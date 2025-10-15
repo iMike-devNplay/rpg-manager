@@ -1,0 +1,67 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>🎲 RPG Manager</h1>
+    <p class="subtitle">Gestionnaire de parties de jeu de rôle</p>
+    
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username"
+          [(ngModel)]="username" 
+          required 
+          minlength="2"
+          #usernameInput="ngModel"
+          class="form-control"
+          placeholder="Entrez votre nom d'utilisateur"
+        >
+        <div class="error-message" *ngIf="usernameInput.invalid && usernameInput.touched">
+          Le nom d'utilisateur doit contenir au moins 2 caractères
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mode de jeu</label>
+        <div class="mode-selection">
+          <label class="mode-option" [class.selected]="selectedMode === userModes.PLAYER">
+            <input 
+              type="radio" 
+              name="mode" 
+              [value]="userModes.PLAYER"
+              [(ngModel)]="selectedMode"
+            >
+            <span class="mode-icon">👤</span>
+            <span>Joueur</span>
+          </label>
+          
+          <label class="mode-option" [class.selected]="selectedMode === userModes.GAMEMASTER">
+            <input 
+              type="radio" 
+              name="mode" 
+              [value]="userModes.GAMEMASTER"
+              [(ngModel)]="selectedMode"
+            >
+            <span class="mode-icon">🎯</span>
+            <span>Maître de jeu</span>
+          </label>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn-primary"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        <span *ngIf="isLoading">Connexion...</span>
+        <span *ngIf="!isLoading">Se connecter</span>
+      </button>
+    </form>
+
+    <div class="info-box">
+      <h3>ℹ️ Information</h3>
+      <p>Vos données sont stockées localement dans votre navigateur. Aucune information n'est envoyée sur internet.</p>
+    </div>
+  </div>
+</div>

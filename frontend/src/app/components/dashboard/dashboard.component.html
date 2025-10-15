@@ -1,0 +1,203 @@
+<div class="dashboard-container" *ngIf="currentUser">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <h1>🎲 RPG Manager</h1>
+      <span class="user-info">
+        Bienvenue, {{ currentUser.username }} 
+        <span class="mode-badge" [class]="'mode-' + currentUser.mode">
+          {{ getModeLabel(currentUser.mode) }}
+        </span>
+      </span>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="exportData()">
+        📤 Exporter
+      </button>
+      <button class="btn btn-secondary" (click)="importData()">
+        📥 Importer
+      </button>
+      <button class="btn btn-secondary" (click)="switchMode()" *ngIf="canSwitchMode()">
+        🔄 {{ getOtherModeLabel() }}
+      </button>
+      <button class="btn btn-danger" (click)="logout()">
+        🚪 Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation pour Maître de jeu -->
+  <nav class="gm-navigation" *ngIf="isGameMaster()">
+    <button 
+      class="nav-btn" 
+      [class.active]="currentView === 'dashboard'"
+      (click)="setView('dashboard')"
+    >
+      📊 Dashboard
+    </button>
+    <button 
+      class="nav-btn" 
+      [class.active]="currentView === 'combat'"
+      (click)="setView('combat')"
+    >
+      ⚔️ Combat
+    </button>
+    <button 
+      class="nav-btn" 
+      [class.active]="currentView === 'players'"
+      (click)="setView('players')"
+    >
+      👥 Joueurs
+    </button>
+  </nav>
+
+  <!-- Dashboard principal -->
+  <main class="dashboard-main" *ngIf="currentView === 'dashboard'">
+    <div class="dashboard-grid">
+      <!-- Zone Top -->
+      <div class="dashboard-zone zone-top" [attr.data-zone]="zones.TOP">
+        <div class="zone-header">
+          <h3>📌 Zone Haute</h3>
+          <button class="btn-add" (click)="addItem(zones.TOP)">+ Ajouter</button>
+        </div>
+        <div class="zone-content">
+          <div class="data-item" *ngFor="let item of getItemsByZone(zones.TOP)" [attr.data-id]="item.id">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
+            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+          </div>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Left -->
+      <div class="dashboard-zone zone-left" [attr.data-zone]="zones.LEFT">
+        <div class="zone-header">
+          <h3>📋 Zone Gauche</h3>
+          <button class="btn-add" (click)="addItem(zones.LEFT)">+ Ajouter</button>
+        </div>
+        <div class="zone-content">
+          <div class="data-item" *ngFor="let item of getItemsByZone(zones.LEFT)" [attr.data-id]="item.id">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
+            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+          </div>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.LEFT).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Center -->
+      <div class="dashboard-zone zone-center" [attr.data-zone]="zones.CENTER">
+        <div class="zone-header">
+          <h3>🎯 Zone Centrale</h3>
+          <button class="btn-add" (click)="addItem(zones.CENTER)">+ Ajouter</button>
+        </div>
+        <div class="zone-content">
+          <div class="data-item" *ngFor="let item of getItemsByZone(zones.CENTER)" [attr.data-id]="item.id">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
+            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+          </div>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.CENTER).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Right -->
+      <div class="dashboard-zone zone-right" [attr.data-zone]="zones.RIGHT">
+        <div class="zone-header">
+          <h3>📝 Zone Droite</h3>
+          <button class="btn-add" (click)="addItem(zones.RIGHT)">+ Ajouter</button>
+        </div>
+        <div class="zone-content">
+          <div class="data-item" *ngFor="let item of getItemsByZone(zones.RIGHT)" [attr.data-id]="item.id">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
+            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+          </div>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.RIGHT).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Bottom -->
+      <div class="dashboard-zone zone-bottom" [attr.data-zone]="zones.BOTTOM">
+        <div class="zone-header">
+          <h3>📦 Zone Basse</h3>
+          <button class="btn-add" (click)="addItem(zones.BOTTOM)">+ Ajouter</button>
+        </div>
+        <div class="zone-content">
+          <div class="data-item" *ngFor="let item of getItemsByZone(zones.BOTTOM)" [attr.data-id]="item.id">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
+            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+          </div>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.BOTTOM).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Vue Combat (pour Maître de jeu) -->
+  <main class="combat-view" *ngIf="currentView === 'combat' && isGameMaster()">
+    <h2>⚔️ Gestion du Combat</h2>
+    <p>Interface de combat à implémenter...</p>
+  </main>
+
+  <!-- Vue Joueurs (pour Maître de jeu) -->
+  <main class="players-view" *ngIf="currentView === 'players' && isGameMaster()">
+    <h2>👥 Gestion des Joueurs</h2>
+    <p>Interface de gestion des joueurs à implémenter...</p>
+  </main>
+</div>
+
+<!-- Modal pour ajouter un élément -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Ajouter un élément</h3>
+    <form (ngSubmit)="saveNewItem()">
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" [(ngModel)]="newItem.name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="newItem.type" name="type">
+          <option [value]="dataTypes.NUMERIC">Numérique</option>
+          <option [value]="dataTypes.TEXT">Texte</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valeur</label>
+        <input 
+          [type]="newItem.type === dataTypes.NUMERIC ? 'number' : 'text'" 
+          [(ngModel)]="newItem.value" 
+          name="value" 
+          required
+        >
+      </div>
+      <div class="form-group">
+        <label>Description (optionnel)</label>
+        <textarea [(ngModel)]="newItem.description" name="description"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+      </div>
+    </form>
+  </div>
+</div>

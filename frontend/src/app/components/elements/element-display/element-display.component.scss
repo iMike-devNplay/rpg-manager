@@ -240,8 +240,13 @@
 
     &.dragging {
       opacity: 0.5;
-      transform: rotate(5deg);
       cursor: grabbing;
+    }
+
+    &.drop-target {
+      border: 2px dashed #007bff;
+      background: rgba(0, 123, 255, 0.1);
+      transform: translateY(-1px);
     }
   }
 }

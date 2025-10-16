@@ -4,6 +4,9 @@
   draggable="true"
   (dragstart)="onDragStart($event)"
   (dragend)="onDragEnd($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
 >
   <!-- En-tête avec nom et boutons d'action -->
   <div class="element-header">

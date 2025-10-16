@@ -18,6 +18,7 @@ export class ElementDisplayComponent {
   @Output() itemEdit = new EventEmitter<DataItem>();
   @Output() itemDragStart = new EventEmitter<DataItem>();
   @Output() itemDragEnd = new EventEmitter<void>();
+  @Output() itemDroppedOn = new EventEmitter<{draggedItemId: string, targetItem: DataItem}>();
 
   constructor(private elementService: ElementService) {}
 
@@ -117,7 +118,63 @@ export class ElementDisplayComponent {
     // Retirer la classe CSS
     (event.target as HTMLElement).classList.remove('dragging');
     
+    // Retirer aussi la classe drop-target de tous les éléments
+    document.querySelectorAll('.drop-target').forEach(element => {
+      element.classList.remove('drop-target');
+    });
+    
     // Notifier le parent
     this.itemDragEnd.emit();
+  }
+
+  /**
+   * Gestion du dragover sur cet élément
+   */
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Ajouter une classe CSS pour indiquer qu'on peut dropper ici
+    (event.currentTarget as HTMLElement).classList.add('drop-target');
+  }
+
+  /**
+   * Gestion du dragleave sur cet élément
+   */
+  onDragLeave(event: DragEvent): void {
+    // Retirer la classe CSS seulement si on quitte vraiment l'élément
+    // (pas ses enfants)
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = event.clientX;
+    const y = event.clientY;
+    
+    // Si la souris est encore dans les limites de l'élément, ne pas retirer la classe
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      return;
+    }
+    
+    (event.currentTarget as HTMLElement).classList.remove('drop-target');
+  }
+
+  /**
+   * Gestion du drop sur cet élément
+   */
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Retirer la classe CSS
+    (event.currentTarget as HTMLElement).classList.remove('drop-target');
+    
+    // Récupérer l'ID de l'élément dragué
+    const draggedItemId = event.dataTransfer?.getData('text/plain');
+    
+    if (draggedItemId && draggedItemId !== this.item.id) {
+      // Notifier le parent avec l'élément dragué et l'élément cible
+      this.itemDroppedOn.emit({
+        draggedItemId,
+        targetItem: this.item
+      });
+    }
   }
 }

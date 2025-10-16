@@ -120,9 +120,14 @@ export class ElementService {
   /**
    * Crée un élément avec tous les calculs automatiques
    * @param elementData Données de l'élément à créer
+   * @param existingItems Éléments existants pour calculer l'ordre
    * @returns L'élément créé avec calculs
    */
-  createElement(elementData: any): DataItem {
+  createElement(elementData: any, existingItems: DataItem[] = []): DataItem {
+    // Calculer l'ordre suivant pour la zone
+    const itemsInZone = existingItems.filter(item => item.zone === elementData.zone);
+    const maxOrder = itemsInZone.length > 0 ? Math.max(...itemsInZone.map(item => item.order)) : -1;
+    
     const newItem: DataItem = {
       id: this.generateId(),
       name: elementData.name,
@@ -130,7 +135,7 @@ export class ElementService {
       value: elementData.value,
       description: elementData.description,
       zone: elementData.zone,
-      order: 0,
+      order: maxOrder + 1,
       userId: this.storageService.getCurrentUser()?.id || '',
       hasProficiency: elementData.hasProficiency,
       allowQuickModification: elementData.allowQuickModification

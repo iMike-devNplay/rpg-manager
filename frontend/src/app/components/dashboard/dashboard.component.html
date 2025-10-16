@@ -90,7 +90,8 @@
             (itemDeleted)="onItemDeleted($event)"
             (itemEdit)="onItemEdit($event)"
             (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()">
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -118,7 +119,8 @@
             (itemDeleted)="onItemDeleted($event)"
             (itemEdit)="onItemEdit($event)"
             (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()">
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.LEFT).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -146,7 +148,8 @@
             (itemDeleted)="onItemDeleted($event)"
             (itemEdit)="onItemEdit($event)"
             (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()">
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.CENTER).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -174,7 +177,8 @@
             (itemDeleted)="onItemDeleted($event)"
             (itemEdit)="onItemEdit($event)"
             (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()">
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.RIGHT).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -202,7 +206,8 @@
             (itemDeleted)="onItemDeleted($event)"
             (itemEdit)="onItemEdit($event)"
             (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()">
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.BOTTOM).length === 0">
             <p>Aucun élément dans cette zone</p>

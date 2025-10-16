@@ -131,7 +131,9 @@ export class DashboardComponent implements OnInit {
   }
 
   getItemsByZone(zone: DashboardZone): DataItem[] {
-    return this.dataItems.filter(item => item.zone === zone);
+    return this.dataItems
+      .filter(item => item.zone === zone)
+      .sort((a, b) => a.order - b.order);
   }
 
   addItem(zone: DashboardZone): void {
@@ -157,8 +159,9 @@ export class DashboardComponent implements OnInit {
         const updatedElement = this.elementService.updateElement(elementData);
         this.storageService.saveDataItem(updatedElement);
       } else {
-        // Mode création : créer un nouvel élément
-        const newElement = this.elementService.createElement(elementData);
+        // Mode création : créer un nouvel élément avec l'ordre correct
+        const existingItems = this.currentCharacter?.dataItems || [];
+        const newElement = this.elementService.createElement(elementData, existingItems);
         this.storageService.saveDataItem(newElement);
       }
       
@@ -409,15 +412,52 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    // Si l'élément est déjà dans la même zone, ne rien faire
+    // Si l'élément est déjà dans la même zone, l'ajouter à la fin
     if (this.draggedItem.zone === targetZone) {
+      // Calculer le nouvel ordre (à la fin de la zone)
+      const itemsInZone = this.currentCharacter.dataItems
+        .filter(item => item.zone === targetZone && item.id !== this.draggedItem!.id)
+        .sort((a, b) => a.order - b.order);
+      
+      const maxOrder = itemsInZone.length > 0 ? Math.max(...itemsInZone.map(item => item.order)) : -1;
+      
+      const updatedItem: DataItem = {
+        ...this.draggedItem,
+        order: maxOrder + 1
+      };
+
+      // Mettre à jour l'élément dans les données du personnage
+      const updatedCharacter = {
+        ...this.currentCharacter,
+        dataItems: this.currentCharacter.dataItems.map(item => 
+          item.id === updatedItem.id ? updatedItem : item
+        )
+      };
+
+      // Sauvegarder les modifications
+      this.characterService.updateCharacter(updatedCharacter);
+      
+      // Mettre à jour le personnage courant
+      this.currentCharacter = updatedCharacter;
+      this.dataItems = updatedCharacter.dataItems;
+
+      // Réinitialiser le drag
+      this.draggedItem = null;
       return;
     }
 
-    // Créer une copie de l'élément avec la nouvelle zone
+    // Calculer le nouvel ordre pour la zone de destination
+    const itemsInTargetZone = this.currentCharacter.dataItems
+      .filter(item => item.zone === targetZone)
+      .sort((a, b) => a.order - b.order);
+    
+    const maxOrder = itemsInTargetZone.length > 0 ? Math.max(...itemsInTargetZone.map(item => item.order)) : -1;
+
+    // Créer une copie de l'élément avec la nouvelle zone et le bon ordre
     const updatedItem: DataItem = {
       ...this.draggedItem,
-      zone: targetZone
+      zone: targetZone,
+      order: maxOrder + 1
     };
 
     // Mettre à jour l'élément dans les données du personnage
@@ -437,5 +477,63 @@ export class DashboardComponent implements OnInit {
 
     // Réinitialiser le drag
     this.draggedItem = null;
+  }
+
+  /**
+   * Gestion du drop d'un élément sur un autre élément (réordonnancement)
+   */
+  onItemDroppedOn(event: {draggedItemId: string, targetItem: DataItem}): void {
+    if (!this.currentCharacter) {
+      return;
+    }
+
+    const { draggedItemId, targetItem } = event;
+    
+    // Trouver l'élément dragué
+    const draggedItem = this.currentCharacter.dataItems.find(item => item.id === draggedItemId);
+    
+    if (!draggedItem || draggedItem.zone !== targetItem.zone) {
+      // Si l'élément dragué n'est pas dans la même zone, ne pas faire de réordonnancement
+      return;
+    }
+
+    // Calculer les nouveaux ordres
+    const itemsInZone = this.currentCharacter.dataItems
+      .filter(item => item.zone === targetItem.zone)
+      .sort((a, b) => a.order - b.order);
+
+    const draggedIndex = itemsInZone.findIndex(item => item.id === draggedItemId);
+    const targetIndex = itemsInZone.findIndex(item => item.id === targetItem.id);
+
+    if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) {
+      return;
+    }
+
+    // Retirer l'élément dragué de sa position actuelle
+    const [movedItem] = itemsInZone.splice(draggedIndex, 1);
+    
+    // L'insérer à la nouvelle position (après l'élément cible)
+    itemsInZone.splice(targetIndex, 0, movedItem);
+
+    // Recalculer les ordres
+    itemsInZone.forEach((item, index) => {
+      item.order = index;
+    });
+
+    // Créer le personnage mis à jour
+    const updatedCharacter = {
+      ...this.currentCharacter,
+      dataItems: this.currentCharacter.dataItems.map(item => {
+        const reorderedItem = itemsInZone.find(reordered => reordered.id === item.id);
+        return reorderedItem || item;
+      })
+    };
+
+    // Sauvegarder les modifications
+    this.characterService.updateCharacter(updatedCharacter);
+    
+    // Mettre à jour le personnage courant
+    this.currentCharacter = updatedCharacter;
+    this.dataItems = updatedCharacter.dataItems;
   }
 }

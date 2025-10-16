@@ -16,6 +16,8 @@ export class ElementDisplayComponent {
   @Output() itemUpdated = new EventEmitter<DataItem>();
   @Output() itemDeleted = new EventEmitter<DataItem>();
   @Output() itemEdit = new EventEmitter<DataItem>();
+  @Output() itemDragStart = new EventEmitter<DataItem>();
+  @Output() itemDragEnd = new EventEmitter<void>();
 
   constructor(private elementService: ElementService) {}
 
@@ -92,5 +94,30 @@ export class ElementDisplayComponent {
    */
   isAttribute(): boolean {
     return this.item.type === DataType.ATTRIBUTE;
+  }
+
+  /**
+   * Gestion du début de drag
+   */
+  onDragStart(event: DragEvent): void {
+    // Stocker l'ID de l'élément dans le dataTransfer
+    event.dataTransfer?.setData('text/plain', this.item.id);
+    
+    // Ajouter une classe CSS pour le style pendant le drag
+    (event.target as HTMLElement).classList.add('dragging');
+    
+    // Notifier le parent
+    this.itemDragStart.emit(this.item);
+  }
+
+  /**
+   * Gestion de la fin de drag
+   */
+  onDragEnd(event: DragEvent): void {
+    // Retirer la classe CSS
+    (event.target as HTMLElement).classList.remove('dragging');
+    
+    // Notifier le parent
+    this.itemDragEnd.emit();
   }
 }

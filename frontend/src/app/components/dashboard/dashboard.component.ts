@@ -47,6 +47,9 @@ export class DashboardComponent implements OnInit {
   newItem: Partial<DataItem> = {};
   currentZone: DashboardZone = DashboardZone.CENTER;
   editingItem: DataItem | null = null;
+  
+  // Drag and drop
+  draggedItem: DataItem | null = null;
 
   // Modal pour gérer les personnages
   showCharacterModal = false;
@@ -353,5 +356,86 @@ export class DashboardComponent implements OnInit {
     this.showCreateElementModal = true;
     this.currentZone = item.zone;
     this.editingItem = item;
+  }
+
+  /**
+   * Gestion du début de drag d'un élément
+   */
+  onItemDragStart(item: DataItem): void {
+    this.draggedItem = item;
+  }
+
+  /**
+   * Gestion de la fin de drag d'un élément
+   */
+  onItemDragEnd(): void {
+    this.draggedItem = null;
+    // Retirer les classes de drop des zones
+    document.querySelectorAll('.zone-content').forEach(zone => {
+      zone.classList.remove('drag-over');
+    });
+  }
+
+  /**
+   * Gestion du dragover sur une zone
+   */
+  onDragOver(event: DragEvent): void {
+    event.preventDefault(); // Nécessaire pour permettre le drop
+    
+    // Ajouter une classe CSS pour l'effet visuel
+    const target = event.currentTarget as HTMLElement;
+    target.classList.add('drag-over');
+  }
+
+  /**
+   * Gestion du drop sur une zone
+   */
+  onDrop(event: DragEvent, targetZone: DashboardZone): void {
+    event.preventDefault();
+    
+    // Retirer la classe CSS de drop
+    const target = event.currentTarget as HTMLElement;
+    target.classList.remove('drag-over');
+    
+    // Récupérer l'ID de l'élément depuis le dataTransfer
+    const itemId = event.dataTransfer?.getData('text/plain');
+    
+    if (!itemId || !this.draggedItem || !this.currentCharacter) {
+      return;
+    }
+
+    // Vérifier que l'élément dragué correspond à l'ID récupéré
+    if (this.draggedItem.id !== itemId) {
+      return;
+    }
+
+    // Si l'élément est déjà dans la même zone, ne rien faire
+    if (this.draggedItem.zone === targetZone) {
+      return;
+    }
+
+    // Créer une copie de l'élément avec la nouvelle zone
+    const updatedItem: DataItem = {
+      ...this.draggedItem,
+      zone: targetZone
+    };
+
+    // Mettre à jour l'élément dans les données du personnage
+    const updatedCharacter = {
+      ...this.currentCharacter,
+      dataItems: this.currentCharacter.dataItems.map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    };
+
+    // Sauvegarder les modifications
+    this.characterService.updateCharacter(updatedCharacter);
+    
+    // Mettre à jour le personnage courant
+    this.currentCharacter = updatedCharacter;
+    this.dataItems = updatedCharacter.dataItems;
+
+    // Réinitialiser le drag
+    this.draggedItem = null;
   }
 }

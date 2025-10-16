@@ -74,17 +74,23 @@
       <!-- Zone Top -->
       <div class="dashboard-zone zone-top" [attr.data-zone]="zones.TOP">
         <div class="zone-header">
-          <h3>📌 Zone Haute</h3>
-          <button class="btn-add" (click)="addItem(zones.TOP)">+ Ajouter</button>
+          <button class="btn-add" (click)="addItem(zones.TOP)">📌</button>
         </div>
-        <div class="zone-content">
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.TOP)"
+          [attr.data-zone]="zones.TOP"
+        >
           <app-element-display 
             *ngFor="let item of getItemsByZone(zones.TOP)" 
             [item]="item"
             [showQuickModification]="true"
             (itemUpdated)="onItemUpdated($event)"
             (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)">
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -96,17 +102,23 @@
       <!-- Zone Left -->
       <div class="dashboard-zone zone-left" [attr.data-zone]="zones.LEFT">
         <div class="zone-header">
-          <h3>📋 Zone Gauche</h3>
-          <button class="btn-add" (click)="addItem(zones.LEFT)">+ Ajouter</button>
+          <button class="btn-add" (click)="addItem(zones.LEFT)">📋</button>
         </div>
-        <div class="zone-content">
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.LEFT)"
+          [attr.data-zone]="zones.LEFT"
+        >
           <app-element-display 
             *ngFor="let item of getItemsByZone(zones.LEFT)" 
             [item]="item"
             [showQuickModification]="true"
             (itemUpdated)="onItemUpdated($event)"
             (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)">
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.LEFT).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -118,17 +130,23 @@
       <!-- Zone Center -->
       <div class="dashboard-zone zone-center" [attr.data-zone]="zones.CENTER">
         <div class="zone-header">
-          <h3>🎯 Zone Centrale</h3>
-          <button class="btn-add" (click)="addItem(zones.CENTER)">+ Ajouter</button>
+          <button class="btn-add" (click)="addItem(zones.CENTER)">🎯</button>
         </div>
-        <div class="zone-content">
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.CENTER)"
+          [attr.data-zone]="zones.CENTER"
+        >
           <app-element-display 
             *ngFor="let item of getItemsByZone(zones.CENTER)" 
             [item]="item"
             [showQuickModification]="true"
             (itemUpdated)="onItemUpdated($event)"
             (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)">
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.CENTER).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -140,17 +158,23 @@
       <!-- Zone Right -->
       <div class="dashboard-zone zone-right" [attr.data-zone]="zones.RIGHT">
         <div class="zone-header">
-          <h3>📝 Zone Droite</h3>
-          <button class="btn-add" (click)="addItem(zones.RIGHT)">+ Ajouter</button>
+          <button class="btn-add" (click)="addItem(zones.RIGHT)">📝</button>
         </div>
-        <div class="zone-content">
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.RIGHT)"
+          [attr.data-zone]="zones.RIGHT"
+        >
           <app-element-display 
             *ngFor="let item of getItemsByZone(zones.RIGHT)" 
             [item]="item"
             [showQuickModification]="true"
             (itemUpdated)="onItemUpdated($event)"
             (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)">
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.RIGHT).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -162,17 +186,23 @@
       <!-- Zone Bottom -->
       <div class="dashboard-zone zone-bottom" [attr.data-zone]="zones.BOTTOM">
         <div class="zone-header">
-          <h3>📦 Zone Basse</h3>
-          <button class="btn-add" (click)="addItem(zones.BOTTOM)">+ Ajouter</button>
+          <button class="btn-add" (click)="addItem(zones.BOTTOM)">📦</button>
         </div>
-        <div class="zone-content">
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.BOTTOM)"
+          [attr.data-zone]="zones.BOTTOM"
+        >
           <app-element-display 
             *ngFor="let item of getItemsByZone(zones.BOTTOM)" 
             [item]="item"
             [showQuickModification]="true"
             (itemUpdated)="onItemUpdated($event)"
             (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)">
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()">
           </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.BOTTOM).length === 0">
             <p>Aucun élément dans cette zone</p>

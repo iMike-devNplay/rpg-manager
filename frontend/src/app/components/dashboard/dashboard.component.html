@@ -3,15 +3,31 @@
   <header class="dashboard-header">
     <div class="header-left">
       <h1>🎲 RPG Manager</h1>
-      <span class="user-info">
-        Bienvenue, {{ currentUser.username }} 
-        <span class="mode-badge" [class]="'mode-' + currentUser.mode">
-          {{ getModeLabel(currentUser.mode) }}
+      <div class="user-character-info">
+        <span class="user-info">
+          {{ currentUser.username }} 
+          <span class="mode-badge" [class]="'mode-' + currentUser.mode">
+            {{ getModeLabel(currentUser.mode) }}
+          </span>
         </span>
-      </span>
+        <div class="character-info" *ngIf="currentCharacter">
+          <span class="character-name" (click)="openCharacterModal()">
+            🧙‍♂️ {{ currentCharacter.name }}
+          </span>
+          <span class="character-system">
+            {{ getGameSystemLabel(currentCharacter.gameSystem) }}
+          </span>
+        </div>
+        <button class="btn-character" *ngIf="!currentCharacter" (click)="openCreateCharacterModal()">
+          ➕ Créer un personnage
+        </button>
+      </div>
     </div>
     
     <div class="header-actions">
+      <button class="btn btn-secondary" (click)="openCharacterModal()" *ngIf="currentCharacter">
+        👥 Personnages
+      </button>
       <button class="btn btn-secondary" (click)="exportData()">
         📤 Exporter
       </button>
@@ -62,10 +78,13 @@
           <button class="btn-add" (click)="addItem(zones.TOP)">+ Ajouter</button>
         </div>
         <div class="zone-content">
-          <div class="data-item" *ngFor="let item of getItemsByZone(zones.TOP)" [attr.data-id]="item.id">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
-            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+          <div class="data-item" *ngFor="let item of getItemsByZone(zones.TOP)" [attr.data-id]="item.id" [class]="'item-' + item.type">
+            <div class="item-header">
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-type-badge">{{ getElementTypeLabel(item) }}</span>
+            </div>
+            <span class="item-value" [class]="'type-' + item.type">{{ getElementValue(item) }}</span>
+            <button class="btn-remove" (click)="removeItem(item.id)" title="Supprimer">×</button>
           </div>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
             <p>Aucun élément dans cette zone</p>
@@ -153,15 +172,13 @@
   </main>
 
   <!-- Vue Combat (pour Maître de jeu) -->
-  <main class="combat-view" *ngIf="currentView === 'combat' && isGameMaster()">
-    <h2>⚔️ Gestion du Combat</h2>
-    <p>Interface de combat à implémenter...</p>
+  <main *ngIf="currentView === 'combat' && isGameMaster()">
+    <app-combat-management></app-combat-management>
   </main>
 
   <!-- Vue Joueurs (pour Maître de jeu) -->
-  <main class="players-view" *ngIf="currentView === 'players' && isGameMaster()">
-    <h2>👥 Gestion des Joueurs</h2>
-    <p>Interface de gestion des joueurs à implémenter...</p>
+  <main *ngIf="currentView === 'players' && isGameMaster()">
+    <app-players-management></app-players-management>
   </main>
 </div>
 
@@ -201,3 +218,28 @@
     </form>
   </div>
 </div>
+
+<!-- Modales externalisées -->
+<app-character-selector-modal
+  [isVisible]="showCharacterModal"
+  [currentCharacter]="currentCharacter"
+  [userCharacters]="userCharacters"
+  (close)="closeCharacterModal()"
+  (characterSelected)="selectCharacter($event)"
+  (createNewCharacter)="openCreateCharacterModal()"
+  (duplicateCharacter)="duplicateCharacter($event)"
+  (deleteCharacter)="deleteCharacter($event)">
+</app-character-selector-modal>
+
+<app-create-character-modal
+  [isVisible]="showCreateCharacterModal"
+  (close)="closeCreateCharacterModal()"
+  (characterCreated)="createNewCharacter($event)">
+</app-create-character-modal>
+
+<app-create-element-modal
+  [isVisible]="showCreateElementModal"
+  [targetZone]="currentZone"
+  (close)="closeCreateElementModal()"
+  (elementCreated)="onElementCreated($event)">
+</app-create-element-modal>

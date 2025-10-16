@@ -4,30 +4,58 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { StorageService } from '../../services/storage.service';
-import { User, UserMode, DashboardZone, DataItem, DataGroup, DataType } from '../../models/rpg.models';
+import { CharacterService } from '../../services/character.service';
+import { CharacterSelectorModalComponent } from '../character-selector-modal/character-selector-modal.component';
+import { CreateCharacterModalComponent } from '../create-character-modal/create-character-modal.component';
+import { CreateElementModalComponent, ElementCreationData } from '../elements/create-element-modal/create-element-modal.component';
+import { CombatManagementComponent } from '../combat-management/combat-management.component';
+import { PlayersManagementComponent } from '../players-management/players-management.component';
+import { User, UserMode, DashboardZone, DataItem, DataGroup, DataType, PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../models/rpg.models';
+import { ElementService } from '../../services/element.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    CharacterSelectorModalComponent,
+    CreateCharacterModalComponent,
+    CreateElementModalComponent,
+    CombatManagementComponent,
+    PlayersManagementComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
+  currentCharacter: PlayerCharacter | null = null;
+  userCharacters: PlayerCharacter[] = [];
   currentView = 'dashboard';
   zones = DashboardZone;
   dataTypes = DataType;
+  gameSystems = GameSystem;
+  gameSystemLabels = GAME_SYSTEM_LABELS;
   dataItems: DataItem[] = [];
   
   // Modal pour ajouter des éléments
   showAddModal = false;
+  showCreateElementModal = false;
   newItem: Partial<DataItem> = {};
   currentZone: DashboardZone = DashboardZone.CENTER;
+
+  // Modal pour gérer les personnages
+  showCharacterModal = false;
+  showCreateCharacterModal = false;
+  newCharacterName = '';
+  newCharacterSystem = GameSystem.OTHER;
 
   constructor(
     private userService: UserService,
     private storageService: StorageService,
+    public characterService: CharacterService,
+    private elementService: ElementService,
     private router: Router
   ) {}
 
@@ -37,8 +65,13 @@ export class DashboardComponent implements OnInit {
       if (!user) {
         this.router.navigate(['/login']);
       } else {
-        this.loadUserData();
+        this.loadUserCharacters();
       }
+    });
+
+    this.characterService.currentCharacter$.subscribe(character => {
+      this.currentCharacter = character;
+      this.loadCharacterData();
     });
   }
 
@@ -51,6 +84,18 @@ export class DashboardComponent implements OnInit {
         // Si aucun personnage n'existe, en créer un par défaut
         this.dataItems = [];
       }
+    }
+  }
+
+  private loadUserCharacters(): void {
+    this.userCharacters = this.characterService.getUserCharacters();
+  }
+
+  private loadCharacterData(): void {
+    if (this.currentCharacter) {
+      this.dataItems = this.currentCharacter.dataItems || [];
+    } else {
+      this.dataItems = [];
     }
   }
 
@@ -85,6 +130,34 @@ export class DashboardComponent implements OnInit {
 
   addItem(zone: DashboardZone): void {
     this.currentZone = zone;
+    this.openCreateElementModal(zone);
+  }
+
+  // Nouvelle modale d'éléments
+  openCreateElementModal(zone?: DashboardZone): void {
+    this.currentZone = zone || DashboardZone.CENTER;
+    this.showCreateElementModal = true;
+  }
+
+  closeCreateElementModal(): void {
+    this.showCreateElementModal = false;
+  }
+
+  onElementCreated(elementData: ElementCreationData): void {
+    try {
+      const newElement = this.elementService.createElement(elementData);
+      this.storageService.saveDataItem(newElement);
+      this.loadCharacterData();
+      this.closeCreateElementModal();
+    } catch (error) {
+      console.error('Erreur lors de la création de l\'élément:', error);
+      alert('Erreur lors de la création de l\'élément. Veuillez réessayer.');
+    }
+  }
+
+  // Ancienne modale (à conserver pour compatibilité)
+  addItemOld(zone: DashboardZone): void {
+    this.currentZone = zone;
     this.newItem = {
       name: '',
       type: DataType.TEXT,
@@ -114,7 +187,7 @@ export class DashboardComponent implements OnInit {
       };
 
       this.storageService.saveDataItem(item);
-      this.loadUserData();
+      this.loadCharacterData();
       this.closeAddModal();
     }
   }
@@ -122,7 +195,7 @@ export class DashboardComponent implements OnInit {
   removeItem(itemId: string): void {
     if (this.currentUser) {
       this.storageService.deleteDataItem(itemId, this.currentUser.id);
-      this.loadUserData();
+      this.loadCharacterData();
     }
   }
 
@@ -153,7 +226,7 @@ export class DashboardComponent implements OnInit {
           try {
             const importData = JSON.parse(e.target.result);
             this.storageService.importData(importData);
-            this.loadUserData();
+            this.loadCharacterData();
             alert('Données importées avec succès !');
           } catch (error) {
             alert('Erreur lors de l\'import: fichier invalide');
@@ -168,5 +241,77 @@ export class DashboardComponent implements OnInit {
   logout(): void {
     this.userService.logout();
     this.router.navigate(['/login']);
+  }
+
+  // Gestion des personnages
+  openCharacterModal(): void {
+    this.loadUserCharacters();
+    this.showCharacterModal = true;
+  }
+
+  closeCharacterModal(): void {
+    this.showCharacterModal = false;
+  }
+
+  selectCharacter(character: PlayerCharacter): void {
+    this.characterService.setCurrentCharacter(character);
+    this.closeCharacterModal();
+  }
+
+  openCreateCharacterModal(): void {
+    this.newCharacterName = '';
+    this.newCharacterSystem = GameSystem.OTHER;
+    this.showCreateCharacterModal = true;
+  }
+
+  closeCreateCharacterModal(): void {
+    this.showCreateCharacterModal = false;
+  }
+
+  createNewCharacter(data: {name: string, gameSystem: GameSystem}): void {
+    try {
+      this.characterService.createCharacter(data.name, data.gameSystem);
+      this.loadUserCharacters();
+      this.closeCreateCharacterModal();
+    } catch (error) {
+      console.error('Erreur lors de la création du personnage:', error);
+    }
+  }
+
+  deleteCharacter(character: PlayerCharacter): void {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le personnage "${character.name}" ?\n\nToutes ses données seront perdues définitivement.`)) {
+      this.characterService.deleteCharacter(character.id);
+      this.loadUserCharacters();
+    }
+  }
+
+  duplicateCharacter(character: PlayerCharacter): void {
+    try {
+      this.characterService.duplicateCharacter(character);
+      this.loadUserCharacters();
+    } catch (error) {
+      console.error('Erreur lors de la duplication du personnage:', error);
+    }
+  }
+
+  getGameSystemLabel(gameSystem: GameSystem): string {
+    return this.characterService.getGameSystemLabel(gameSystem);
+  }
+
+  // Méthodes pour les nouveaux éléments
+  getElementValue(item: DataItem): string {
+    return this.elementService.formatElementValue(item);
+  }
+
+  getElementTypeLabel(item: DataItem): string {
+    return this.elementService.getElementTypeLabel(item.type);
+  }
+
+  isAttributeElement(item: DataItem): boolean {
+    return item.type === DataType.ATTRIBUTE;
+  }
+
+  isProficiencyBonusElement(item: DataItem): boolean {
+    return item.type === DataType.PROFICIENCY_BONUS;
   }
 }

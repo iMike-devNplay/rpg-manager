@@ -157,49 +157,139 @@
 
 .data-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
   margin-bottom: 8px;
   background: #f9f9f9;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #eee;
-}
+  position: relative;
+  transition: all 0.3s;
 
-.item-name {
-  font-weight: 500;
-  color: #333;
-}
+  &:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
 
-.item-value {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
 
-.item-value.type-numeric {
-  background: #e3f2fd;
-  color: #1976d2;
-  font-weight: bold;
-}
+  .item-name {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.95rem;
+  }
 
-.item-value.type-text {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
+  .item-type-badge {
+    background: #e9ecef;
+    color: #666;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
 
-.btn-remove {
-  background: #f44336;
-  color: white;
-  border: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .item-value {
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    word-break: break-word;
+
+    &.type-numeric {
+      background: #e3f2fd;
+      color: #1976d2;
+      font-weight: bold;
+    }
+
+    &.type-text {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+
+    &.type-attribute {
+      background: #e8f5e8;
+      color: #2e7d32;
+      font-weight: bold;
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+
+    &.type-proficiency_bonus {
+      background: #fff3e0;
+      color: #ef6c00;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #f44336;
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.3s;
+
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  // Styles spécifiques par type
+  &.item-attribute {
+    border-left: 4px solid #4caf50;
+    
+    .item-type-badge {
+      background: #4caf50;
+      color: white;
+    }
+  }
+
+  &.item-proficiency_bonus {
+    border-left: 4px solid #ff9800;
+    
+    .item-type-badge {
+      background: #ff9800;
+      color: white;
+    }
+  }
+
+  &.item-numeric {
+    border-left: 4px solid #2196f3;
+    
+    .item-type-badge {
+      background: #2196f3;
+      color: white;
+    }
+  }
+
+  &.item-text {
+    border-left: 4px solid #9c27b0;
+    
+    .item-type-badge {
+      background: #9c27b0;
+      color: white;
+    }
+  }
 }
 
 .combat-view, .players-view {
@@ -284,4 +374,196 @@
 .empty-zone small {
   color: #888;
   font-size: 0.9em;
+}
+
+// Styles spécifiques pour la gestion des personnages
+.character-info {
+  font-size: 0.9rem;
+  color: #666;
+  
+  strong {
+    color: #1976d2;
+  }
+}
+
+.characters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.character-card {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    border-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.2);
+  }
+
+  &.active {
+    border-color: #1976d2;
+    background: #e3f2fd;
+  }
+
+  .character-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .character-game {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  .character-dates {
+    font-size: 0.8rem;
+    color: #888;
+    line-height: 1.4;
+
+    .created, .updated {
+      display: block;
+    }
+  }
+
+  .character-actions {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.3s;
+
+    button {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #ddd;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s;
+
+      &:hover {
+        background: white;
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      }
+
+      &.duplicate {
+        color: #1976d2;
+        &:hover {
+          background: #e3f2fd;
+        }
+      }
+
+      &.delete {
+        color: #d32f2f;
+        &:hover {
+          background: #ffebee;
+        }
+      }
+    }
+  }
+
+  &:hover .character-actions {
+    opacity: 1;
+  }
+}
+
+.add-character-card {
+  background: #f8f9fa;
+  border: 2px dashed #bdc3c7;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    border-color: #1976d2;
+    color: #1976d2;
+    background: #e3f2fd;
+  }
+
+  .add-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    line-height: 1;
+  }
+
+  .add-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+}
+
+.character-form {
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: #1976d2;
+      }
+    }
+
+    select {
+      background: white;
+      cursor: pointer;
+    }
+  }
+}
+
+// Animation pour l'apparition des modales
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-content {
+  animation: modalAppear 0.3s ease-out;
 }

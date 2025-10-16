@@ -1,0 +1,135 @@
+<!-- Modale de création d'élément -->
+<div *ngIf="isVisible" class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>🧩 Créer un nouvel élément</h2>
+    
+    <form class="element-form" (ngSubmit)="onCreateElement()">
+      <!-- Nom de l'élément -->
+      <div class="form-group">
+        <label for="elementName">Nom de l'élément *</label>
+        <input 
+          type="text" 
+          id="elementName"
+          [(ngModel)]="newElement.name" 
+          name="elementName"
+          placeholder="Entrez le nom de l'élément"
+          required
+          maxlength="50">
+      </div>
+      
+      <!-- Type d'élément -->
+      <div class="form-group">
+        <label for="elementType">Type d'élément *</label>
+        <select 
+          id="elementType"
+          [(ngModel)]="newElement.type" 
+          name="elementType"
+          required>
+          <option 
+            *ngFor="let type of getAvailableDataTypes()" 
+            [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+      
+      <!-- Zone de destination -->
+      <div class="form-group">
+        <label for="elementZone">Zone de destination</label>
+        <select 
+          id="elementZone"
+          [(ngModel)]="newElement.zone" 
+          name="elementZone">
+          <option 
+            *ngFor="let zone of getAvailableZones()" 
+            [value]="zone.value">
+            {{ zone.label }}
+          </option>
+        </select>
+      </div>
+      
+      <!-- Valeur -->
+      <div class="form-group">
+        <label for="elementValue">
+          Valeur initiale *
+          <span *ngIf="isAttributeType()" class="hint">(Valeur d'attribut entre 1 et 30)</span>
+        </label>
+        <input 
+          [type]="newElement.type === dataTypes.TEXT ? 'text' : 'number'"
+          id="elementValue"
+          [(ngModel)]="newElement.value" 
+          name="elementValue"
+          [placeholder]="newElement.type === dataTypes.TEXT ? 'Entrez le texte' : 'Entrez la valeur numérique'"
+          [min]="isAttributeType() ? 1 : undefined"
+          [max]="isAttributeType() ? 30 : undefined"
+          required>
+      </div>
+      
+      <!-- Options spécifiques aux attributs -->
+      <div *ngIf="isAttributeType()" class="attribute-options">
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="newElement.hasProficiency" 
+              name="hasProficiency">
+            <span class="checkmark"></span>
+            Cet attribut bénéficie de la maîtrise
+          </label>
+        </div>
+        
+        <div *ngIf="newElement.hasProficiency" class="form-group">
+          <label for="proficiencyBonus">
+            Bonus de maîtrise *
+            <span class="hint">(Sera créé automatiquement s'il n'existe pas)</span>
+          </label>
+          <input 
+            type="number" 
+            id="proficiencyBonus"
+            [(ngModel)]="newElement.proficiencyBonusValue" 
+            name="proficiencyBonus"
+            min="1"
+            max="6"
+            placeholder="2">
+        </div>
+      </div>
+      
+      <!-- Description -->
+      <div class="form-group">
+        <label for="elementDescription">Description (optionnel)</label>
+        <textarea 
+          id="elementDescription"
+          [(ngModel)]="newElement.description" 
+          name="elementDescription"
+          placeholder="Description de l'élément..."
+          rows="3"
+          maxlength="200"></textarea>
+      </div>
+      
+      <!-- Aperçu des calculs automatiques -->
+      <div *ngIf="isAttributeType() && newElement.value" class="calculations-preview">
+        <h4>📊 Calculs automatiques</h4>
+        <div class="calc-item">
+          <span class="calc-label">Modificateur:</span>
+          <span class="calc-value">{{ getModifierDisplay() }}</span>
+        </div>
+        <div *ngIf="newElement.hasProficiency" class="calc-item">
+          <span class="calc-label">Jet de sauvegarde:</span>
+          <span class="calc-value">{{ getSavingThrowDisplay() }}</span>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" (click)="onClose()">
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn primary" 
+          [disabled]="!newElement.name.trim() || !newElement.value">
+          Créer l'élément
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

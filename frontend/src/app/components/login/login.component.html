@@ -3,7 +3,77 @@
     <h1>🎲 RPG Manager</h1>
     <p class="subtitle">Gestionnaire de parties de jeu de rôle</p>
     
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <!-- Toggle entre utilisateurs existants et nouveau -->
+    <div class="user-mode-toggle">
+      <button 
+        type="button"
+        class="toggle-btn" 
+        [class.active]="showExistingUsers"
+        (click)="showExistingUsers = true"
+      >
+        👥 Utilisateurs existants
+      </button>
+      <button 
+        type="button"
+        class="toggle-btn" 
+        [class.active]="!showExistingUsers"
+        (click)="showExistingUsers = false"
+      >
+        ➕ Nouvel utilisateur
+      </button>
+    </div>
+
+    <!-- Section utilisateurs existants -->
+    <div class="existing-users-section" *ngIf="showExistingUsers">
+      <div class="users-list" *ngIf="existingUsers.length > 0; else noUsers">
+        <h3>Sélectionnez votre utilisateur :</h3>
+        <div class="user-item" 
+             *ngFor="let user of existingUsers" 
+             [class.selected]="selectedExistingUser?.id === user.id"
+             (click)="selectedExistingUser = user">
+          <div class="user-info">
+            <span class="user-name">{{ user.username }}</span>
+            <span class="user-mode" [class]="'mode-' + user.mode">
+              {{ getModeLabel(user.mode) }}
+            </span>
+            <small class="user-date">
+              Créé le {{ user.createdAt | date:'dd/MM/yyyy' }}
+            </small>
+          </div>
+          <button 
+            type="button"
+            class="delete-user-btn" 
+            (click)="deleteExistingUser(user, $event)"
+            title="Supprimer cet utilisateur"
+          >
+            🗑️
+          </button>
+        </div>
+        
+        <button 
+          type="button"
+          class="btn-primary connect-existing"
+          [disabled]="!selectedExistingUser || isLoading"
+          (click)="onSelectExistingUser()"
+        >
+          <span *ngIf="isLoading">Connexion...</span>
+          <span *ngIf="!isLoading">Se connecter</span>
+        </button>
+      </div>
+      
+      <ng-template #noUsers>
+        <div class="no-users">
+          <p>Aucun utilisateur existant trouvé.</p>
+          <p>Créez votre premier utilisateur ci-dessous !</p>
+          <button type="button" class="btn-secondary" (click)="showExistingUsers = false">
+            ➕ Créer un utilisateur
+          </button>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Section nouveau utilisateur -->
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" *ngIf="!showExistingUsers">
       <div class="form-group">
         <label for="username">Nom d'utilisateur</label>
         <input 
@@ -54,8 +124,8 @@
         class="btn-primary"
         [disabled]="loginForm.invalid || isLoading"
       >
-        <span *ngIf="isLoading">Connexion...</span>
-        <span *ngIf="!isLoading">Se connecter</span>
+        <span *ngIf="isLoading">Création...</span>
+        <span *ngIf="!isLoading">Créer et se connecter</span>
       </button>
     </form>
 

@@ -30,9 +30,22 @@ export class UserService {
   }
 
   loginUser(username: string, mode: UserMode): User {
-    // Dans cette application, on crée simplement un nouvel utilisateur à chaque "connexion"
-    // car il n'y a pas de persistance des utilisateurs entre les sessions
-    return this.createUser(username, mode);
+    // Chercher d'abord un utilisateur existant
+    const existingUser = this.storageService.findUserByUsername(username, mode);
+    
+    if (existingUser) {
+      // Utilisateur trouvé, se connecter avec cet utilisateur
+      this.storageService.setCurrentUser(existingUser);
+      return existingUser;
+    } else {
+      // Aucun utilisateur trouvé, en créer un nouveau
+      return this.createUser(username, mode);
+    }
+  }
+
+  loginExistingUser(user: User): User {
+    this.storageService.setCurrentUser(user);
+    return user;
   }
 
   getCurrentUser(): User | null {
@@ -66,5 +79,13 @@ export class UserService {
       };
       this.storageService.setCurrentUser(updatedUser);
     }
+  }
+
+  getAllUsers(): User[] {
+    return this.storageService.getAllUsers();
+  }
+
+  deleteUser(userId: string): void {
+    this.storageService.deleteUser(userId);
   }
 }

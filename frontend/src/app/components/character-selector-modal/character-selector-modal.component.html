@@ -1,0 +1,49 @@
+<!-- Modale de sélection de personnage -->
+<div *ngIf="isVisible" class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Choisir un personnage</h2>
+    
+    <div class="characters-grid">
+      <!-- Carte pour créer un nouveau personnage -->
+      <div class="add-character-card" (click)="onCreateNew()">
+        <div class="add-icon">+</div>
+        <div class="add-text">Nouveau personnage</div>
+      </div>
+      
+      <!-- Cartes des personnages existants -->
+      <div 
+        *ngFor="let character of userCharacters" 
+        class="character-card"
+        [class.active]="currentCharacter?.id === character.id"
+        (click)="onSelectCharacter(character)">
+        
+        <div class="character-name">{{ character.name }}</div>
+        <div class="character-game">{{ getGameSystemLabel(character.gameSystem) }}</div>
+        <div class="character-dates">
+          <span class="created">Créé: {{ formatDate(character.createdAt) }}</span>
+          <span class="updated">Modifié: {{ formatDate(character.updatedAt) }}</span>
+        </div>
+        
+        <div class="character-actions">
+          <button 
+            class="duplicate" 
+            (click)="onDuplicate(character, $event)"
+            title="Dupliquer ce personnage">
+            ⧉
+          </button>
+          <button 
+            *ngIf="userCharacters.length > 1"
+            class="delete" 
+            (click)="onDelete(character, $event)"
+            title="Supprimer ce personnage">
+            ×
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn secondary" (click)="onClose()">Annuler</button>
+    </div>
+  </div>
+</div>

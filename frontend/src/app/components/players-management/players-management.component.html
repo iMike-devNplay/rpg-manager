@@ -1,0 +1,157 @@
+<!-- Gestion des joueurs -->
+<div class="players-management">
+  <div class="players-header">
+    <h2>👥 Gestion des Joueurs</h2>
+    
+    <div class="current-gm-info">
+      <span>Maître de jeu actuel: <strong>{{ getCurrentUser()?.username }}</strong></span>
+    </div>
+  </div>
+
+  <div class="players-content">
+    <!-- Liste des utilisateurs -->
+    <div class="users-section">
+      <h3>Utilisateurs ({{ users.length }})</h3>
+      
+      <div *ngIf="users.length === 0" class="empty-state">
+        <p>Aucun utilisateur enregistré</p>
+        <small>Les utilisateurs apparaîtront ici après leur première connexion</small>
+      </div>
+      
+      <div class="users-list">
+        <div 
+          *ngFor="let user of users" 
+          class="user-card"
+          [class.selected]="selectedUser?.id === user.id"
+          [class.current]="getCurrentUser()?.id === user.id"
+          (click)="selectUser(user)">
+          
+          <div class="user-header">
+            <div class="user-name">
+              <span class="name">{{ user.username }}</span>
+              <span class="mode-badge" [class]="'mode-' + user.mode">
+                {{ user.mode === 'player' ? '👤 Joueur' : '🎭 MJ' }}
+              </span>
+            </div>
+            
+            <div class="user-stats">
+              <span class="characters-count">
+                {{ getUserCharacters(user.username).length }} personnage(s)
+              </span>
+            </div>
+          </div>
+          
+          <div class="user-dates">
+            <div>Créé: {{ formatDate(user.createdAt) }}</div>
+            <div>Dernière connexion: {{ formatDate(user.createdAt) }}</div>
+          </div>
+          
+          <div class="user-actions">
+            <button 
+              class="btn primary"
+              (click)="exportUserData(user); $event.stopPropagation()"
+              title="Exporter les données">
+              📤 Exporter
+            </button>
+            
+            <button 
+              *ngIf="getCurrentUser()?.id !== user.id"
+              class="btn secondary"
+              (click)="switchToUser(user); $event.stopPropagation()"
+              title="Basculer vers cet utilisateur">
+              🔄 Basculer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Détails de l'utilisateur sélectionné -->
+    <div class="user-details" *ngIf="selectedUser">
+      <h3>Détails de {{ selectedUser.username }}</h3>
+      
+      <div class="user-info">
+        <div class="info-row">
+          <label>Mode de jeu:</label>
+          <span class="mode-badge" [class]="'mode-' + selectedUser.mode">
+            {{ selectedUser.mode === 'player' ? 'Joueur' : 'Maître de jeu' }}
+          </span>
+        </div>
+        
+        <div class="info-row">
+          <label>Nombre de personnages:</label>
+          <span>{{ selectedUserCharacters.length }}</span>
+        </div>
+        
+        <div class="info-row">
+          <label>Données totales:</label>
+          <span>{{ getTotalDataItems() }} élément(s)</span>
+        </div>
+      </div>
+
+      <!-- Personnages de l'utilisateur -->
+      <div class="characters-section">
+        <h4>Personnages</h4>
+        
+        <div *ngIf="selectedUserCharacters.length === 0" class="empty-state">
+          <p>Aucun personnage créé</p>
+        </div>
+        
+        <div class="characters-grid">
+          <div 
+            *ngFor="let character of selectedUserCharacters"
+            class="character-card"
+            [class.selected]="selectedCharacter?.id === character.id"
+            (click)="selectCharacter(character)">
+            
+            <div class="character-header">
+              <div class="character-name">{{ character.name }}</div>
+              <div class="character-game">{{ character.gameSystem }}</div>
+            </div>
+            
+            <div class="character-stats">
+              <div class="stat">
+                <label>Données:</label>
+                <span>{{ getDataItemsCount(character.id) }} élément(s)</span>
+              </div>
+              
+              <div class="stat">
+                <label>Créé:</label>
+                <span>{{ formatDate(character.createdAt) }}</span>
+              </div>
+              
+              <div class="stat">
+                <label>Modifié:</label>
+                <span>{{ formatDate(character.updatedAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Détails du personnage sélectionné -->
+    <div class="character-details" *ngIf="selectedCharacter">
+      <h3>{{ selectedCharacter.name }}</h3>
+      
+      <div class="character-overview">
+        <div class="overview-header">
+          <span class="game-system">{{ selectedCharacter.gameSystem }}</span>
+          <span class="character-id">ID: {{ selectedCharacter.id }}</span>
+        </div>
+        
+        <div class="data-summary">
+          <h4>Répartition des données</h4>
+          <div class="data-zones">
+            <div 
+              *ngFor="let group of getDataGroupEntries(selectedCharacter)"
+              class="zone-summary">
+              <span class="zone-name">{{ group.value.name }}:</span>
+              <span class="zone-count">{{ group.value.items?.length || 0 }} élément(s)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

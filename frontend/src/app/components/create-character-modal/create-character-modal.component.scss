@@ -1,0 +1,156 @@
+// Styles pour la modale de création de personnage
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: modalAppear 0.3s ease-out;
+
+  h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+  }
+}
+
+.character-form {
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+      font-size: 0.95rem;
+
+      &::after {
+        content: '';
+      }
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      box-sizing: border-box;
+      background: white;
+
+      &:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+      }
+
+      &:invalid {
+        border-color: #d32f2f;
+      }
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+      appearance: none;
+    }
+
+    input::placeholder {
+      color: #999;
+      font-style: italic;
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #ecf0f1;
+
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    min-width: 120px;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    &.primary {
+      background: #1976d2;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #1565c0;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+      }
+    }
+
+    &.secondary {
+      background: #f5f5f5;
+      color: #333;
+      border: 1px solid #ddd;
+
+      &:hover {
+        background: #eeeeee;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Validation visuelle
+.form-group input:invalid:not(:focus):not(:placeholder-shown) {
+  border-color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.form-group input:valid:not(:focus):not(:placeholder-shown) {
+  border-color: #4caf50;
+}

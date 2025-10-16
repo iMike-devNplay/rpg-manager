@@ -1,0 +1,258 @@
+// Styles pour la modale de création d'élément
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: modalAppear 0.3s ease-out;
+
+  h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+  }
+}
+
+.element-form {
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+      font-size: 0.95rem;
+
+      .hint {
+        font-weight: normal;
+        color: #666;
+        font-size: 0.85rem;
+        font-style: italic;
+      }
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      box-sizing: border-box;
+      background: white;
+
+      &:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      }
+
+      &:invalid {
+        border-color: #e74c3c;
+      }
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+      appearance: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #999;
+      font-style: italic;
+    }
+
+    &.checkbox-group {
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-weight: 500;
+        color: #333;
+
+        input[type="checkbox"] {
+          width: auto;
+          margin-right: 10px;
+          transform: scale(1.2);
+          cursor: pointer;
+        }
+
+        .checkmark {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+
+.attribute-options {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+
+  .form-group {
+    margin-bottom: 15px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.calculations-preview {
+  background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+
+  h4 {
+    margin: 0 0 15px 0;
+    color: #1976d2;
+    font-size: 1rem;
+  }
+
+  .calc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(25, 118, 210, 0.1);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .calc-label {
+      font-weight: 500;
+      color: #555;
+    }
+
+    .calc-value {
+      font-weight: bold;
+      color: #1976d2;
+      font-size: 1.1rem;
+      padding: 4px 8px;
+      background: rgba(25, 118, 210, 0.1);
+      border-radius: 4px;
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #ecf0f1;
+
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    min-width: 120px;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    &.primary {
+      background: #3498db;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #2980b9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+      }
+    }
+
+    &.secondary {
+      background: #f5f5f5;
+      color: #333;
+      border: 1px solid #ddd;
+
+      &:hover {
+        background: #eeeeee;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Validation visuelle
+.form-group input:invalid:not(:focus):not(:placeholder-shown) {
+  border-color: #e74c3c;
+  background-color: #fdf2f2;
+}
+
+.form-group input:valid:not(:focus):not(:placeholder-shown) {
+  border-color: #27ae60;
+}
+
+// Styles responsive
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .calculations-preview .calc-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}

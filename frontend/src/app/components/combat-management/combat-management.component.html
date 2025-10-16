@@ -1,0 +1,159 @@
+<!-- Gestion des combats -->
+<div class="combat-management">
+  <div class="combat-header">
+    <h2>🗡️ Gestion des Combats</h2>
+    
+    <div class="combat-status" *ngIf="isCombatActive">
+      <div class="round-info">
+        <strong>Round {{ round }}</strong>
+      </div>
+      <div class="turn-info" *ngIf="participants.length > 0">
+        Tour de : <strong>{{ participants[currentTurn]?.name }}</strong>
+      </div>
+    </div>
+    
+    <div class="combat-controls">
+      <button 
+        *ngIf="!isCombatActive" 
+        class="btn primary" 
+        (click)="startCombat()"
+        [disabled]="participants.length === 0">
+        🚀 Commencer le combat
+      </button>
+      
+      <div *ngIf="isCombatActive" class="turn-controls">
+        <button class="btn secondary" (click)="previousTurn()">⬅️ Tour précédent</button>
+        <button class="btn primary" (click)="nextTurn()">➡️ Tour suivant</button>
+        <button class="btn danger" (click)="endCombat()">🛑 Terminer</button>
+      </div>
+      
+      <button class="btn danger" (click)="resetCombat()">🗑️ Reset</button>
+    </div>
+  </div>
+
+  <!-- Formulaire d'ajout de participant -->
+  <div class="add-participant-form" *ngIf="!isCombatActive">
+    <h3>Ajouter un participant</h3>
+    <form (ngSubmit)="addParticipant()" class="participant-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nom</label>
+          <input 
+            type="text" 
+            [(ngModel)]="newParticipant.name" 
+            name="name"
+            placeholder="Nom du participant"
+            required>
+        </div>
+        
+        <div class="form-group">
+          <label>Initiative</label>
+          <input 
+            type="number" 
+            [(ngModel)]="newParticipant.initiative" 
+            name="initiative"
+            min="0"
+            max="30">
+        </div>
+        
+        <div class="form-group">
+          <label>PV Max</label>
+          <input 
+            type="number" 
+            [(ngModel)]="newParticipant.maxHp" 
+            name="maxHp"
+            min="1"
+            max="999">
+        </div>
+        
+        <div class="form-group">
+          <label>CA</label>
+          <input 
+            type="number" 
+            [(ngModel)]="newParticipant.ac" 
+            name="ac"
+            min="1"
+            max="30">
+        </div>
+        
+        <div class="form-group checkbox-group">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="newParticipant.isPlayer" 
+              name="isPlayer">
+            Joueur
+          </label>
+        </div>
+        
+        <button type="submit" class="btn primary" [disabled]="!newParticipant.name.trim()">
+          ➕ Ajouter
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Liste des participants -->
+  <div class="participants-list">
+    <h3>Participants ({{ participants.length }})</h3>
+    
+    <div *ngIf="participants.length === 0" class="empty-state">
+      <p>Aucun participant dans le combat</p>
+      <small>Ajoutez des participants pour commencer un combat</small>
+    </div>
+    
+    <div class="participant-cards">
+      <div 
+        *ngFor="let participant of participants; let i = index" 
+        class="participant-card"
+        [class.current-turn]="isCombatActive && currentTurn === i"
+        [class.player]="participant.isPlayer"
+        [class.npc]="!participant.isPlayer">
+        
+        <div class="participant-header">
+          <div class="participant-name">
+            <span class="name">{{ participant.name }}</span>
+            <span class="type">{{ participant.isPlayer ? '👤 Joueur' : '🎭 PNJ' }}</span>
+          </div>
+          
+          <div class="initiative-badge">
+            Initiative: {{ participant.initiative }}
+          </div>
+          
+          <button 
+            *ngIf="!isCombatActive"
+            class="btn-remove" 
+            (click)="removeParticipant(participant.id)"
+            title="Supprimer">
+            ❌
+          </button>
+        </div>
+        
+        <div class="participant-stats">
+          <div class="hp-section">
+            <div class="hp-bar">
+              <div class="hp-fill" 
+                   [style.width.%]="getHpPercentage(participant)"
+                   [class]="getHpStatus(participant)">
+              </div>
+            </div>
+            <div class="hp-text">
+              {{ participant.hp }} / {{ participant.maxHp }} PV
+            </div>
+            
+            <div class="hp-controls" *ngIf="isCombatActive">
+              <button class="btn-hp" (click)="updateHp(participant, -1)">-1</button>
+              <button class="btn-hp" (click)="updateHp(participant, -5)">-5</button>
+              <button class="btn-hp" (click)="updateHp(participant, +1)">+1</button>
+              <button class="btn-hp" (click)="updateHp(participant, +5)">+5</button>
+            </div>
+          </div>
+          
+          <div class="other-stats">
+            <span class="ac">CA: {{ participant.ac }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

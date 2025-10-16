@@ -1,0 +1,73 @@
+<div class="element-display" [ngClass]="'element-' + item.type">
+  <!-- En-tête avec nom et boutons d'action -->
+  <div class="element-header">
+    <span class="element-name">{{ item.name }}</span>
+    <div class="element-actions">
+      <button class="edit-btn" (click)="editItem()" title="Modifier l'élément">
+        ✏️
+      </button>
+      <button class="delete-btn" (click)="deleteItem()" title="Supprimer l'élément">
+        ×
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenu de l'élément -->
+  <div class="element-content">
+    
+    <!-- Élément textuel -->
+    <div *ngIf="isTextElement()" class="text-content">
+      {{ item.value }}
+    </div>
+
+    <!-- Élément numérique simple -->
+    <div *ngIf="isNumericElement() && !isAttribute()" class="numeric-content">
+      <div class="value-display">
+        <span class="value">{{ getFormattedValue() }}</span>
+        
+        <!-- Boutons de modification rapide -->
+        <div *ngIf="canQuickModify()" class="quick-modify">
+          <button class="modify-btn decrease" (click)="quickModify(-1)" title="Diminuer">
+            −
+          </button>
+          <button class="modify-btn increase" (click)="quickModify(1)" title="Augmenter">
+            +
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attribut D&D avec détails -->
+    <div *ngIf="isAttribute()" class="attribute-content">
+      <div class="attribute-main">
+        <div class="attribute-value">
+          <span class="value">{{ item.value }}</span>
+          
+          <!-- Boutons de modification rapide -->
+          <div *ngIf="canQuickModify()" class="quick-modify">
+            <button class="modify-btn decrease" (click)="quickModify(-1)" title="Diminuer">
+              −
+            </button>
+            <button class="modify-btn increase" (click)="quickModify(1)" title="Augmenter">
+              +
+            </button>
+          </div>
+        </div>
+        
+        <!-- Détails de l'attribut -->
+        <div class="attribute-details" *ngIf="getAttributeDetails()">
+          <div class="modifier">
+            <span class="label">Mod:</span>
+            <span class="value">{{ getAttributeDetails()?.modifier }}</span>
+          </div>
+          <div class="saving-throw" [class.proficient]="item.hasProficiency">
+            <span class="label">JS:</span>
+            <span class="value">{{ getAttributeDetails()?.savingThrow }}</span>
+            <span *ngIf="item.hasProficiency" class="proficient-indicator">⭐</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

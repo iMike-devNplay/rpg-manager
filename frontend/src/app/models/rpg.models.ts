@@ -76,6 +76,8 @@ export interface DataItem {
   savingThrow?: number;
   // Référence vers le bonus de maîtrise si nécessaire
   proficiencyBonusRef?: string;
+  // Propriétés pour les éléments numériques modifiables
+  allowQuickModification?: boolean;
 }
 
 export interface DataGroup {

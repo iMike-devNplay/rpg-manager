@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DataType, DashboardZone } from '../../../models/rpg.models';
+import { DataType, DashboardZone, DataItem } from '../../../models/rpg.models';
 
 export interface ElementCreationData {
+  id?: string; // Pour l'édition
   name: string;
   type: DataType;
   value: string | number;
@@ -11,6 +12,7 @@ export interface ElementCreationData {
   zone: DashboardZone;
   hasProficiency?: boolean;
   proficiencyBonusValue?: number;
+  allowQuickModification?: boolean;
 }
 
 @Component({
@@ -20,9 +22,10 @@ export interface ElementCreationData {
   templateUrl: './create-element-modal.component.html',
   styleUrls: ['./create-element-modal.component.scss']
 })
-export class CreateElementModalComponent {
+export class CreateElementModalComponent implements OnInit, OnChanges {
   @Input() isVisible: boolean = false;
   @Input() targetZone: DashboardZone = DashboardZone.CENTER;
+  @Input() editingItem: DataItem | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() elementCreated = new EventEmitter<ElementCreationData>();
 
@@ -38,7 +41,8 @@ export class CreateElementModalComponent {
     description: '',
     zone: DashboardZone.CENTER,
     hasProficiency: false,
-    proficiencyBonusValue: 2
+    proficiencyBonusValue: 2,
+    allowQuickModification: false
   };
 
   // Référence à Math pour le template
@@ -46,6 +50,32 @@ export class CreateElementModalComponent {
 
   ngOnInit() {
     this.newElement.zone = this.targetZone;
+    this.initializeForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['editingItem'] || changes['isVisible']) {
+      this.initializeForm();
+    }
+  }
+
+  private initializeForm() {
+    if (this.editingItem) {
+      // Mode édition : pré-remplir avec les données existantes
+      this.newElement = {
+        name: this.editingItem.name,
+        type: this.editingItem.type,
+        value: this.editingItem.value,
+        description: this.editingItem.description || '',
+        zone: this.editingItem.zone,
+        hasProficiency: this.editingItem.hasProficiency || false,
+        proficiencyBonusValue: 2, // Sera récupéré automatiquement
+        allowQuickModification: this.editingItem.allowQuickModification !== false
+      };
+    } else {
+      // Mode création : valeurs par défaut
+      this.resetForm();
+    }
   }
 
   onClose() {
@@ -67,6 +97,11 @@ export class CreateElementModalComponent {
         value: processedValue
       };
 
+      // Ajouter l'ID si on est en mode édition
+      if (this.editingItem) {
+        elementData.id = this.editingItem.id;
+      }
+
       this.elementCreated.emit(elementData);
       this.resetForm();
     }
@@ -80,7 +115,8 @@ export class CreateElementModalComponent {
       description: '',
       zone: this.targetZone,
       hasProficiency: false,
-      proficiencyBonusValue: 2
+      proficiencyBonusValue: 2,
+      allowQuickModification: false
     };
   }
 
@@ -114,6 +150,10 @@ export class CreateElementModalComponent {
       default:
         return 'Inconnu';
     }
+  }
+
+  isNumericType(): boolean {
+    return this.newElement.type === DataType.NUMERIC;
   }
 
   isAttributeType(): boolean {

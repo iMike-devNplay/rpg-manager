@@ -8,6 +8,7 @@ import { CharacterService } from '../../services/character.service';
 import { CharacterSelectorModalComponent } from '../character-selector-modal/character-selector-modal.component';
 import { CreateCharacterModalComponent } from '../create-character-modal/create-character-modal.component';
 import { CreateElementModalComponent, ElementCreationData } from '../elements/create-element-modal/create-element-modal.component';
+import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
 import { CombatManagementComponent } from '../combat-management/combat-management.component';
 import { PlayersManagementComponent } from '../players-management/players-management.component';
 import { User, UserMode, DashboardZone, DataItem, DataGroup, DataType, PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../models/rpg.models';
@@ -22,6 +23,7 @@ import { ElementService } from '../../services/element.service';
     CharacterSelectorModalComponent,
     CreateCharacterModalComponent,
     CreateElementModalComponent,
+    ElementDisplayComponent,
     CombatManagementComponent,
     PlayersManagementComponent
   ],
@@ -44,6 +46,7 @@ export class DashboardComponent implements OnInit {
   showCreateElementModal = false;
   newItem: Partial<DataItem> = {};
   currentZone: DashboardZone = DashboardZone.CENTER;
+  editingItem: DataItem | null = null;
 
   // Modal pour gérer les personnages
   showCharacterModal = false;
@@ -141,17 +144,27 @@ export class DashboardComponent implements OnInit {
 
   closeCreateElementModal(): void {
     this.showCreateElementModal = false;
+    this.editingItem = null; // Réinitialiser l'élément en édition
   }
 
   onElementCreated(elementData: ElementCreationData): void {
     try {
-      const newElement = this.elementService.createElement(elementData);
-      this.storageService.saveDataItem(newElement);
-      this.loadCharacterData();
+      if (elementData.id) {
+        // Mode édition : mettre à jour l'élément existant
+        const updatedElement = this.elementService.updateElement(elementData);
+        this.storageService.saveDataItem(updatedElement);
+      } else {
+        // Mode création : créer un nouvel élément
+        const newElement = this.elementService.createElement(elementData);
+        this.storageService.saveDataItem(newElement);
+      }
+      
+      // Recharger les données du personnage
+      this.currentCharacter = this.characterService.getCurrentCharacter();
       this.closeCreateElementModal();
     } catch (error) {
-      console.error('Erreur lors de la création de l\'élément:', error);
-      alert('Erreur lors de la création de l\'élément. Veuillez réessayer.');
+      console.error('Erreur lors de la sauvegarde de l\'élément:', error);
+      alert('Erreur lors de la sauvegarde de l\'élément. Veuillez réessayer.');
     }
   }
 
@@ -195,7 +208,8 @@ export class DashboardComponent implements OnInit {
   removeItem(itemId: string): void {
     if (this.currentUser) {
       this.storageService.deleteDataItem(itemId, this.currentUser.id);
-      this.loadCharacterData();
+      // Recharger les données du personnage courant
+      this.currentCharacter = this.characterService.getCurrentCharacter();
     }
   }
 
@@ -313,5 +327,31 @@ export class DashboardComponent implements OnInit {
 
   isProficiencyBonusElement(item: DataItem): boolean {
     return item.type === DataType.PROFICIENCY_BONUS;
+  }
+
+  /**
+   * Gestionnaire de mise à jour d'élément
+   */
+  onItemUpdated(item: DataItem): void {
+    // L'élément a déjà été sauvegardé par le service
+    // On peut optionnellement faire une mise à jour locale ici
+    this.currentCharacter = this.characterService.getCurrentCharacter();
+  }
+
+  /**
+   * Gestionnaire de suppression d'élément
+   */
+  onItemDeleted(item: DataItem): void {
+    this.removeItem(item.id);
+  }
+
+  /**
+   * Gestionnaire d'édition d'élément
+   */
+  onItemEdit(item: DataItem): void {
+    // Ouvrir la modal de modification de l'élément
+    this.showCreateElementModal = true;
+    this.currentZone = item.zone;
+    this.editingItem = item;
   }
 }

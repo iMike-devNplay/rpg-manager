@@ -1,7 +1,7 @@
-<!-- Modale de création d'élément -->
+<!-- Modale de création/édition d'élément -->
 <div *ngIf="isVisible" class="modal-overlay" (click)="onClose()">
   <div class="modal-content" (click)="$event.stopPropagation()">
-    <h2>🧩 Créer un nouvel élément</h2>
+    <h2>{{ editingItem ? '✏️ Modifier l\'élément' : '🧩 Créer un nouvel élément' }}</h2>
     
     <form class="element-form" (ngSubmit)="onCreateElement()">
       <!-- Nom de l'élément -->
@@ -65,6 +65,20 @@
           required>
       </div>
       
+      <!-- Options spécifiques aux éléments numériques -->
+      <div *ngIf="isNumericType()" class="numeric-options">
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="newElement.allowQuickModification" 
+              name="allowQuickModification">
+            <span class="checkmark"></span>
+            Permettre la modification rapide (+/- sur le dashboard)
+          </label>
+        </div>
+      </div>
+
       <!-- Options spécifiques aux attributs -->
       <div *ngIf="isAttributeType()" class="attribute-options">
         <div class="form-group checkbox-group">
@@ -127,7 +141,7 @@
           type="submit" 
           class="btn primary" 
           [disabled]="!newElement.name.trim() || !newElement.value">
-          Créer l'élément
+          {{ editingItem ? 'Modifier l\'élément' : 'Créer l\'élément' }}
         </button>
       </div>
     </form>

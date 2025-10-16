@@ -132,7 +132,8 @@ export class ElementService {
       zone: elementData.zone,
       order: 0,
       userId: this.storageService.getCurrentUser()?.id || '',
-      hasProficiency: elementData.hasProficiency
+      hasProficiency: elementData.hasProficiency,
+      allowQuickModification: elementData.allowQuickModification
     };
 
     // Traitement spécial pour les attributs
@@ -154,6 +155,46 @@ export class ElementService {
     }
 
     return newItem;
+  }
+
+  /**
+   * Met à jour un élément existant avec tous les calculs automatiques
+   * @param elementData Données de l'élément à mettre à jour (avec ID)
+   * @returns L'élément mis à jour avec calculs
+   */
+  updateElement(elementData: any): DataItem {
+    const updatedItem: DataItem = {
+      id: elementData.id, // Garder l'ID existant
+      name: elementData.name,
+      type: elementData.type,
+      value: elementData.value,
+      description: elementData.description,
+      zone: elementData.zone,
+      order: 0,
+      userId: this.storageService.getCurrentUser()?.id || '',
+      hasProficiency: elementData.hasProficiency,
+      allowQuickModification: elementData.allowQuickModification
+    };
+
+    // Traitement spécial pour les attributs
+    if (elementData.type === DataType.ATTRIBUTE) {
+      let proficiencyBonus = 2;
+      
+      if (elementData.hasProficiency) {
+        // Récupérer le bonus de maîtrise existant
+        proficiencyBonus = this.getProficiencyBonusValue();
+        const proficiencyBonusItem = this.findOrCreateProficiencyBonus(
+          updatedItem.userId, 
+          proficiencyBonus
+        );
+        updatedItem.proficiencyBonusRef = proficiencyBonusItem.id;
+      }
+      
+      // Recalculer les propriétés
+      this.updateAttributeCalculations(updatedItem, proficiencyBonus);
+    }
+
+    return updatedItem;
   }
 
   /**
@@ -192,16 +233,11 @@ export class ElementService {
   formatElementValue(item: DataItem): string {
     switch (item.type) {
       case DataType.ATTRIBUTE:
-        const modifier = item.modifier || 0;
+        const value = Number(item.value);
+        const modifier = item.modifier !== undefined ? item.modifier : this.calculateModifier(value);
         const modifierStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        let result = `${item.value} (${modifierStr})`;
         
-        if (item.hasProficiency && item.savingThrow !== undefined) {
-          const savingThrowStr = item.savingThrow >= 0 ? `+${item.savingThrow}` : `${item.savingThrow}`;
-          result += ` | Sauvegarde: ${savingThrowStr}`;
-        }
-        
-        return result;
+        return `${value} (${modifierStr})`;
         
       case DataType.PROFICIENCY_BONUS:
         const bonus = Number(item.value);
@@ -210,5 +246,76 @@ export class ElementService {
       default:
         return String(item.value);
     }
+  }
+
+  /**
+   * Obtient les détails d'affichage d'un attribut
+   * @param item Élément attribut
+   * @returns Détails formatés
+   */
+  getAttributeDetails(item: DataItem): {modifier: string, savingThrow: string} {
+    if (item.type !== DataType.ATTRIBUTE) return {modifier: '', savingThrow: ''};
+    
+    const value = Number(item.value);
+    const modifier = item.modifier !== undefined ? item.modifier : this.calculateModifier(value);
+    const modifierStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+    
+    // Calculer le jet de sauvegarde
+    let savingThrow = modifier; // Par défaut, égal au modificateur
+    
+    if (item.hasProficiency) {
+      // Si proficient, utiliser la valeur calculée ou ajouter le bonus de maîtrise
+      if (item.savingThrow !== undefined) {
+        savingThrow = item.savingThrow;
+      } else {
+        const proficiencyBonus = this.getProficiencyBonusValue();
+        savingThrow = modifier + proficiencyBonus;
+      }
+    }
+    
+    const savingThrowStr = savingThrow >= 0 ? `+${savingThrow}` : `${savingThrow}`;
+    
+    return {
+      modifier: modifierStr,
+      savingThrow: savingThrowStr
+    };
+  }
+
+  /**
+   * Modifie rapidement la valeur d'un élément numérique
+   * @param item Élément à modifier
+   * @param change Changement à appliquer (+ ou -)
+   * @returns L'élément modifié
+   */
+  quickModifyValue(item: DataItem, change: number): DataItem {
+    if (item.type === DataType.NUMERIC || item.type === DataType.ATTRIBUTE || item.type === DataType.PROFICIENCY_BONUS) {
+      const currentValue = Number(item.value) || 0;
+      let newValue = currentValue + change;
+      
+      // Contraintes spécifiques
+      if (item.type === DataType.ATTRIBUTE) {
+        newValue = Math.max(1, Math.min(30, newValue)); // Attributs entre 1 et 30
+      } else if (item.type === DataType.PROFICIENCY_BONUS) {
+        newValue = Math.max(1, Math.min(6, newValue)); // Bonus entre 1 et 6
+      }
+      
+      item.value = newValue;
+      
+      // Recalculer pour les attributs
+      if (item.type === DataType.ATTRIBUTE) {
+        const proficiencyBonus = this.getProficiencyBonusValue();
+        this.updateAttributeCalculations(item, proficiencyBonus);
+      }
+      
+      // Mettre à jour les autres attributs si c'est un bonus de maîtrise
+      if (item.type === DataType.PROFICIENCY_BONUS) {
+        this.updateAllAttributesWithProficiency(newValue);
+      }
+      
+      // Sauvegarder l'élément modifié
+      this.storageService.saveDataItem(item);
+    }
+    
+    return item;
   }
 }

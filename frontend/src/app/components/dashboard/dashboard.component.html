@@ -78,14 +78,14 @@
           <button class="btn-add" (click)="addItem(zones.TOP)">+ Ajouter</button>
         </div>
         <div class="zone-content">
-          <div class="data-item" *ngFor="let item of getItemsByZone(zones.TOP)" [attr.data-id]="item.id" [class]="'item-' + item.type">
-            <div class="item-header">
-              <span class="item-name">{{ item.name }}</span>
-              <span class="item-type-badge">{{ getElementTypeLabel(item) }}</span>
-            </div>
-            <span class="item-value" [class]="'type-' + item.type">{{ getElementValue(item) }}</span>
-            <button class="btn-remove" (click)="removeItem(item.id)" title="Supprimer">×</button>
-          </div>
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.TOP)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)">
+          </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
             <p>Aucun élément dans cette zone</p>
             <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
@@ -100,11 +100,14 @@
           <button class="btn-add" (click)="addItem(zones.LEFT)">+ Ajouter</button>
         </div>
         <div class="zone-content">
-          <div class="data-item" *ngFor="let item of getItemsByZone(zones.LEFT)" [attr.data-id]="item.id">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
-            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
-          </div>
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.LEFT)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)">
+          </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.LEFT).length === 0">
             <p>Aucun élément dans cette zone</p>
             <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
@@ -119,11 +122,14 @@
           <button class="btn-add" (click)="addItem(zones.CENTER)">+ Ajouter</button>
         </div>
         <div class="zone-content">
-          <div class="data-item" *ngFor="let item of getItemsByZone(zones.CENTER)" [attr.data-id]="item.id">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
-            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
-          </div>
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.CENTER)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)">
+          </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.CENTER).length === 0">
             <p>Aucun élément dans cette zone</p>
             <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
@@ -138,11 +144,14 @@
           <button class="btn-add" (click)="addItem(zones.RIGHT)">+ Ajouter</button>
         </div>
         <div class="zone-content">
-          <div class="data-item" *ngFor="let item of getItemsByZone(zones.RIGHT)" [attr.data-id]="item.id">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
-            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
-          </div>
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.RIGHT)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)">
+          </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.RIGHT).length === 0">
             <p>Aucun élément dans cette zone</p>
             <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
@@ -157,11 +166,14 @@
           <button class="btn-add" (click)="addItem(zones.BOTTOM)">+ Ajouter</button>
         </div>
         <div class="zone-content">
-          <div class="data-item" *ngFor="let item of getItemsByZone(zones.BOTTOM)" [attr.data-id]="item.id">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-value" [class]="'type-' + item.type">{{ item.value }}</span>
-            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
-          </div>
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.BOTTOM)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)">
+          </app-element-display>
           <div class="empty-zone" *ngIf="getItemsByZone(zones.BOTTOM).length === 0">
             <p>Aucun élément dans cette zone</p>
             <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
@@ -240,6 +252,7 @@
 <app-create-element-modal
   [isVisible]="showCreateElementModal"
   [targetZone]="currentZone"
+  [editingItem]="editingItem"
   (close)="closeCreateElementModal()"
   (elementCreated)="onElementCreated($event)">
 </app-create-element-modal>

@@ -1,0 +1,230 @@
+.element-display {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .element-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    
+    .element-name {
+      font-weight: 600;
+      color: #212529;
+      font-size: 0.9rem;
+    }
+
+    .element-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      color: #6c757d;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+      line-height: 1;
+
+      &:hover {
+        opacity: 1;
+        background: rgba(108, 117, 125, 0.1);
+        color: #495057;
+      }
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #dc3545;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      font-size: 1.2rem;
+      font-weight: bold;
+      line-height: 1;
+
+      &:hover {
+        opacity: 1;
+        background: rgba(220, 53, 69, 0.1);
+      }
+    }
+  }
+
+  .element-content {
+    .text-content {
+      color: #6c757d;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .numeric-content,
+    .attribute-content {
+      .value-display,
+      .attribute-main {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0d6efd;
+      }
+
+      .quick-modify {
+        display: flex;
+        gap: 4px;
+        opacity: 1;
+        transition: opacity 0.2s ease;
+
+        .modify-btn {
+          background: #0d6efd;
+          border: none;
+          color: white;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1rem;
+          font-weight: bold;
+          line-height: 1;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: #0b5ed7;
+            transform: scale(1.1);
+          }
+
+          &.decrease {
+            background: #ffc107;
+            color: #000;
+            
+            &:hover {
+              background: #e0a800;
+            }
+          }
+
+          &.increase {
+            background: #28a745;
+            
+            &:hover {
+              background: #198754;
+            }
+          }
+        }
+      }
+    }
+
+    .attribute-content {
+      .attribute-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .attribute-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .value {
+          font-size: 1.3rem;
+          font-weight: 700;
+        }
+      }
+
+      .attribute-details {
+        display: flex;
+        gap: 12px;
+        font-size: 0.8rem;
+
+        .modifier,
+        .saving-throw {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 2px 6px;
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+
+          .label {
+            color: #6c757d;
+            font-weight: 500;
+          }
+
+          .value {
+            color: #212529;
+            font-weight: 600;
+            font-size: 0.85rem;
+          }
+        }
+
+        .saving-throw {
+          background: rgba(40, 167, 69, 0.1);
+          
+          .value {
+            color: #28a745;
+          }
+
+          // Style pour la maîtrise
+          &.proficient {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            
+            .value {
+              color: #1e7e34;
+              font-weight: 700;
+            }
+          }
+
+          .proficient-indicator {
+            color: #ffc107;
+            font-size: 0.7rem;
+            margin-left: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  // Styles spécifiques par type d'élément
+  &.element-text {
+    border-left: 4px solid #17a2b8;
+  }
+
+  &.element-numeric {
+    border-left: 4px solid #ffc107;
+  }
+
+  &.element-attribute {
+    border-left: 4px solid #0d6efd;
+  }
+
+  &.element-proficiency_bonus {
+    border-left: 4px solid #28a745;
+  }
+}

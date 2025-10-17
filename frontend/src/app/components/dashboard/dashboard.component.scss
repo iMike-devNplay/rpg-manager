@@ -86,6 +86,11 @@
 .character-info {
   display: flex;
   align-items: center;
+}
+
+.character-details {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -95,12 +100,28 @@
   text-decoration: underline;
 }
 
+.btn-edit-character {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background: rgba(0, 123, 255, 0.1);
+  }
+}
+
 .character-system {
-  background: #e9ecef;
-  padding: 2px 6px;
-  border-radius: 4px;
+  background: #fff3cd;
+  color: #856404;
+  padding: 4px 8px;
+  border-radius: 12px;
   font-size: 0.8em;
-  color: #6c757d;
+  font-weight: bold;
+  margin-left: 8px;
 }
 
 .btn-character {
@@ -179,75 +200,85 @@
   display: flex;
   flex-direction: column;
   min-height: 120px;
-  max-height: 500px;
+  // Suppression de max-height pour permettre l'expansion
 }
 
-.zone-top,
-.zone-bottom {
-  max-height: 300px;
-}
+// Suppression des contraintes de hauteur max
+// .zone-top,
+// .zone-bottom {
+//   max-height: 300px;
+// }
 
-.zone-left,
-.zone-center,
-.zone-right {
-  max-height: 600px;
-}
+// .zone-left,
+// .zone-center,
+// .zone-right {
+//   max-height: 600px;
+// }
 
 .zone-header {
   background: #f8f9fa;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 1rem; // Réduction de moitié (était 0.5rem)
   border-bottom: 1px solid #ddd;
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
   flex-shrink: 0;
-  min-height: 40px;
+  min-height: 20px; // Réduction de moitié (était 40px)
 }
 
 .btn-add {
   background: transparent;
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 4px 8px; // Réduction proportionnelle
   border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px; // Réduction de la taille de police
   font-weight: bold;
-  width: 32px;
-  height: 32px;
+  width: 24px; // Réduction de la taille (était 32px)
+  height: 24px; // Réduction de la taille (était 32px)
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-add:hover {
-  background: #45a049;
+  background: #cfd3cf;
 }
 
 .zone-content {
   padding: 0.75rem;
   flex: 1;
-  overflow-y: auto;
+  // Suppression de overflow-y: auto pour éviter les scrollbars
   min-height: 0;
+  
+  // Layout spécialisé pour zone-top : 4 colonnes
+  &.zone-top-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+  }
 }
 
-.zone-content::-webkit-scrollbar {
-  width: 6px;
-}
+// Suppression des styles de scrollbar puisqu'on n'en veut plus
+// .zone-content::-webkit-scrollbar {
+//   width: 6px;
+// }
 
-.zone-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
+// .zone-content::-webkit-scrollbar-track {
+//   background: #f1f1f1;
+//   border-radius: 3px;
+// }
 
-.zone-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
+// .zone-content::-webkit-scrollbar-thumb {
+//   background: #c1c1c1;
+//   border-radius: 3px;
+// }
 
-.zone-content::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
-}
+// .zone-content::-webkit-scrollbar-thumb:hover {
+//   background: #a1a1a1;
+// }
 
 .empty-zone {
   text-align: center;
@@ -297,5 +328,12 @@
     background: rgba(76, 175, 80, 0.1);
     border: 2px dashed #4caf50;
     transform: scale(1.02);
+  }
+  
+  // Style spécialisé pour la zone-top avec grid
+  &.zone-top-content.drag-over {
+    // Pour le grid, on évite le transform qui pourrait causer des problèmes
+    transform: none;
+    background: rgba(76, 175, 80, 0.15);
   }
 }

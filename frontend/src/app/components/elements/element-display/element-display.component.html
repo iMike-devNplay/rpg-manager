@@ -12,10 +12,18 @@
   <div class="element-header">
     <span class="element-name">{{ item.name }}</span>
     <div class="element-actions">
-      <button class="edit-btn" (click)="editItem()" title="Modifier l'élément">
+      <button 
+        class="edit-btn" 
+        (click)="editItem()" 
+        title="Modifier l'élément"
+      >
         ✏️
       </button>
-      <button class="delete-btn" (click)="deleteItem()" title="Supprimer l'élément">
+      <button 
+        class="delete-btn" 
+        (click)="deleteItem()" 
+        title="Supprimer l'élément"
+      >
         ×
       </button>
     </div>
@@ -36,10 +44,18 @@
         
         <!-- Boutons de modification rapide -->
         <div *ngIf="canQuickModify()" class="quick-modify">
-          <button class="modify-btn decrease" (click)="quickModify(-1)" title="Diminuer">
+          <button 
+            class="modify-btn decrease" 
+            (click)="quickModify(-1)" 
+            title="Diminuer"
+          >
             −
           </button>
-          <button class="modify-btn increase" (click)="quickModify(1)" title="Augmenter">
+          <button 
+            class="modify-btn increase" 
+            (click)="quickModify(1)" 
+            title="Augmenter"
+          >
             +
           </button>
         </div>
@@ -54,10 +70,18 @@
           
           <!-- Boutons de modification rapide -->
           <div *ngIf="canQuickModify()" class="quick-modify">
-            <button class="modify-btn decrease" (click)="quickModify(-1)" title="Diminuer">
+            <button 
+              class="modify-btn decrease" 
+              (click)="quickModify(-1)" 
+              title="Diminuer"
+            >
               −
             </button>
-            <button class="modify-btn increase" (click)="quickModify(1)" title="Augmenter">
+            <button 
+              class="modify-btn increase" 
+              (click)="quickModify(1)" 
+              title="Augmenter"
+            >
               +
             </button>
           </div>
@@ -79,4 +103,10 @@
     </div>
 
   </div>
+
+  <!-- Description qui s'affiche au hover -->
+  <div class="element-description" *ngIf="item.description">
+    {{ item.description }}
+  </div>
+
 </div>

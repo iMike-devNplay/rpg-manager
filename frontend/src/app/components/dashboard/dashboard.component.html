@@ -11,12 +11,17 @@
           </span>
         </span>
         <div class="character-info" *ngIf="currentCharacter">
-          <span class="character-name" (click)="openCharacterModal()">
-            🧙‍♂️ {{ currentCharacter.name }}
-          </span>
-          <span class="character-system">
-            {{ getGameSystemLabel(currentCharacter.gameSystem) }}
-          </span>
+          <div class="character-details">
+            <span class="character-name" (click)="openCharacterModal()">
+              🧙‍♂️ {{ currentCharacter.name }}
+            </span>
+            <span class="character-system">
+              {{ getGameSystemLabel(currentCharacter.gameSystem) }}
+            </span>
+            <button class="btn-edit-character" (click)="openEditCharacterModal()" title="Modifier le personnage">
+              ✏️
+            </button>
+          </div>
         </div>
         <button class="btn-character" *ngIf="!currentCharacter" (click)="openCreateCharacterModal()">
           ➕ Créer un personnage
@@ -77,7 +82,7 @@
           <button class="btn-add" (click)="addItem(zones.TOP)">📌</button>
         </div>
         <div 
-          class="zone-content" 
+          class="zone-content zone-top-content" 
           (dragover)="onDragOver($event)" 
           (drop)="onDrop($event, zones.TOP)"
           [attr.data-zone]="zones.TOP"
@@ -283,6 +288,13 @@
   (close)="closeCreateCharacterModal()"
   (characterCreated)="createNewCharacter($event)">
 </app-create-character-modal>
+
+<app-edit-character-modal
+  *ngIf="showEditCharacterModal && currentCharacter"
+  [character]="currentCharacter"
+  (characterUpdated)="updateCharacterInfo($event)"
+  (modalClosed)="closeEditCharacterModal()">
+</app-edit-character-modal>
 
 <app-create-element-modal
   [isVisible]="showCreateElementModal"

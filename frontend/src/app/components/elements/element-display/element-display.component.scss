@@ -4,12 +4,18 @@
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
 
-  &:hover {
+  &:hover:not(.dragging) {
     border-color: #0d6efd;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    background: #ffffff;
+  }
+
+  &:active:not(.dragging) {
+    transform: scale(0.98);
   }
 
   .element-header {
@@ -22,6 +28,7 @@
       font-weight: 600;
       color: #212529;
       font-size: 0.9rem;
+      transition: color 0.2s ease;
     }
 
     .element-actions {
@@ -29,43 +36,66 @@
       gap: 4px;
       align-items: center;
     }
+  }
 
-    .edit-btn {
-      background: none;
-      border: none;
-      color: #6c757d;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      opacity: 0.7;
-      transition: all 0.2s ease;
-      font-size: 1rem;
-      line-height: 1;
+  &:hover:not(.dragging) .element-name {
+    color: #0d6efd;
+  }
 
-      &:hover {
-        opacity: 1;
-        background: rgba(108, 117, 125, 0.1);
-        color: #495057;
-      }
+  .element-description {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+    color: #6c757d;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    background: rgba(13, 110, 253, 0.05);
+    border-radius: 4px;
+    margin: 0;
+    padding: 0;
+  }
+
+  &:hover:not(.dragging) .element-description {
+    max-height: 200px; /* Ajustez selon vos besoins */
+    padding: 8px;
+    margin-top: 8px;
+  }
+
+  .edit-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    line-height: 1;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(108, 117, 125, 0.1);
+      color: #495057;
     }
+  }
 
-    .delete-btn {
-      background: none;
-      border: none;
-      color: #dc3545;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      opacity: 0.7;
-      transition: all 0.2s ease;
-      font-size: 1.2rem;
-      font-weight: bold;
-      line-height: 1;
+  .delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
 
-      &:hover {
-        opacity: 1;
-        background: rgba(220, 53, 69, 0.1);
-      }
+    &:hover {
+      opacity: 1;
+      background: rgba(220, 53, 69, 0.1);
     }
   }
 
@@ -104,131 +134,103 @@
           color: white;
           width: 24px;
           height: 24px;
-          border-radius: 50%;
+          border-radius: 4px;
           cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1rem;
+          font-size: 0.8rem;
           font-weight: bold;
-          line-height: 1;
-          transition: all 0.2s ease;
+          transition: background 0.2s ease;
 
           &:hover {
             background: #0b5ed7;
-            transform: scale(1.1);
           }
 
-          &.decrease {
-            background: #ffc107;
-            color: #000;
-            
-            &:hover {
-              background: #e0a800;
-            }
-          }
-
-          &.increase {
-            background: #28a745;
-            
-            &:hover {
-              background: #198754;
-            }
+          &:active {
+            transform: scale(0.95);
           }
         }
       }
-    }
 
-    .attribute-content {
-      .attribute-main {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
+      .attribute-secondary {
+        margin-top: 4px;
+        color: #6c757d;
+        font-size: 0.85rem;
 
-      .attribute-value {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        .value {
-          font-size: 1.3rem;
-          font-weight: 700;
-        }
-      }
-
-      .attribute-details {
-        display: flex;
-        gap: 12px;
-        font-size: 0.8rem;
-
-        .modifier,
-        .saving-throw {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          padding: 2px 6px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 4px;
-
-          .label {
-            color: #6c757d;
-            font-weight: 500;
-          }
-
-          .value {
-            color: #212529;
-            font-weight: 600;
-            font-size: 0.85rem;
-          }
-        }
-
-        .saving-throw {
-          background: rgba(40, 167, 69, 0.1);
-          
-          .value {
-            color: #28a745;
-          }
-
-          // Style pour la maîtrise
-          &.proficient {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.3);
-            
-            .value {
-              color: #1e7e34;
-              font-weight: 700;
-            }
-          }
-
-          .proficient-indicator {
-            color: #ffc107;
-            font-size: 0.7rem;
-            margin-left: 2px;
-          }
+        .attribute-label {
+          font-weight: 500;
+          margin-right: 4px;
         }
       }
     }
   }
 
-  // Styles spécifiques par type d'élément
+  &.element-numeric,
+  &.element-attribute {
+    border-left: 4px solid #0d6efd;
+  }
+
   &.element-text {
-    border-left: 4px solid #17a2b8;
+    border-left: 4px solid #6c757d;
   }
 
-  &.element-numeric {
+  &.element-weapon {
+    border-left: 4px solid #dc3545;
+  }
+
+  &.element-spell {
+    border-left: 4px solid #6f42c1;
+  }
+
+  &.element-equipment {
+    border-left: 4px solid #fd7e14;
+  }
+
+  &.element-skill {
+    border-left: 4px solid #198754;
+  }
+
+  &.element-hp,
+  &.element-health_points {
+    border-left: 4px solid #dc3545;
+  }
+
+  &.element-ac,
+  &.element-armor_class {
+    border-left: 4px solid #6c757d;
+  }
+
+  &.element-xp,
+  &.element-experience_points {
+    border-left: 4px solid #fd7e14;
+  }
+
+  &.element-level {
+    border-left: 4px solid #198754;
+  }
+
+  &.element-speed {
+    border-left: 4px solid #0dcaf0;
+  }
+
+  &.element-initiative {
     border-left: 4px solid #ffc107;
   }
 
-  &.element-attribute {
-    border-left: 4px solid #0d6efd;
+  &.element-hit_dice {
+    border-left: 4px solid #e83e8c;
+  }
+
+  &.element-passive_perception {
+    border-left: 4px solid #20c997;
+  }
+
+  &.element-spell_slots {
+    border-left: 4px solid #6f42c1;
   }
 
   &.element-proficiency_bonus {
     border-left: 4px solid #28a745;
   }
 
-  // Styles pour le drag and drop
   &[draggable="true"] {
     cursor: grab;
     transition: all 0.2s ease;

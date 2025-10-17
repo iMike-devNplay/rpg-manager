@@ -7,6 +7,7 @@ import { StorageService } from '../../services/storage.service';
 import { CharacterService } from '../../services/character.service';
 import { CharacterSelectorModalComponent } from '../character-selector-modal/character-selector-modal.component';
 import { CreateCharacterModalComponent } from '../create-character-modal/create-character-modal.component';
+import { EditCharacterModalComponent } from '../edit-character-modal/edit-character-modal';
 import { CreateElementModalComponent, ElementCreationData } from '../elements/create-element-modal/create-element-modal.component';
 import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
 import { CombatManagementComponent } from '../combat-management/combat-management.component';
@@ -22,6 +23,7 @@ import { ElementService } from '../../services/element.service';
     FormsModule,
     CharacterSelectorModalComponent,
     CreateCharacterModalComponent,
+    EditCharacterModalComponent,
     CreateElementModalComponent,
     ElementDisplayComponent,
     CombatManagementComponent,
@@ -54,6 +56,7 @@ export class DashboardComponent implements OnInit {
   // Modal pour gérer les personnages
   showCharacterModal = false;
   showCreateCharacterModal = false;
+  showEditCharacterModal = false;
   newCharacterName = '';
   newCharacterSystem = GameSystem.OTHER;
 
@@ -286,6 +289,39 @@ export class DashboardComponent implements OnInit {
 
   closeCreateCharacterModal(): void {
     this.showCreateCharacterModal = false;
+  }
+
+  openEditCharacterModal(): void {
+    this.showEditCharacterModal = true;
+  }
+
+  closeEditCharacterModal(): void {
+    this.showEditCharacterModal = false;
+  }
+
+  updateCharacterInfo(data: {name: string, gameSystem: GameSystem}): void {
+    console.log('Updating character with data:', data);
+    if (!this.currentCharacter) {
+      console.error('No current character to update');
+      return;
+    }
+
+    try {
+      const updatedCharacter: PlayerCharacter = {
+        ...this.currentCharacter,
+        name: data.name,
+        gameSystem: data.gameSystem,
+        updatedAt: new Date()
+      };
+
+      console.log('Calling characterService.updateCharacter with:', updatedCharacter);
+      this.characterService.updateCharacter(updatedCharacter);
+      this.currentCharacter = updatedCharacter;
+      this.closeEditCharacterModal();
+      console.log('Character updated successfully');
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du personnage:', error);
+    }
   }
 
   createNewCharacter(data: {name: string, gameSystem: GameSystem}): void {

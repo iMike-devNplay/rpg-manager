@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>✏️ Modifier le personnage</h3>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+    
+    <form (ngSubmit)="onSubmit()" #editForm="ngForm" class="edit-form">
+      <div class="form-group">
+        <label for="characterName">Nom du personnage :</label>
+        <input 
+          type="text" 
+          id="characterName"
+          name="characterName"
+          [(ngModel)]="characterName"
+          class="form-control"
+          placeholder="Entrez le nom du personnage"
+          required
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="gameSystem">Système de jeu :</label>
+        <select 
+          id="gameSystem"
+          name="gameSystem"
+          [(ngModel)]="selectedGameSystem"
+          class="form-control"
+          required
+        >
+          <option *ngFor="let system of getGameSystemOptions()" [value]="system.key">
+            {{ system.label }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!characterName.trim()">
+          💾 Sauvegarder
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

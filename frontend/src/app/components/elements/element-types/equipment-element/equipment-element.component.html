@@ -1,0 +1,23 @@
+<div class="equipment-element-content">
+  <div class="equipment-main">
+    <div class="equipment-header">
+      <div class="equipment-info">
+        <span class="quantity" *ngIf="element.quantity > 1">{{ element.quantity }}x</span>
+        <span class="cost" *ngIf="element.cost">({{ element.cost }})</span>
+      </div>
+      <button 
+        *ngIf="element.equipped !== undefined" 
+        class="equip-toggle"
+        [class.equipped]="element.equipped"
+        (click)="toggleEquipped()"
+        [title]="element.equipped ? 'Déséquiper' : 'Équiper'"
+      >
+        {{ element.equipped ? '✓' : '○' }}
+      </button>
+    </div>
+    
+    <div class="equipment-details" *ngIf="element.weight">
+      <span class="weight">{{ element.weight }} kg</span>
+    </div>
+  </div>
+</div>

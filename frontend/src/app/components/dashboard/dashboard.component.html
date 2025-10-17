@@ -296,10 +296,11 @@
   (modalClosed)="closeEditCharacterModal()">
 </app-edit-character-modal>
 
-<app-create-element-modal
-  [isVisible]="showCreateElementModal"
-  [targetZone]="currentZone"
-  [editingItem]="editingItem"
+<app-element-creation-orchestrator
+  [isOpen]="showCreateElementModal"
+  [gameSystem]="getGameSystemForNewElement()"
+  [zone]="currentZone"
+  [editingElement]="getEditingElementForNewSystem()"
   (close)="closeCreateElementModal()"
-  (elementCreated)="onElementCreated($event)">
-</app-create-element-modal>
+  (elementSaved)="onElementCreated($event)">
+</app-element-creation-orchestrator>

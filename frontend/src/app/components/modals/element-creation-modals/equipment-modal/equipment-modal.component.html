@@ -1,0 +1,114 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ modalTitle }}</h2>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+    
+    <form (ngSubmit)="onSave()" class="modal-body">
+      <div class="form-group">
+        <label for="name">Nom de l'équipement <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="name"
+          [(ngModel)]="formData.name"
+          name="name"
+          placeholder="Ex: Épée longue, Armure de cuir, Potion de soin..."
+          required
+          class="form-control"
+          [class.invalid]="formData.name.trim().length === 0 && formData.name.length > 0"
+        >
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="quantity">Quantité <span class="required">*</span></label>
+          <input 
+            type="number" 
+            id="quantity"
+            [(ngModel)]="formData.quantity"
+            name="quantity"
+            min="1"
+            required
+            class="form-control"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="weight">Poids (kg)</label>
+          <input 
+            type="number" 
+            id="weight"
+            [(ngModel)]="formData.weight"
+            name="weight"
+            min="0"
+            step="0.1"
+            class="form-control"
+            placeholder="Optionnel"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cost">Coût</label>
+        <input 
+          type="text" 
+          id="cost"
+          [(ngModel)]="formData.cost"
+          name="cost"
+          placeholder="Ex: 15 po, 50 pa, 2 électrums..."
+          class="form-control"
+        >
+        <small class="form-help">Format libre (pièces d'or, argent, etc.)</small>
+      </div>
+
+      <div class="form-group">
+        <div class="checkbox-group">
+          <input 
+            type="checkbox" 
+            id="equipped"
+            [(ngModel)]="formData.equipped"
+            name="equipped"
+            class="checkbox"
+          >
+          <label for="equipped" class="checkbox-label">
+            Équipement actuellement porté/utilisé
+          </label>
+        </div>
+        <small class="form-help">Marque l'objet comme équipé (arme en main, armure portée, etc.)</small>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description (optionnel)</label>
+        <textarea 
+          id="description"
+          [(ngModel)]="formData.description"
+          name="description"
+          placeholder="Propriétés, effets spéciaux, apparence..."
+          class="form-control textarea"
+          rows="3"
+        ></textarea>
+        <small class="form-help">Apparaîtra au survol de l'élément</small>
+      </div>
+
+      <div class="zone-info" *ngIf="zone">
+        <span class="label">Zone de destination :</span>
+        <span class="value">{{ zone }}</span>
+      </div>
+    </form>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onClose()">
+        Annuler
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="onSave()"
+        [disabled]="!isFormValid()"
+      >
+        {{ editingElement ? 'Modifier' : 'Créer' }}
+      </button>
+    </div>
+  </div>
+</div>

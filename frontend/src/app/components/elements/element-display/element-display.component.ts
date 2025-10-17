@@ -1,12 +1,23 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataItem, DataType } from '../../../models/rpg.models';
+import { Element } from '../../../models/element-types';
 import { ElementService } from '../../../services/element.service';
+import { TextElementComponent } from '../element-types/text-element/text-element.component';
+import { NumericElementComponent } from '../element-types/numeric-element/numeric-element.component';
+import { DndAttributeElementComponent } from '../element-types/dnd-attribute-element/dnd-attribute-element.component';
+import { EquipmentElementComponent } from '../element-types/equipment-element/equipment-element.component';
 
 @Component({
   selector: 'app-element-display',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    TextElementComponent,
+    NumericElementComponent,
+    DndAttributeElementComponent,
+    EquipmentElementComponent
+  ],
   templateUrl: './element-display.component.html',
   styleUrls: ['./element-display.component.scss']
 })
@@ -21,6 +32,68 @@ export class ElementDisplayComponent {
   @Output() itemDroppedOn = new EventEmitter<{draggedItemId: string, targetItem: DataItem}>();
 
   constructor(private elementService: ElementService) {}
+
+  /**
+   * Convertit le DataItem legacy vers le nouveau format Element
+   */
+  get element(): Element {
+    // Conversion temporaire pour compatibilité
+    const baseElement = {
+      id: this.item.id,
+      name: this.item.name,
+      description: this.item.description,
+      zone: '', // À récupérer du contexte
+      position: 0, // À récupérer du contexte
+      gameSystem: null as any
+    };
+
+    // Conversion selon le type legacy
+    switch (this.item.type) {
+      case 'text':
+        return {
+          ...baseElement,
+          type: 'text',
+          value: this.item.value as string
+        };
+      case 'numeric':
+        return {
+          ...baseElement,
+          type: 'numeric',
+          value: this.item.value as number,
+          canQuickModify: this.item.allowQuickModification !== false
+        };
+      case 'attribute':
+        return {
+          ...baseElement,
+          type: 'dnd-attribute',
+          value: this.item.value as number,
+          hasProficiency: this.item.hasProficiency
+        };
+      default:
+        // Fallback vers text
+        return {
+          ...baseElement,
+          type: 'text',
+          value: String(this.item.value)
+        };
+    }
+  }
+
+  /**
+   * Gestionnaire pour les changements de valeur des éléments
+   */
+  onElementValueChange(newValue: any): void {
+    const updatedItem = { ...this.item, value: newValue };
+    this.itemUpdated.emit(updatedItem);
+  }
+
+  /**
+   * Gestionnaire pour le toggle d'équipement
+   */
+  onEquipmentToggle(equipped: boolean): void {
+    const updatedItem = { ...this.item, equipped };
+    this.itemUpdated.emit(updatedItem);
+  }
 
   /**
    * Vérifie si l'élément peut être modifié rapidement

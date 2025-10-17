@@ -1,0 +1,46 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Choisir un type d'élément</h2>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="game-system-info" *ngIf="gameSystem">
+        <span class="label">Système de jeu :</span>
+        <span class="value">{{ gameSystem }}</span>
+      </div>
+
+      <div *ngFor="let categoryKey of getCategoryKeys()" class="category-section">
+        <h3 class="category-title">{{ getCategoryName(categoryKey) }}</h3>
+        
+        <div class="type-grid">
+          <div 
+            *ngFor="let type of categorizedTypes[categoryKey]" 
+            class="type-card"
+            (click)="selectType(type.id)"
+          >
+            <div class="type-icon">{{ type.icon }}</div>
+            <div class="type-info">
+              <h4 class="type-name">{{ type.name }}</h4>
+              <p class="type-description">{{ type.description }}</p>
+              <div class="type-system" *ngIf="type.gameSystem">
+                <span class="system-badge">{{ type.gameSystem }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="getCategoryKeys().length === 0" class="no-types">
+        <p>Aucun type d'élément disponible pour ce système de jeu.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>

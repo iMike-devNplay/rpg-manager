@@ -8,11 +8,12 @@ import { CharacterService } from '../../services/character.service';
 import { CharacterSelectorModalComponent } from '../character-selector-modal/character-selector-modal.component';
 import { CreateCharacterModalComponent } from '../create-character-modal/create-character-modal.component';
 import { EditCharacterModalComponent } from '../edit-character-modal/edit-character-modal';
-import { CreateElementModalComponent, ElementCreationData } from '../elements/create-element-modal/create-element-modal.component';
+import { ElementCreationOrchestratorComponent } from '../modals/element-creation-orchestrator/element-creation-orchestrator.component';
 import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
 import { CombatManagementComponent } from '../combat-management/combat-management.component';
 import { PlayersManagementComponent } from '../players-management/players-management.component';
 import { User, UserMode, DashboardZone, DataItem, DataGroup, DataType, PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../models/rpg.models';
+import { Element, GameSystem as ElementGameSystem } from '../../models/element-types';
 import { ElementService } from '../../services/element.service';
 
 @Component({
@@ -24,7 +25,7 @@ import { ElementService } from '../../services/element.service';
     CharacterSelectorModalComponent,
     CreateCharacterModalComponent,
     EditCharacterModalComponent,
-    CreateElementModalComponent,
+    ElementCreationOrchestratorComponent,
     ElementDisplayComponent,
     CombatManagementComponent,
     PlayersManagementComponent
@@ -155,17 +156,22 @@ export class DashboardComponent implements OnInit {
     this.editingItem = null; // Réinitialiser l'élément en édition
   }
 
-  onElementCreated(elementData: ElementCreationData): void {
+  onElementCreated(elementData: Partial<Element>): void {
     try {
       if (elementData.id) {
         // Mode édition : mettre à jour l'élément existant
-        const updatedElement = this.elementService.updateElement(elementData);
+        // Conversion vers DataItem pour compatibilité avec le système existant
+        const updatedElement = this.convertElementToDataItem(elementData as Element);
         this.storageService.saveDataItem(updatedElement);
       } else {
         // Mode création : créer un nouvel élément avec l'ordre correct
         const existingItems = this.currentCharacter?.dataItems || [];
-        const newElement = this.elementService.createElement(elementData, existingItems);
-        this.storageService.saveDataItem(newElement);
+        const newDataItem = this.convertElementToDataItem({
+          ...elementData,
+          id: this.generateId(),
+          position: this.getNextPosition(existingItems, elementData.zone!)
+        } as Element);
+        this.storageService.saveDataItem(newDataItem);
       }
       
       // Recharger les données du personnage
@@ -174,6 +180,119 @@ export class DashboardComponent implements OnInit {
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de l\'élément:', error);
       alert('Erreur lors de la sauvegarde de l\'élément. Veuillez réessayer.');
+    }
+  }
+
+  /**
+   * Conversion temporaire d'Element vers DataItem pour compatibilité
+   */
+  private convertElementToDataItem(element: Element): DataItem {
+    // Conversion de base
+    const dataItem: DataItem = {
+      id: element.id,
+      name: element.name,
+      type: this.convertElementTypeToDataType(element.type),
+      value: this.getNewElementValue(element),
+      zone: element.zone as DashboardZone,
+      order: element.position,
+      description: element.description,
+      userId: this.userService.getCurrentUser()?.username || 'user' // Ajouter l'userId requis
+    };
+
+    // Propriétés spécifiques selon le type
+    if (element.type === 'numeric') {
+      dataItem.allowQuickModification = element.canQuickModify ?? true;
+    } else if (element.type === 'dnd-attribute') {
+      dataItem.hasProficiency = element.hasProficiency;
+    }
+
+    return dataItem;
+  }
+
+  private convertElementTypeToDataType(elementType: string): DataType {
+    switch (elementType) {
+      case 'text': return DataType.TEXT;
+      case 'numeric': return DataType.NUMERIC;
+      case 'dnd-attribute': return DataType.ATTRIBUTE;
+      default: return DataType.TEXT;
+    }
+  }
+
+  private getNewElementValue(element: Element): any {
+    switch (element.type) {
+      case 'text': return element.value;
+      case 'numeric': return element.value;
+      case 'dnd-attribute': return element.value;
+      case 'equipment': return element.name; // Nom de l'équipement comme valeur
+      default: return element.name;
+    }
+  }
+
+  private generateId(): string {
+    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  }
+
+  private getNextPosition(items: DataItem[], zone: string): number {
+    const zoneItems = items.filter(item => item.zone === zone);
+    return zoneItems.length > 0 ? Math.max(...zoneItems.map(item => item.order || 0)) + 1 : 0;
+  }
+
+  /**
+   * Récupère le système de jeu pour les nouveaux éléments
+   */
+  getGameSystemForNewElement(): ElementGameSystem | null {
+    const currentSystem = this.currentCharacter?.gameSystem;
+    if (!currentSystem) return null;
+    
+    // Conversion entre les types GameSystem
+    return currentSystem as ElementGameSystem;
+  }
+
+  /**
+   * Convertit l'élément en cours d'édition vers le nouveau format pour compatibilité
+   */
+  getEditingElementForNewSystem(): Element | null {
+    if (!this.editingItem) return null;
+
+    // Conversion de DataItem vers Element
+    const gameSystem = this.currentCharacter?.gameSystem as ElementGameSystem;
+    const baseElement = {
+      id: this.editingItem.id,
+      name: this.editingItem.name,
+      description: this.editingItem.description,
+      zone: this.editingItem.zone,
+      position: this.editingItem.order || 0,
+      gameSystem
+    };
+
+    // Conversion selon le type
+    switch (this.editingItem.type) {
+      case DataType.TEXT:
+        return {
+          ...baseElement,
+          type: 'text' as const,
+          value: this.editingItem.value as string
+        };
+      case DataType.NUMERIC:
+        return {
+          ...baseElement,
+          type: 'numeric' as const,
+          value: this.editingItem.value as number,
+          canQuickModify: this.editingItem.allowQuickModification !== false
+        };
+      case DataType.ATTRIBUTE:
+        return {
+          ...baseElement,
+          type: 'dnd-attribute' as const,
+          value: this.editingItem.value as number,
+          hasProficiency: this.editingItem.hasProficiency || false
+        };
+      default:
+        return {
+          ...baseElement,
+          type: 'text' as const,
+          value: String(this.editingItem.value)
+        };
     }
   }
 

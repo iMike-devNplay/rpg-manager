@@ -1,0 +1,45 @@
+<!-- Modal de sélection de type (pour la création) -->
+<app-element-type-selection-modal
+  [isOpen]="showTypeSelection"
+  [gameSystem]="gameSystem"
+  (close)="onTypeSelectionClose()"
+  (typeSelected)="onTypeSelected($event)">
+</app-element-type-selection-modal>
+
+<!-- Modals spécifiques par type -->
+
+<!-- Modal pour élément textuel -->
+<app-text-element-modal
+  [isOpen]="showElementModal && selectedType === 'text'"
+  [editingElement]="textElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-text-element-modal>
+
+<!-- Modal pour élément numérique -->
+<app-numeric-element-modal
+  [isOpen]="showElementModal && selectedType === 'numeric'"
+  [editingElement]="numericElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-numeric-element-modal>
+
+<!-- Modal pour attribut D&D -->
+<app-dnd-attribute-modal
+  [isOpen]="showElementModal && selectedType === 'dnd-attribute'"
+  [editingElement]="dndAttributeElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-dnd-attribute-modal>
+
+<!-- Modal pour équipement -->
+<app-equipment-modal
+  [isOpen]="showElementModal && selectedType === 'equipment'"
+  [editingElement]="equipmentElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-equipment-modal>

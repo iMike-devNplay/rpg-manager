@@ -1,0 +1,38 @@
+<div class="dnd-attribute-content">
+  <div class="attribute-main">
+    <div class="attribute-value">
+      <span class="value">{{ element.value }}</span>
+      
+      <!-- Boutons de modification rapide -->
+      <div *ngIf="canQuickModify" class="quick-modify">
+        <button 
+          class="modify-btn decrease" 
+          (click)="quickModify(-1)" 
+          title="Diminuer"
+        >
+          −
+        </button>
+        <button 
+          class="modify-btn increase" 
+          (click)="quickModify(1)" 
+          title="Augmenter"
+        >
+          +
+        </button>
+      </div>
+    </div>
+    
+    <!-- Détails de l'attribut -->
+    <div class="attribute-details">
+      <div class="modifier">
+        <span class="label">Mod:</span>
+        <span class="value">{{ getModifier() }}</span>
+      </div>
+      <div class="saving-throw" [class.proficient]="element.hasProficiency">
+        <span class="label">JS:</span>
+        <span class="value">{{ getSavingThrow() }}</span>
+        <span *ngIf="element.hasProficiency" class="proficient-indicator">⭐</span>
+      </div>
+    </div>
+  </div>
+</div>

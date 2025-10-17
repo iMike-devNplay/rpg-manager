@@ -33,74 +33,44 @@
   <div class="element-content">
     
     <!-- Élément textuel -->
-    <div *ngIf="isTextElement()" class="text-content">
-      {{ item.value }}
-    </div>
+    <app-text-element 
+      *ngIf="element.type === 'text'"
+      [element]="element"
+      [canQuickModify]="canQuickModify()"
+      (edit)="editItem()"
+      (delete)="deleteItem()"
+      (valueChange)="onElementValueChange($event)">
+    </app-text-element>
 
     <!-- Élément numérique simple -->
-    <div *ngIf="isNumericElement() && !isAttribute()" class="numeric-content">
-      <div class="value-display">
-        <span class="value">{{ getFormattedValue() }}</span>
-        
-        <!-- Boutons de modification rapide -->
-        <div *ngIf="canQuickModify()" class="quick-modify">
-          <button 
-            class="modify-btn decrease" 
-            (click)="quickModify(-1)" 
-            title="Diminuer"
-          >
-            −
-          </button>
-          <button 
-            class="modify-btn increase" 
-            (click)="quickModify(1)" 
-            title="Augmenter"
-          >
-            +
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-numeric-element 
+      *ngIf="element.type === 'numeric'"
+      [element]="element"
+      [canQuickModify]="canQuickModify()"
+      (edit)="editItem()"
+      (delete)="deleteItem()"
+      (valueChange)="onElementValueChange($event)">
+    </app-numeric-element>
 
-    <!-- Attribut D&D avec détails -->
-    <div *ngIf="isAttribute()" class="attribute-content">
-      <div class="attribute-main">
-        <div class="attribute-value">
-          <span class="value">{{ item.value }}</span>
-          
-          <!-- Boutons de modification rapide -->
-          <div *ngIf="canQuickModify()" class="quick-modify">
-            <button 
-              class="modify-btn decrease" 
-              (click)="quickModify(-1)" 
-              title="Diminuer"
-            >
-              −
-            </button>
-            <button 
-              class="modify-btn increase" 
-              (click)="quickModify(1)" 
-              title="Augmenter"
-            >
-              +
-            </button>
-          </div>
-        </div>
-        
-        <!-- Détails de l'attribut -->
-        <div class="attribute-details" *ngIf="getAttributeDetails()">
-          <div class="modifier">
-            <span class="label">Mod:</span>
-            <span class="value">{{ getAttributeDetails()?.modifier }}</span>
-          </div>
-          <div class="saving-throw" [class.proficient]="item.hasProficiency">
-            <span class="label">JS:</span>
-            <span class="value">{{ getAttributeDetails()?.savingThrow }}</span>
-            <span *ngIf="item.hasProficiency" class="proficient-indicator">⭐</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Attribut D&D -->
+    <app-dnd-attribute-element 
+      *ngIf="element.type === 'dnd-attribute'"
+      [element]="element"
+      [canQuickModify]="canQuickModify()"
+      (edit)="editItem()"
+      (delete)="deleteItem()"
+      (valueChange)="onElementValueChange($event)">
+    </app-dnd-attribute-element>
+
+    <!-- Équipement -->
+    <app-equipment-element 
+      *ngIf="element.type === 'equipment'"
+      [element]="element"
+      [canQuickModify]="canQuickModify()"
+      (edit)="editItem()"
+      (delete)="deleteItem()"
+      (equipToggle)="onEquipmentToggle($event)">
+    </app-equipment-element>
 
   </div>
 

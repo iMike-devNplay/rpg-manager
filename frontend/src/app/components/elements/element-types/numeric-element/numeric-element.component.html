@@ -1,0 +1,23 @@
+<div class="numeric-element-content">
+  <div class="value-display">
+    <span class="value">{{ getFormattedValue() }}</span>
+    
+    <!-- Boutons de modification rapide -->
+    <div *ngIf="element.canQuickModify && canQuickModify" class="quick-modify">
+      <button 
+        class="modify-btn decrease" 
+        (click)="quickModify(-1)" 
+        title="Diminuer"
+      >
+        −
+      </button>
+      <button 
+        class="modify-btn increase" 
+        (click)="quickModify(1)" 
+        title="Augmenter"
+      >
+        +
+      </button>
+    </div>
+  </div>
+</div>

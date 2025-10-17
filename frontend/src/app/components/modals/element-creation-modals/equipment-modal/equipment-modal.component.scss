@@ -1,0 +1,35 @@
+@use '../text-element-modal/text-element-modal.component.scss';
+
+// Styles spécifiques pour l'équipement
+.modal-body {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    .checkbox {
+      width: auto;
+      padding: 0;
+      margin: 0;
+    }
+
+    .checkbox-label {
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+}

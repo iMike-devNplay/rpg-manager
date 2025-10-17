@@ -1,0 +1,118 @@
+@use '../text-element-modal/text-element-modal.component.scss';
+
+// Styles spécifiques pour les attributs D&D
+.modal-body {
+  .predefined-attributes {
+    margin-top: 8px;
+
+    .attribute-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+
+      .attr-btn {
+        background: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 16px;
+        padding: 4px 12px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #dee2e6;
+          border-color: #adb5bd;
+        }
+
+        &.selected {
+          background: #0d6efd;
+          border-color: #0d6efd;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
+
+  .calculated-values {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 4px;
+
+    .calc-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 4px;
+        padding-bottom: 8px;
+      }
+
+      .calc-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .calc-value {
+        font-weight: 600;
+        font-size: 0.9rem;
+
+        &.modifier {
+          color: #0d6efd;
+        }
+
+        &.saving-throw {
+          color: #6c757d;
+
+          &.proficient {
+            color: #198754;
+          }
+
+          .prof-indicator {
+            color: #ffc107;
+            font-size: 0.7rem;
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    .checkbox {
+      width: auto;
+      padding: 0;
+      margin: 0;
+    }
+
+    .checkbox-label {
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+}

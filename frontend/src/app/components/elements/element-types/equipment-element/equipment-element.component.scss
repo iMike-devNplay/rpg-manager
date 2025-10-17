@@ -1,0 +1,65 @@
+.equipment-element-content {
+  .equipment-main {
+    .equipment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+
+      .equipment-info {
+        display: flex;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #6c757d;
+
+        .quantity {
+          font-weight: 600;
+          color: #0d6efd;
+        }
+
+        .cost {
+          color: #198754;
+        }
+      }
+
+      .equip-toggle {
+        background: none;
+        border: 1px solid #dee2e6;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #0d6efd;
+          background: rgba(13, 110, 253, 0.1);
+        }
+
+        &.equipped {
+          background: #198754;
+          border-color: #198754;
+          color: white;
+
+          &:hover {
+            background: #157347;
+            border-color: #157347;
+          }
+        }
+      }
+    }
+
+    .equipment-details {
+      font-size: 0.8rem;
+      color: #6c757d;
+
+      .weight {
+        background: rgba(108, 117, 125, 0.1);
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+    }
+  }
+}

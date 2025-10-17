@@ -1,0 +1,51 @@
+name: rpg-manager Build
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './frontend'
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ./frontend/package-lock.json
+    - run: npm ci
+    - run: npm run build --if-present -- --base-href=/${{vars.PROJECT_NAME}}/
+
+    - name: ssh-scp-deploy
+      uses: marcodallasanta/ssh-scp-deploy@v1.2.0
+      with:
+        # Local file path
+        local: ./frontend/dist/${{vars.PROJECT_NAME}}
+        # Remote file path
+        remote: ~/deploy/
+        # Remote server address
+        host: ${{secrets.OVH_SERVER}}
+        # Remote server port (default 22)
+        port: ${{secrets.OVH_PORT}} # optional, default is 22
+        # Remote server user
+        user: ${{secrets.OVH_USER}}
+        # User password
+        password: ${{secrets.OVH_PASSWORD}} # optional
+        # Remote server private key
+        #key: # optional
+        # Command to run via ssh before scp upload
+        pre_upload: ~/deploy/clean-frontend.sh ${{vars.PROJECT_NAME}}# optional
+        # Command to run via ssh after scp upload
+        #post_upload: # optional
+        # A set of ssh_option separated by -o
+        #ssh_options: # optional, default is -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+        # Flags to use during scp
+        #scp_options: # optional

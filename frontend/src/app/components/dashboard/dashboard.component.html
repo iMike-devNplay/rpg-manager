@@ -12,9 +12,9 @@
         </span>
         <div class="character-info" *ngIf="currentCharacter">
           <div class="character-details">
-            <span class="character-name" (click)="openCharacterModal()">
-              🧙‍♂️ {{ currentCharacter.name }}
-            </span>
+            <span class="character-name" (click)="navigateToCharacterPage()">
+                  🧙‍♂️ {{ currentCharacter.name }}
+                </span>
             <span class="character-system">
               {{ getGameSystemLabel(currentCharacter.gameSystem) }}
             </span>
@@ -23,6 +23,7 @@
             </button>
           </div>
         </div>
+        <!-- character selector is a separate page; dashboard only provides navigation -->
         <button class="btn-character" *ngIf="!currentCharacter" (click)="openCreateCharacterModal()">
           ➕ Créer un personnage
         </button>
@@ -30,7 +31,7 @@
     </div>
     
     <div class="header-actions">
-      <button class="btn btn-secondary" (click)="openCharacterModal()" *ngIf="currentCharacter">
+      <button class="btn btn-secondary" (click)="navigateToCharacterPage()" *ngIf="currentCharacter">
         👥 Personnages
       </button>
       <button class="btn btn-secondary" (click)="exportData()">
@@ -272,16 +273,6 @@
 </div>
 
 <!-- Modales externalisées -->
-<app-character-selector-modal
-  [isVisible]="showCharacterModal"
-  [currentCharacter]="currentCharacter"
-  [userCharacters]="userCharacters"
-  (close)="closeCharacterModal()"
-  (characterSelected)="selectCharacter($event)"
-  (createNewCharacter)="openCreateCharacterModal()"
-  (duplicateCharacter)="duplicateCharacter($event)"
-  (deleteCharacter)="deleteCharacter($event)">
-</app-character-selector-modal>
 
 <app-create-character-modal
   [isVisible]="showCreateCharacterModal"

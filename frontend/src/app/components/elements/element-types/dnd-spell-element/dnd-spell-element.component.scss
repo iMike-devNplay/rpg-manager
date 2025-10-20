@@ -1,0 +1,43 @@
+.spell-element {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 0.5rem;
+  
+  .spell-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    
+    h3 {
+      margin: 0;
+      color: #2c3e50;
+    }
+    
+    .spell-level {
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+  }
+  
+  .spell-info {
+    margin-bottom: 1rem;
+    
+    .info-row {
+      margin: 0.5rem 0;
+      
+      strong {
+        color: #34495e;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+  
+  .spell-description {
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #2c3e50;
+    white-space: pre-wrap;
+  }
+}

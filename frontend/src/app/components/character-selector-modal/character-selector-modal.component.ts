@@ -12,6 +12,7 @@ import { CharacterService } from '../../services/character.service';
 })
 export class CharacterSelectorModalComponent {
   @Input() isVisible: boolean = false;
+  @Input() inlineMode: boolean = false; // if true, render inline instead of modal overlay
   @Input() currentCharacter: PlayerCharacter | null = null;
   @Input() userCharacters: PlayerCharacter[] = [];
   

@@ -1,0 +1,129 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>{{ editingElement ? 'Modifier le sort' : 'Créer un sort' }}</h2>
+            <button class="close-btn" (click)="onCancel()">×</button>
+        </div>
+        
+        <form (ngSubmit)="onSubmit()" class="modal-body">
+            <div class="form-group">
+                <label for="name">Nom du sort <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name"
+                    [(ngModel)]="spellData.name" 
+                    required
+                    class="form-control"
+                    placeholder="Nom du sort">
+            </div>
+
+            <div class="form-group">
+                <label for="level">Niveau <span class="required">*</span></label>
+                <select 
+                    id="level" 
+                    name="level"
+                    [(ngModel)]="spellData.level" 
+                    required
+                    class="form-control">
+                    <option [value]="0">Tour de magie</option>
+                    <option [value]="1">Niveau 1</option>
+                    <option [value]="2">Niveau 2</option>
+                    <option [value]="3">Niveau 3</option>
+                    <option [value]="4">Niveau 4</option>
+                    <option [value]="5">Niveau 5</option>
+                    <option [value]="6">Niveau 6</option>
+                    <option [value]="7">Niveau 7</option>
+                    <option [value]="8">Niveau 8</option>
+                    <option [value]="9">Niveau 9</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="school">École de magie <span class="required">*</span></label>
+                <select 
+                    id="school" 
+                    name="school"
+                    [(ngModel)]="spellData.school" 
+                    required
+                    class="form-control">
+                    <option *ngFor="let school of schools" [value]="school">{{ school }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="castingTime">Temps d'incantation <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="castingTime" 
+                    name="castingTime"
+                    [(ngModel)]="spellData.castingTime" 
+                    required
+                    class="form-control"
+                    placeholder="Ex: 1 action">
+            </div>
+
+            <div class="form-group">
+                <label for="range">Portée <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="range" 
+                    name="range"
+                    [(ngModel)]="spellData.range" 
+                    required
+                    class="form-control"
+                    placeholder="Ex: 18 mètres">
+            </div>
+
+            <div class="form-group">
+                <label>Composantes <span class="required">*</span></label>
+                <div class="components-list">
+                    <label *ngFor="let comp of componentOptions" class="component-checkbox">
+                        <input 
+                            type="checkbox"
+                            [name]="'component-' + comp"
+                            [checked]="selectedComponents[comp]"
+                            (change)="selectedComponents[comp] = !selectedComponents[comp]">
+                        {{ comp }}
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Durée <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="duration" 
+                    name="duration"
+                    [(ngModel)]="spellData.duration" 
+                    required
+                    class="form-control"
+                    placeholder="Ex: Concentration, jusqu'à 1 minute">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description <span class="required">*</span></label>
+                <textarea 
+                    id="description" 
+                    name="description"
+                    [(ngModel)]="spellData.description" 
+                    required
+                    class="form-control"
+                    rows="4"
+                    placeholder="Description des effets du sort"></textarea>
+            </div>
+
+            <div class="zone-info" *ngIf="zone">
+                <span class="label">Zone de destination :</span>
+                <span class="value">{{ zone }}</span>
+            </div>
+        </form>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onCancel()">Annuler</button>
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="!spellData.name">
+                {{ editingElement ? 'Modifier' : 'Créer' }}
+            </button>
+        </div>
+    </div>
+</div>

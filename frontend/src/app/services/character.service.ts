@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../models/rpg.models';
 import { StorageService } from './storage.service';
 import { UserService } from './user.service';
+import { Dnd5eService } from './dnd5e.service';
+import { GameSystemDataService } from './game-system-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,9 @@ import { UserService } from './user.service';
 export class CharacterService {
   constructor(
     private storageService: StorageService,
-    private userService: UserService
+    private userService: UserService,
+    private dnd5eService: Dnd5eService,
+    private gameSystemDataService: GameSystemDataService
   ) {}
 
   // Obtenir le personnage actuel
@@ -38,14 +42,36 @@ export class CharacterService {
   }
 
   // Créer un nouveau personnage
-  createCharacter(name: string, gameSystem: GameSystem): PlayerCharacter {
+  async createCharacter(name: string, gameSystem: GameSystem): Promise<PlayerCharacter> {
+    console.log('=== createCharacter service appelée ===');
     const user = this.userService.getCurrentUser();
     if (!user) {
       throw new Error('Aucun utilisateur connecté');
     }
 
+    console.log('=== Création du personnage via storage ===');
     const newCharacter = this.storageService.createNewCharacter(name, gameSystem, user.id);
+    
+    console.log('Character créé:', newCharacter);
+    console.log('GameSystem:', gameSystem);
+    console.log('Has game system data:', this.gameSystemDataService.hasGameSystemData(gameSystem));
+    
+    console.log('=== Définition du personnage comme actuel ===');
+    // Définir le personnage comme actuel AVANT l'initialisation pour que saveDataItem fonctionne
     this.setCurrentCharacter(newCharacter);
+    
+    console.log('=== Vérification initialisation système ===');
+    // Initialiser avec les données spécifiques au système de jeu si disponibles
+    if (this.gameSystemDataService.hasGameSystemData(gameSystem)) {
+      console.log('Initialisation D&D 5e...');
+      if (gameSystem === GameSystem.DND5E) {
+        console.log('=== Début initialisation D&D 5e ===');
+        await this.dnd5eService.initializeDnd5eCharacter(newCharacter);
+        console.log('Initialisation D&D 5e terminée');
+      }
+    }
+    
+    console.log('=== createCharacter service terminée avec succès ===');
     return newCharacter;
   }
 

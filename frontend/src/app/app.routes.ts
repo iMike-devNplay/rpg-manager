@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { CharacterSelectionPageComponent } from './components/character-selection-page/character-selection-page.component';
+import { DashboardComponent } from './components/game-system/default/dashboard/dashboard.component';
+import { CharacterSelectionPageComponent } from './components/character-management/character-selection-page/character-selection-page.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [

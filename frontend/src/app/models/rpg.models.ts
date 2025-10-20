@@ -78,6 +78,17 @@ export interface DataItem {
   proficiencyBonusRef?: string;
   // Propriétés pour les éléments numériques modifiables
   allowQuickModification?: boolean;
+  // Métadonnées pour les systèmes de jeu spécifiques
+  metadata?: {
+    dnd5eType?: string;
+    attributeCode?: string;
+    skillCode?: string;
+    linkedAttribute?: string;
+    hasProficiency?: boolean;
+    hasExpertise?: boolean;
+    availableOptions?: any[];
+    [key: string]: any;
+  };
 }
 
 export interface DataGroup {

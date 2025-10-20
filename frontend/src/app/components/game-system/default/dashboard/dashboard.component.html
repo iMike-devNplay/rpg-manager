@@ -1,0 +1,287 @@
+<div class="dashboard-container" *ngIf="currentUser">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <h1>🎲 RPG Manager</h1>
+      <div class="user-character-info">
+        <span class="user-info">
+          {{ currentUser.username }} 
+          <span class="mode-badge" [class]="'mode-' + currentUser.mode">
+            {{ getModeLabel(currentUser.mode) }}
+          </span>
+        </span>
+        <div class="character-info" *ngIf="currentCharacter">
+          <div class="character-details">
+            <span class="character-name" (click)="navigateToCharacterPage()">
+                  🧙‍♂️ {{ currentCharacter.name }}
+                </span>
+            <span class="character-system">
+              {{ getGameSystemLabel(currentCharacter.gameSystem) }}
+            </span>
+          </div>
+        </div>
+        <!-- character selector is a separate page; dashboard only provides navigation -->
+        <button class="btn-character" *ngIf="!currentCharacter" (click)="navigateToCharacterPage()">
+          ➕ Créer un personnage
+        </button>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="navigateToCharacterPage()" *ngIf="currentCharacter">
+        👥 Personnages
+      </button>
+      <button class="btn btn-secondary" (click)="exportData()">
+        📤 Exporter
+      </button>
+      <button class="btn btn-secondary" (click)="importData()">
+        📥 Importer
+      </button>
+      <button class="btn btn-secondary" (click)="switchMode()" *ngIf="canSwitchMode()">
+        🔄 {{ getOtherModeLabel() }}
+      </button>
+      <button class="btn btn-danger" (click)="logout()">
+        🚪 Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation pour Maître de jeu -->
+  <nav class="gm-navigation" *ngIf="isGameMaster()">
+    <button 
+      class="nav-btn" 
+      [class.active]="currentView === 'dashboard'"
+      (click)="setView('dashboard')"
+    >
+      📊 Dashboard
+    </button>
+    <button 
+      class="nav-btn" 
+      [class.active]="currentView === 'combat'"
+      (click)="setView('combat')"
+    >
+      ⚔️ Combat
+    </button>
+    <button 
+      class="nav-btn" 
+      [class.active]="currentView === 'players'"
+      (click)="setView('players')"
+    >
+      👥 Joueurs
+    </button>
+  </nav>
+
+  <!-- Composant spécialisé D&D 5e -->
+  <app-dnd5e-dashboard 
+    *ngIf="currentView === 'dashboard' && currentCharacter?.gameSystem === 'dnd5e'"
+    [character]="currentCharacter">
+  </app-dnd5e-dashboard>
+
+  <!-- Dashboard principal -->
+  <main class="dashboard-main" *ngIf="currentView === 'dashboard'">
+    <div class="dashboard-grid">
+      <!-- Zone Top -->
+      <div class="dashboard-zone zone-top" [attr.data-zone]="zones.TOP">
+        <div class="zone-header">
+          <button class="btn-add" (click)="addItem(zones.TOP)">📌</button>
+        </div>
+        <div 
+          class="zone-content zone-top-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.TOP)"
+          [attr.data-zone]="zones.TOP"
+        >
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.TOP)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
+          </app-element-display>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Left -->
+      <div class="dashboard-zone zone-left" [attr.data-zone]="zones.LEFT">
+        <div class="zone-header">
+          <button class="btn-add" (click)="addItem(zones.LEFT)">📋</button>
+        </div>
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.LEFT)"
+          [attr.data-zone]="zones.LEFT"
+        >
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.LEFT)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
+          </app-element-display>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.LEFT).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Center -->
+      <div class="dashboard-zone zone-center" [attr.data-zone]="zones.CENTER">
+        <div class="zone-header">
+          <button class="btn-add" (click)="addItem(zones.CENTER)">🎯</button>
+        </div>
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.CENTER)"
+          [attr.data-zone]="zones.CENTER"
+        >
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.CENTER)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
+          </app-element-display>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.CENTER).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Right -->
+      <div class="dashboard-zone zone-right" [attr.data-zone]="zones.RIGHT">
+        <div class="zone-header">
+          <button class="btn-add" (click)="addItem(zones.RIGHT)">📝</button>
+        </div>
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.RIGHT)"
+          [attr.data-zone]="zones.RIGHT"
+        >
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.RIGHT)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
+          </app-element-display>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.RIGHT).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone Bottom -->
+      <div class="dashboard-zone zone-bottom" [attr.data-zone]="zones.BOTTOM">
+        <div class="zone-header">
+          <button class="btn-add" (click)="addItem(zones.BOTTOM)">📦</button>
+        </div>
+        <div 
+          class="zone-content" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onDrop($event, zones.BOTTOM)"
+          [attr.data-zone]="zones.BOTTOM"
+        >
+          <app-element-display 
+            *ngFor="let item of getItemsByZone(zones.BOTTOM)" 
+            [item]="item"
+            [showQuickModification]="true"
+            (itemUpdated)="onItemUpdated($event)"
+            (itemDeleted)="onItemDeleted($event)"
+            (itemEdit)="onItemEdit($event)"
+            (itemDragStart)="onItemDragStart($event)"
+            (itemDragEnd)="onItemDragEnd()"
+            (itemDroppedOn)="onItemDroppedOn($event)">
+          </app-element-display>
+          <div class="empty-zone" *ngIf="getItemsByZone(zones.BOTTOM).length === 0">
+            <p>Aucun élément dans cette zone</p>
+            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Vue Combat (pour Maître de jeu) -->
+  <main *ngIf="currentView === 'combat' && isGameMaster()">
+    <app-combat-management></app-combat-management>
+  </main>
+
+  <!-- Vue Joueurs (pour Maître de jeu) -->
+  <main *ngIf="currentView === 'players' && isGameMaster()">
+    <app-players-management></app-players-management>
+  </main>
+</div>
+
+<!-- Modal pour ajouter un élément -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Ajouter un élément</h3>
+    <form (ngSubmit)="saveNewItem()">
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" [(ngModel)]="newItem.name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="newItem.type" name="type">
+          <option [value]="dataTypes.NUMERIC">Numérique</option>
+          <option [value]="dataTypes.TEXT">Texte</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valeur</label>
+        <input 
+          [type]="newItem.type === dataTypes.NUMERIC ? 'number' : 'text'" 
+          [(ngModel)]="newItem.value" 
+          name="value" 
+          required
+        >
+      </div>
+      <div class="form-group">
+        <label>Description (optionnel)</label>
+        <textarea [(ngModel)]="newItem.description" name="description"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modales externalisées -->
+
+<app-element-creation-orchestrator
+  [isOpen]="showCreateElementModal"
+  [gameSystem]="getGameSystemForNewElement()"
+  [zone]="currentZone"
+  [editingElement]="getEditingElementForNewSystem()"
+  (close)="closeCreateElementModal()"
+  (elementSaved)="onElementCreated($event)">
+</app-element-creation-orchestrator>

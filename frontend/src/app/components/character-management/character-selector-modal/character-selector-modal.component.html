@@ -1,0 +1,87 @@
+<!-- Sélecteur de personnage (modal ou inline selon inlineMode) -->
+<ng-container *ngIf="isVisible">
+  <div *ngIf="!inlineMode" class="modal-overlay" (click)="onClose()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Choisir un personnage</h2>
+
+      <div class="characters-grid">
+      <!-- Carte pour créer un nouveau personnage -->
+      <div class="add-character-card" (click)="onCreateNew()">
+        <div class="add-icon">+</div>
+        <div class="add-text">Nouveau personnage</div>
+      </div>
+      
+      <!-- Cartes des personnages existants -->
+      <div 
+        *ngFor="let character of userCharacters" 
+        class="character-card"
+        [class.active]="currentCharacter?.id === character.id"
+        (click)="onSelectCharacter(character)">
+        
+        <div class="character-name">{{ character.name }}</div>
+        <div class="character-game">{{ getGameSystemLabel(character.gameSystem) }}</div>
+        <div class="character-dates">
+          <span class="created">Créé: {{ formatDate(character.createdAt) }}</span>
+          <span class="updated">Modifié: {{ formatDate(character.updatedAt) }}</span>
+        </div>
+        
+        <div class="character-actions">
+          <button 
+            class="edit" 
+            (click)="onEdit(character, $event)"
+            title="Modifier le nom du personnage">
+            ✏️
+          </button>
+          <button 
+            class="duplicate" 
+            (click)="onDuplicate(character, $event)"
+            title="Dupliquer ce personnage">
+            ⧉
+          </button>
+          <button 
+            *ngIf="userCharacters.length > 1"
+            class="delete" 
+            (click)="onDelete(character, $event)"
+            title="Supprimer ce personnage">
+            ×
+          </button>
+        </div>
+      </div>
+      </div>
+
+      <div class="modal-actions" *ngIf="!inlineMode">
+        <button class="btn secondary" (click)="onClose()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline rendering -->
+  <div *ngIf="inlineMode" class="character-selector-inline">
+    <h3>Choisir un personnage</h3>
+    <div class="characters-grid">
+      <!-- same content reused for inline -->
+      <div class="add-character-card" (click)="onCreateNew()">
+        <div class="add-icon">+</div>
+        <div class="add-text">Nouveau personnage</div>
+      </div>
+
+      <div 
+        *ngFor="let character of userCharacters" 
+        class="character-card"
+        [class.active]="currentCharacter?.id === character.id"
+        (click)="onSelectCharacter(character)">
+        <div class="character-name">{{ character.name }}</div>
+        <div class="character-game">{{ getGameSystemLabel(character.gameSystem) }}</div>
+        <div class="character-dates">
+          <span class="created">Créé: {{ formatDate(character.createdAt) }}</span>
+          <span class="updated">Modifié: {{ formatDate(character.updatedAt) }}</span>
+        </div>
+        <div class="character-actions">
+          <button class="edit" (click)="onEdit(character, $event)" title="Modifier le nom">✏️</button>
+          <button class="duplicate" (click)="onDuplicate(character, $event)" title="Dupliquer">⧉</button>
+          <button *ngIf="userCharacters.length > 1" class="delete" (click)="onDelete(character, $event)" title="Supprimer">×</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

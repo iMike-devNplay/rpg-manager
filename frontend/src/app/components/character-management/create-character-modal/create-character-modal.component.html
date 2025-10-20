@@ -1,0 +1,47 @@
+<!-- Modale de création de personnage -->
+<div *ngIf="isVisible" class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Créer un nouveau personnage</h2>
+    
+    <form class="character-form" (ngSubmit)="onCreateCharacter()">
+      <div class="form-group">
+        <label for="characterName">Nom du personnage *</label>
+        <input 
+          type="text" 
+          id="characterName"
+          [(ngModel)]="newCharacterName" 
+          name="characterName"
+          placeholder="Entrez le nom du personnage"
+          required
+          maxlength="50">
+      </div>
+      
+      <div class="form-group">
+        <label for="gameSystem">Système de jeu *</label>
+        <select 
+          id="gameSystem"
+          [(ngModel)]="selectedGameSystem" 
+          name="gameSystem"
+          required>
+          <option 
+            *ngFor="let system of availableGameSystems" 
+            [value]="system.value">
+            {{ system.label }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" (click)="onClose()">
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn primary" 
+          [disabled]="!newCharacterName.trim()">
+          Créer le personnage
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

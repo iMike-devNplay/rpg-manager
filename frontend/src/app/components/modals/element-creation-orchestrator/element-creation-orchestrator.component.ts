@@ -4,6 +4,7 @@ import { ElementTypeSelectionModalComponent } from '../element-type-selection-mo
 import { TextElementModalComponent } from '../element-creation-modals/text-element-modal/text-element-modal.component';
 import { NumericElementModalComponent } from '../element-creation-modals/numeric-element-modal/numeric-element-modal.component';
 import { DndAttributeModalComponent } from '../element-creation-modals/dnd-attribute-modal/dnd-attribute-modal.component';
+import { DndSpellModalComponent } from '../element-creation-modals/dnd-spell-modal/dnd-spell-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
 import { ElementType, Element, GameSystem } from '../../../models/element-types';
 

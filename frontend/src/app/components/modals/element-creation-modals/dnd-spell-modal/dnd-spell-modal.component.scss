@@ -1,47 +1,53 @@
-@import '../text-element-modal/text-element-modal.component.scss';
+@use '../text-element-modal/text-element-modal.component.scss';
 
-.checkbox-group {
+// Styles spécifiques pour les sorts D&D
+.components-list {
   display: flex;
   gap: 1rem;
   margin-top: 0.5rem;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
   
-  input[type="checkbox"] {
-    margin: 0;
-  }
-  
-  .checkbox-text {
+  .component-checkbox {
     display: flex;
-    flex-direction: column;
-    
-    small {
-      color: #666;
-      font-size: 0.75rem;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: #f8f9fa;
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e9ecef;
+      border-color: #ced4da;
+    }
+
+    input[type="checkbox"] {
+      cursor: pointer;
+      margin: 0;
+    }
+
+    &:has(input:checked) {
+      background: #0d6efd;
+      border-color: #0d6efd;
+      color: white;
     }
   }
 }
 
-.form-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  
-  .flex-1 {
-    flex: 1;
-  }
-  
-  .flex-2 {
-    flex: 2;
+// Styles spécifiques pour le formulaire de sort
+.modal-body {
+  .form-group {
+    margin-bottom: 1rem;
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
   }
 }
 
-textarea {
-  resize: vertical;
-  min-height: 120px;
+.required {
+  color: #dc3545;
+  margin-left: 2px;
 }

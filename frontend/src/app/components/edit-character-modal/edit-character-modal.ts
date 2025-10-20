@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../models/rpg.models';
+import { PlayerCharacter } from '../../models/rpg.models';
 
 @Component({
   selector: 'app-edit-character-modal',
@@ -11,13 +11,11 @@ import { PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../models/rp
 })
 export class EditCharacterModalComponent implements OnInit, OnChanges {
   @Input() character!: PlayerCharacter;
-  @Output() characterUpdated = new EventEmitter<{name: string, gameSystem: GameSystem}>();
+  @Output() characterUpdated = new EventEmitter<{name: string}>();
   @Output() modalClosed = new EventEmitter<void>();
 
   characterName = '';
-  selectedGameSystem = GameSystem.DND5E;
-  gameSystems = GameSystem;
-  gameSystemLabels = GAME_SYSTEM_LABELS;
+  // Note: game system is no longer editable from this modal
 
   ngOnInit() {
     this.initializeValues();
@@ -32,33 +30,18 @@ export class EditCharacterModalComponent implements OnInit, OnChanges {
   private initializeValues() {
     if (this.character) {
       this.characterName = this.character.name;
-      this.selectedGameSystem = this.character.gameSystem;
     }
   }
 
   onSubmit() {
-    console.log('Form submitted with:', this.characterName, this.selectedGameSystem);
+    console.log('Form submitted with:', this.characterName);
     if (this.characterName?.trim()) {
-      this.characterUpdated.emit({
-        name: this.characterName.trim(),
-        gameSystem: this.selectedGameSystem
-      });
+      this.characterUpdated.emit({ name: this.characterName.trim() });
       this.onClose();
     }
   }
 
   onClose() {
     this.modalClosed.emit();
-  }
-
-  getSystemLabel(systemKey: string): string {
-    return this.gameSystemLabels[systemKey as GameSystem] || systemKey;
-  }
-
-  getGameSystemOptions(): {key: GameSystem, label: string}[] {
-    return Object.entries(this.gameSystemLabels).map(([key, label]) => ({
-      key: key as GameSystem,
-      label: label
-    }));
   }
 }

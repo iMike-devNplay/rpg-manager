@@ -1,0 +1,25 @@
+<div class="spell-element">
+  <div class="spell-header">
+    <h3>{{ element.name }}</h3>
+    <span class="spell-level">{{ getSpellLevel() }} - {{ element.school }}</span>
+  </div>
+  
+  <div class="spell-info">
+    <div class="info-row">
+      <strong>Temps d'incantation:</strong> {{ element.castingTime }}
+    </div>
+    <div class="info-row">
+      <strong>Portée:</strong> {{ element.range }}
+    </div>
+    <div class="info-row">
+      <strong>Composantes:</strong> {{ getComponentsString() }}
+    </div>
+    <div class="info-row">
+      <strong>Durée:</strong> {{ element.duration }}
+    </div>
+  </div>
+  
+  <div class="spell-description">
+    {{ element.description }}
+  </div>
+</div>

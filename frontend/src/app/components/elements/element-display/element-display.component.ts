@@ -3,9 +3,11 @@ import { CommonModule } from '@angular/common';
 import { DataItem, DataType } from '../../../models/rpg.models';
 import { Element } from '../../../models/element-types';
 import { ElementService } from '../../../services/element.service';
+import { StorageService } from '../../../services/storage.service';
 import { TextElementComponent } from '../element-types/text-element/text-element.component';
 import { NumericElementComponent } from '../element-types/numeric-element/numeric-element.component';
 import { DndAttributeElementComponent } from '../element-types/dnd-attribute-element/dnd-attribute-element.component';
+import { DndSpellElementComponent } from '../element-types/dnd-spell-element/dnd-spell-element.component';
 import { EquipmentElementComponent } from '../element-types/equipment-element/equipment-element.component';
 
 @Component({
@@ -16,6 +18,7 @@ import { EquipmentElementComponent } from '../element-types/equipment-element/eq
     TextElementComponent,
     NumericElementComponent,
     DndAttributeElementComponent,
+    DndSpellElementComponent,
     EquipmentElementComponent
   ],
   templateUrl: './element-display.component.html',
@@ -31,7 +34,7 @@ export class ElementDisplayComponent {
   @Output() itemDragEnd = new EventEmitter<void>();
   @Output() itemDroppedOn = new EventEmitter<{draggedItemId: string, targetItem: DataItem}>();
 
-  constructor(private elementService: ElementService) {}
+  constructor(private elementService: ElementService, private storageService: StorageService) {}
 
   /**
    * Convertit le DataItem legacy vers le nouveau format Element
@@ -84,6 +87,8 @@ export class ElementDisplayComponent {
    */
   onElementValueChange(newValue: any): void {
     const updatedItem = { ...this.item, value: newValue };
+    // Persist the change immediately so parent views reflect saved state
+    this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
   }
 
@@ -92,6 +97,8 @@ export class ElementDisplayComponent {
    */
   onEquipmentToggle(equipped: boolean): void {
     const updatedItem = { ...this.item, equipped };
+    // Persist equipment toggle
+    this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
   }
 
@@ -112,6 +119,8 @@ export class ElementDisplayComponent {
   quickModify(change: number): void {
     if (this.canQuickModify()) {
       const updatedItem = this.elementService.quickModifyValue(this.item, change);
+      // Ensure change is persisted
+      this.storageService.saveDataItem(updatedItem);
       this.itemUpdated.emit(updatedItem);
     }
   }

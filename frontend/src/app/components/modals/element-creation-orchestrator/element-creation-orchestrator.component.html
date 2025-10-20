@@ -43,3 +43,12 @@
   (close)="onElementModalClose()"
   (save)="onElementSaved($event)">
 </app-equipment-modal>
+
+<!-- Modal pour sort D&D -->
+<app-dnd-spell-modal
+  [isOpen]="showElementModal && selectedType === 'dnd-spell'"
+  [editingElement]="dndSpellElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-dnd-spell-modal>

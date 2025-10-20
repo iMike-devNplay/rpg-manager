@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import { Subscription } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { CharacterService } from '../../services/character.service';
 import { CharacterSelectorModalComponent } from '../character-selector-modal/character-selector-modal.component';
@@ -22,7 +23,6 @@ import { ElementService } from '../../services/element.service';
   imports: [
     CommonModule, 
     FormsModule,
-    CharacterSelectorModalComponent,
     CreateCharacterModalComponent,
     EditCharacterModalComponent,
     ElementCreationOrchestratorComponent,
@@ -69,6 +69,12 @@ export class DashboardComponent implements OnInit {
     private router: Router
   ) {}
 
+  navigateToCharacterPage(): void {
+    this.router.navigate(['/character']);
+  }
+
+  private subscriptions: Subscription[] = [];
+
   ngOnInit(): void {
     this.userService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -79,10 +85,25 @@ export class DashboardComponent implements OnInit {
       }
     });
 
+    // Show character selector right after login
+    const sub = this.userService.justLoggedIn$.subscribe(flag => {
+      if (flag) {
+        // Open selector inline
+        this.showCharacterModal = true;
+        // reset the flag so it doesn't reopen repeatedly
+        this.userService.clearJustLoggedInFlag();
+      }
+    });
+    this.subscriptions.push(sub);
+
     this.characterService.currentCharacter$.subscribe(character => {
       this.currentCharacter = character;
       this.loadCharacterData();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   private loadUserData(): void {
@@ -418,8 +439,7 @@ export class DashboardComponent implements OnInit {
     this.showEditCharacterModal = false;
   }
 
-  updateCharacterInfo(data: {name: string, gameSystem: GameSystem}): void {
-    console.log('Updating character with data:', data);
+  updateCharacterInfo(data: {name: string}): void {
     if (!this.currentCharacter) {
       console.error('No current character to update');
       return;
@@ -429,15 +449,12 @@ export class DashboardComponent implements OnInit {
       const updatedCharacter: PlayerCharacter = {
         ...this.currentCharacter,
         name: data.name,
-        gameSystem: data.gameSystem,
         updatedAt: new Date()
       };
 
-      console.log('Calling characterService.updateCharacter with:', updatedCharacter);
       this.characterService.updateCharacter(updatedCharacter);
       this.currentCharacter = updatedCharacter;
       this.closeEditCharacterModal();
-      console.log('Character updated successfully');
     } catch (error) {
       console.error('Erreur lors de la mise à jour du personnage:', error);
     }

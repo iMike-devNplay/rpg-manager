@@ -9,12 +9,18 @@ import { StorageService } from './storage.service';
 export class UserService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private justLoggedInSubject = new BehaviorSubject<boolean>(false);
+  public justLoggedIn$ = this.justLoggedInSubject.asObservable();
 
   constructor(private storageService: StorageService) {
     // Écouter les changements d'utilisateur depuis le StorageService
     this.storageService.currentUser$.subscribe(user => {
       this.currentUserSubject.next(user);
     });
+  }
+
+  clearJustLoggedInFlag(): void {
+    this.justLoggedInSubject.next(false);
   }
 
   createUser(username: string, mode: UserMode): User {
@@ -36,15 +42,19 @@ export class UserService {
     if (existingUser) {
       // Utilisateur trouvé, se connecter avec cet utilisateur
       this.storageService.setCurrentUser(existingUser);
+      this.justLoggedInSubject.next(true);
       return existingUser;
     } else {
       // Aucun utilisateur trouvé, en créer un nouveau
-      return this.createUser(username, mode);
+      const user = this.createUser(username, mode);
+      this.justLoggedInSubject.next(true);
+      return user;
     }
   }
 
   loginExistingUser(user: User): User {
     this.storageService.setCurrentUser(user);
+    this.justLoggedInSubject.next(true);
     return user;
   }
 

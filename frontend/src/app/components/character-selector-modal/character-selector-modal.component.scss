@@ -202,3 +202,18 @@
     transform: scale(1) translateY(0);
   }
 }
+
+/* Inline variant: reuse grid styles but no overlay */
+.character-selector-inline {
+  background: transparent;
+  padding: 10px 0;
+
+  h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+  }
+
+  .characters-grid {
+    gap: 12px;
+  }
+}

@@ -19,20 +19,7 @@
         >
       </div>
       
-      <div class="form-group">
-        <label for="gameSystem">Système de jeu :</label>
-        <select 
-          id="gameSystem"
-          name="gameSystem"
-          [(ngModel)]="selectedGameSystem"
-          class="form-control"
-          required
-        >
-          <option *ngFor="let system of getGameSystemOptions()" [value]="system.key">
-            {{ system.label }}
-          </option>
-        </select>
-      </div>
+      <!-- Le système de jeu n'est plus modifiable ici -->
       
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" (click)="onClose()">

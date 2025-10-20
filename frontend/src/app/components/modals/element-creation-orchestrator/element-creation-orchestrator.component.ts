@@ -63,12 +63,9 @@ export class ElementCreationOrchestratorComponent {
 
   onTypeSelected(type: ElementType): void {
     this.selectedType = type;
-    
-    // Délai pour éviter les problèmes de timing
-    setTimeout(() => {
-      this.showTypeSelection = false;
-      this.showElementModal = true;
-    }, 100);
+    // Ouvrir immédiatement la modal spécifique
+    this.showTypeSelection = false;
+    this.showElementModal = true;
   }
 
   onTypeSelectionClose(): void {
@@ -111,5 +108,9 @@ export class ElementCreationOrchestratorComponent {
 
   get equipmentElement() {
     return this.editingElement?.type === 'equipment' ? this.editingElement : null;
+  }
+
+  get dndSpellElement() {
+    return this.editingElement?.type === 'dnd-spell' ? this.editingElement : null;
   }
 }

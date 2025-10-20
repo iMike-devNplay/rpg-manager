@@ -38,8 +38,8 @@ export class LoginComponent {
     this.isLoading = true;
     
     try {
-      this.userService.loginUser(this.username.trim(), this.selectedMode);
-      this.router.navigate(['/dashboard']);
+  this.userService.loginUser(this.username.trim(), this.selectedMode);
+  this.router.navigate(['/character']);
     } catch (error) {
       console.error('Erreur lors de la connexion:', error);
     } finally {
@@ -55,8 +55,8 @@ export class LoginComponent {
     if (this.selectedExistingUser) {
       this.isLoading = true;
       try {
-        this.userService.loginExistingUser(this.selectedExistingUser);
-        this.router.navigate(['/dashboard']);
+  this.userService.loginExistingUser(this.selectedExistingUser);
+  this.router.navigate(['/character']);
       } catch (error) {
         console.error('Erreur lors de la connexion:', error);
       } finally {

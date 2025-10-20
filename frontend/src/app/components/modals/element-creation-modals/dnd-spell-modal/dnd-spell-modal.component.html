@@ -1,0 +1,128 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ editingElement ? 'Modifier' : 'Créer' }} un sort D&D</h2>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+    
+    <form (ngSubmit)="onSubmit()" class="modal-body">
+      <div class="form-row">
+        <div class="form-group flex-2">
+          <label for="spell-name">Nom du sort *</label>
+          <input 
+            id="spell-name"
+            type="text" 
+            [(ngModel)]="formData.name" 
+            name="name" 
+            required
+            placeholder="Ex: Boule de feu"
+          >
+        </div>
+        <div class="form-group flex-1">
+          <label for="spell-level">Niveau *</label>
+          <select id="spell-level" [(ngModel)]="formData.level" name="level" required>
+            <option value="0">Tour de magie</option>
+            <option value="1">1er niveau</option>
+            <option value="2">2ème niveau</option>
+            <option value="3">3ème niveau</option>
+            <option value="4">4ème niveau</option>
+            <option value="5">5ème niveau</option>
+            <option value="6">6ème niveau</option>
+            <option value="7">7ème niveau</option>
+            <option value="8">8ème niveau</option>
+            <option value="9">9ème niveau</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="spell-school">École de magie *</label>
+          <select id="spell-school" [(ngModel)]="formData.school" name="school" required>
+            <option *ngFor="let school of spellSchools" [value]="school">
+              {{ school }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group flex-1">
+          <label for="casting-time">Temps d'incantation *</label>
+          <input 
+            id="casting-time"
+            type="text" 
+            [(ngModel)]="formData.castingTime" 
+            name="castingTime" 
+            required
+            placeholder="Ex: 1 action"
+          >
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="spell-range">Portée *</label>
+          <input 
+            id="spell-range"
+            type="text" 
+            [(ngModel)]="formData.range" 
+            name="range" 
+            required
+            placeholder="Ex: 45 mètres"
+          >
+        </div>
+        <div class="form-group flex-1">
+          <label for="spell-duration">Durée *</label>
+          <input 
+            id="spell-duration"
+            type="text" 
+            [(ngModel)]="formData.duration" 
+            name="duration" 
+            required
+            placeholder="Ex: Instantanée"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Composantes *</label>
+        <div class="checkbox-group">
+          <label *ngFor="let component of availableComponents" class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [checked]="formData.components.includes(component)"
+              (change)="onComponentChange(component, $event.target.checked)"
+            >
+            <span class="checkbox-text">
+              {{ component }} 
+              <small>
+                {{ component === 'V' ? '(Verbale)' : 
+                   component === 'S' ? '(Somatique)' : 
+                   '(Matérielle)' }}
+              </small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="spell-description">Description *</label>
+        <textarea 
+          id="spell-description"
+          [(ngModel)]="formData.description" 
+          name="description" 
+          rows="6"
+          required
+          placeholder="Décrivez les effets du sort...">
+        </textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {{ editingElement ? 'Modifier' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

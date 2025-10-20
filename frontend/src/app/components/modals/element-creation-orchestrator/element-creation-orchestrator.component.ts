@@ -17,6 +17,7 @@ import { ElementType, Element, GameSystem } from '../../../models/element-types'
     TextElementModalComponent,
     NumericElementModalComponent,
     DndAttributeModalComponent,
+    DndSpellModalComponent,
     EquipmentModalComponent
   ],
   templateUrl: './element-creation-orchestrator.component.html',
@@ -102,6 +103,10 @@ export class ElementCreationOrchestratorComponent {
 
   get dndAttributeElement() {
     return this.editingElement?.type === 'dnd-attribute' ? this.editingElement : null;
+  }
+
+  get dndSpellElement() {
+    return this.editingElement?.type === 'dnd-spell' ? this.editingElement : null;
   }
 
   get equipmentElement() {

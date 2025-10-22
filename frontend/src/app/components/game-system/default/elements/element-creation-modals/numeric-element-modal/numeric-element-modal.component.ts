@@ -38,6 +38,8 @@ export class NumericElementModalComponent implements OnInit, OnChanges {
   }
 
   private initializeForm(): void {
+    console.log('DEBUG: NumericModal initializeForm called with editingElement:', this.editingElement);
+    
     if (this.editingElement) {
       this.formData = {
         name: this.editingElement.name,
@@ -47,6 +49,7 @@ export class NumericElementModalComponent implements OnInit, OnChanges {
         canQuickModify: this.editingElement.canQuickModify ?? true,
         description: this.editingElement.description || ''
       };
+      console.log('DEBUG: NumericModal initialized form with editing data:', this.formData);
     } else {
       this.formData = {
         name: '',
@@ -56,10 +59,12 @@ export class NumericElementModalComponent implements OnInit, OnChanges {
         canQuickModify: true,
         description: ''
       };
+      console.log('DEBUG: NumericModal initialized form for new element:', this.formData);
     }
   }
 
   onSave(): void {
+    console.log('DEBUG: NumericModal onSave called with formData:', this.formData);
     if (!this.isFormValid()) return;
 
     const elementData: Partial<NumericElement> = {
@@ -77,6 +82,7 @@ export class NumericElementModalComponent implements OnInit, OnChanges {
       elementData.id = this.editingElement.id;
     }
 
+    console.log('DEBUG: NumericModal emitting elementData:', elementData);
     this.save.emit(elementData);
     this.onClose();
   }

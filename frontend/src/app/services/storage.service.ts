@@ -122,16 +122,23 @@ export class StorageService {
 
   // Gestion des éléments de données
   saveDataItem(item: DataItem): void {
+    console.log('DEBUG: saveDataItem called with:', item);
     const currentCharacter = this.getCurrentCharacter();
+    console.log('DEBUG: currentCharacter from storage:', currentCharacter);
     
     if (currentCharacter) {
       const existingIndex = currentCharacter.dataItems.findIndex(i => i.id === item.id);
       if (existingIndex >= 0) {
+        console.log('DEBUG: Updating existing item at index:', existingIndex);
         currentCharacter.dataItems[existingIndex] = item;
       } else {
+        console.log('DEBUG: Adding new item to dataItems');
         currentCharacter.dataItems.push(item);
       }
+      console.log('DEBUG: Calling updateCharacter with:', currentCharacter);
       this.updateCharacter(currentCharacter);
+    } else {
+      console.error('DEBUG: No current character found!');
     }
   }
 
@@ -321,12 +328,15 @@ export class StorageService {
   }
 
   updateCharacter(character: PlayerCharacter): void {
+    console.log('DEBUG: updateCharacter called with:', character);
     character.updatedAt = new Date();
     this.saveCharacter(character);
     
     // Si c'est le personnage actuel, le mettre à jour aussi
     const currentCharacter = this.getCurrentCharacter();
+    console.log('DEBUG: Current character before update:', currentCharacter);
     if (currentCharacter && currentCharacter.id === character.id) {
+      console.log('DEBUG: Updating current character via setCurrentCharacter');
       this.setCurrentCharacter(character);
     }
   }

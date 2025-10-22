@@ -47,6 +47,7 @@ export class DashboardComponent implements OnInit {
   newItem: Partial<DataItem> = {};
   currentZone: DashboardZone = DashboardZone.CENTER;
   editingItem: DataItem | null = null;
+  editingElementConverted: Element | null = null; // Cache pour éviter les reconversions
   
   // Drag and drop
   draggedItem: DataItem | null = null;
@@ -168,28 +169,40 @@ export class DashboardComponent implements OnInit {
   closeCreateElementModal(): void {
     this.showCreateElementModal = false;
     this.editingItem = null; // Réinitialiser l'élément en édition
+    this.editingElementConverted = null; // Nettoyer le cache
   }
 
   onElementCreated(elementData: Partial<Element>): void {
+    console.log('DEBUG: onElementCreated called with:', elementData);
+    console.log('DEBUG: currentCharacter:', this.currentCharacter);
+    console.log('DEBUG: storageService.getCurrentCharacter():', this.storageService.getCurrentCharacter());
+    
     try {
       if (elementData.id) {
         // Mode édition : mettre à jour l'élément existant
         // Conversion vers DataItem pour compatibilité avec le système existant
         const updatedElement = this.convertElementToDataItem(elementData as Element);
+        console.log('DEBUG: Editing element:', updatedElement);
         this.storageService.saveDataItem(updatedElement);
       } else {
         // Mode création : créer un nouvel élément avec l'ordre correct
-        const existingItems = this.currentCharacter?.dataItems || [];
+        const currentCharacter = this.characterService.getCurrentCharacter();
+        const existingItems = currentCharacter?.dataItems || [];
         const newDataItem = this.convertElementToDataItem({
           ...elementData,
           id: this.generateId(),
           position: this.getNextPosition(existingItems, elementData.zone!)
         } as Element);
+        console.log('DEBUG: Creating new element:', newDataItem);
         this.storageService.saveDataItem(newDataItem);
       }
       
       // Recharger les données du personnage
-      this.currentCharacter = this.characterService.getCurrentCharacter();
+      const updatedCharacter = this.characterService.getCurrentCharacter();
+      if (updatedCharacter) {
+        this.currentCharacter = updatedCharacter;
+        this.loadCharacterData();
+      }
       this.closeCreateElementModal();
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de l\'élément:', error);
@@ -266,47 +279,64 @@ export class DashboardComponent implements OnInit {
    * Convertit l'élément en cours d'édition vers le nouveau format pour compatibilité
    */
   getEditingElementForNewSystem(): Element | null {
-    if (!this.editingItem) return null;
+    return this.editingElementConverted;
+  }
+
+  /**
+   * Convertit un DataItem vers un Element pour la modal
+   */
+  private convertDataItemToElement(item: DataItem): Element | null {
+    console.log('DEBUG: convertDataItemToElement called with item:', item);
+    
+    if (!item) return null;
 
     // Conversion de DataItem vers Element
     const gameSystem = this.currentCharacter?.gameSystem as ElementGameSystem;
     const baseElement = {
-      id: this.editingItem.id,
-      name: this.editingItem.name,
-      description: this.editingItem.description,
-      zone: this.editingItem.zone,
-      position: this.editingItem.order || 0,
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      zone: item.zone,
+      position: item.order || 0,
       gameSystem
     };
 
     // Conversion selon le type
-    switch (this.editingItem.type) {
+    switch (item.type) {
       case DataType.TEXT:
-        return {
+        const textElement = {
           ...baseElement,
           type: 'text' as const,
-          value: this.editingItem.value as string
+          value: item.value as string
         };
+        console.log('DEBUG: convertDataItemToElement returning (text):', textElement);
+        return textElement;
       case DataType.NUMERIC:
-        return {
+        const numericElement = {
           ...baseElement,
           type: 'numeric' as const,
-          value: this.editingItem.value as number,
-          canQuickModify: this.editingItem.allowQuickModification !== false
+          value: item.value as number,
+          canQuickModify: item.allowQuickModification !== false
         };
+        console.log('DEBUG: convertDataItemToElement returning (numeric):', numericElement);
+        return numericElement;
       case DataType.ATTRIBUTE:
-        return {
+        const attributeElement = {
           ...baseElement,
           type: 'dnd-attribute' as const,
-          value: this.editingItem.value as number,
-          hasProficiency: this.editingItem.hasProficiency || false
+          value: item.value as number,
+          hasProficiency: item.hasProficiency || false
         };
+        console.log('DEBUG: convertDataItemToElement returning (attribute):', attributeElement);
+        return attributeElement;
       default:
-        return {
+        const defaultElement = {
           ...baseElement,
           type: 'text' as const,
-          value: String(this.editingItem.value)
+          value: String(item.value)
         };
+        console.log('DEBUG: convertDataItemToElement returning (default):', defaultElement);
+        return defaultElement;
     }
   }
 
@@ -440,10 +470,15 @@ export class DashboardComponent implements OnInit {
    * Gestionnaire d'édition d'élément
    */
   onItemEdit(item: DataItem): void {
+    console.log('DEBUG: onItemEdit called with item:', item);
     // Ouvrir la modal de modification de l'élément
     this.showCreateElementModal = true;
     this.currentZone = item.zone;
     this.editingItem = item;
+    
+    // Convertir et mettre en cache l'élément pour la modal
+    this.editingElementConverted = this.convertDataItemToElement(item);
+    console.log('DEBUG: Converted element for editing:', this.editingElementConverted);
   }
 
   /**

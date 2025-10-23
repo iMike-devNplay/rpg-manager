@@ -245,6 +245,12 @@ export class DashboardComponent implements OnInit {
         dnd5eType: 'dnd-proficiency-bonus',
         level: element.level || 1
       };
+    } else if (element.type === 'dnd-skills-group') {
+      // Stocker les compétences comme metadata pour préserver la structure
+      dataItem.metadata = {
+        dnd5eType: 'dnd-skills-group',
+        skills: element.skills
+      };
     }
 
     return dataItem;
@@ -258,6 +264,7 @@ export class DashboardComponent implements OnInit {
       case 'dnd-attributes-group': return DataType.ATTRIBUTES_GROUP;
       case 'dnd-proficiency-bonus': return DataType.DND_PROFICIENCY_BONUS;
       case 'dnd-level': return DataType.DND_LEVEL;
+      case 'dnd-skills-group': return DataType.DND_SKILLS_GROUP;
       default: return DataType.TEXT;
     }
   }
@@ -270,6 +277,7 @@ export class DashboardComponent implements OnInit {
       case 'dnd-attributes-group': return 'Attributs'; // Nom générique pour l'affichage
       case 'dnd-proficiency-bonus': return element.value;
       case 'dnd-level': return element.level;
+      case 'dnd-skills-group': return 'Compétences'; // Nom générique pour l'affichage
       case 'equipment': return element.name; // Nom de l'équipement comme valeur
       default: return element.name;
     }
@@ -381,6 +389,38 @@ export class DashboardComponent implements OnInit {
         };
         console.log('DEBUG: convertDataItemToElement returning (dnd-level):', levelElement);
         return levelElement;
+      case DataType.DND_SKILLS_GROUP:
+        const skillsGroupElement = {
+          ...baseElement,
+          type: 'dnd-skills-group' as const,
+          skills: item.metadata?.['skills'] || {
+            // Compétences basées sur la Force
+            athletics: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur la Dextérité
+            acrobatics: { hasProficiency: false, hasExpertise: false },
+            sleightOfHand: { hasProficiency: false, hasExpertise: false },
+            stealth: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur l'Intelligence
+            arcana: { hasProficiency: false, hasExpertise: false },
+            history: { hasProficiency: false, hasExpertise: false },
+            investigation: { hasProficiency: false, hasExpertise: false },
+            nature: { hasProficiency: false, hasExpertise: false },
+            religion: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur la Sagesse
+            animalHandling: { hasProficiency: false, hasExpertise: false },
+            insight: { hasProficiency: false, hasExpertise: false },
+            medicine: { hasProficiency: false, hasExpertise: false },
+            perception: { hasProficiency: false, hasExpertise: false },
+            survival: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur le Charisme
+            deception: { hasProficiency: false, hasExpertise: false },
+            intimidation: { hasProficiency: false, hasExpertise: false },
+            performance: { hasProficiency: false, hasExpertise: false },
+            persuasion: { hasProficiency: false, hasExpertise: false }
+          }
+        };
+        console.log('DEBUG: convertDataItemToElement returning (dnd-skills-group):', skillsGroupElement);
+        return skillsGroupElement;
       default:
         const defaultElement = {
           ...baseElement,

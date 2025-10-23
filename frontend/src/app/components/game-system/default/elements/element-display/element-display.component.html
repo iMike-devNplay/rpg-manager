@@ -83,6 +83,14 @@
       (valueChange)="onLevelChange($event)">
     </app-dnd-level>
 
+    <!-- Groupe de compétences D&D -->
+    <app-dnd-skills-group 
+      *ngIf="element.type === 'dnd-skills-group'"
+      [element]="element"
+      [proficiencyBonus]="getCurrentProficiencyBonus()"
+      [attr.data-proficiency-bonus]="getCurrentProficiencyBonus()">
+    </app-dnd-skills-group>
+
     <!-- Équipement -->
     <app-equipment-element 
       *ngIf="element.type === 'equipment'"

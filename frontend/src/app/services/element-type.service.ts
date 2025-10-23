@@ -61,9 +61,9 @@ export const ELEMENT_TYPES_CONFIG: ElementTypeConfig[] = [
     category: 'attribute'
   },
   {
-    id: 'dnd-skill',
-    name: 'Compétence D&D',
-    description: 'Compétence D&D avec maîtrise et expertise',
+    id: 'dnd-skills-group',
+    name: 'Groupe de compétences D&D',
+    description: 'Toutes les compétences D&D 5e avec maîtrise et expertise',
     gameSystem: 'dnd5e',
     icon: '🎯',
     category: 'attribute'

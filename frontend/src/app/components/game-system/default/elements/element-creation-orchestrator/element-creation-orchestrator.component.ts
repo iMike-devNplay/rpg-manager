@@ -8,6 +8,7 @@ import { DndAttributesGroupModalComponent } from '../../../dnd5e/elements/elemen
 import { DndProficiencyBonusModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-proficiency-bonus-modal/dnd-proficiency-bonus-modal.component';
 import { DndLevelModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-level-modal/dnd-level-modal.component';
 import { DndSpellModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-spell-modal/dnd-spell-modal.component';
+import { DndSkillsGroupModalComponent } from '../../../dnd5e/elements/modals/dnd-skills-group-modal/dnd-skills-group-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
 import { ElementType, Element, GameSystem } from '../../../../../models/element-types';
 
@@ -24,6 +25,7 @@ import { ElementType, Element, GameSystem } from '../../../../../models/element-
     DndProficiencyBonusModalComponent,
     DndLevelModalComponent,
     DndSpellModalComponent,
+    DndSkillsGroupModalComponent,
     EquipmentModalComponent
   ],
   templateUrl: './element-creation-orchestrator.component.html',
@@ -126,5 +128,9 @@ export class ElementCreationOrchestratorComponent {
 
   get dndSpellElement() {
     return this.editingElement?.type === 'dnd-spell' ? this.editingElement : null;
+  }
+
+  get dndSkillsGroupElement() {
+    return this.editingElement?.type === 'dnd-skills-group' ? this.editingElement : null;
   }
 }

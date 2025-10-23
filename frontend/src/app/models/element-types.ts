@@ -1,6 +1,6 @@
 export type GameSystem = 'dnd5e' | 'pathfinder' | 'call-of-cthulhu' | null;
 
-export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skill' | 'dnd-spell' | 'equipment';
+export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment';
 
 export interface ElementTypeConfig {
   id: ElementType;
@@ -63,11 +63,33 @@ export interface DndLevelElement extends BaseElement {
   level: number; // Niveau du personnage (1-20)
 }
 
-export interface DndSkillElement extends BaseElement {
-  type: 'dnd-skill';
-  attribute: 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
-  hasProficiency: boolean;
-  hasExpertise?: boolean;
+export interface DndSkillsGroupElement extends BaseElement {
+  type: 'dnd-skills-group';
+  skills: {
+    // Compétences basées sur la Force
+    athletics: { hasProficiency: boolean; hasExpertise: boolean };
+    // Compétences basées sur la Dextérité
+    acrobatics: { hasProficiency: boolean; hasExpertise: boolean };
+    sleightOfHand: { hasProficiency: boolean; hasExpertise: boolean };
+    stealth: { hasProficiency: boolean; hasExpertise: boolean };
+    // Compétences basées sur l'Intelligence
+    arcana: { hasProficiency: boolean; hasExpertise: boolean };
+    history: { hasProficiency: boolean; hasExpertise: boolean };
+    investigation: { hasProficiency: boolean; hasExpertise: boolean };
+    nature: { hasProficiency: boolean; hasExpertise: boolean };
+    religion: { hasProficiency: boolean; hasExpertise: boolean };
+    // Compétences basées sur la Sagesse
+    animalHandling: { hasProficiency: boolean; hasExpertise: boolean };
+    insight: { hasProficiency: boolean; hasExpertise: boolean };
+    medicine: { hasProficiency: boolean; hasExpertise: boolean };
+    perception: { hasProficiency: boolean; hasExpertise: boolean };
+    survival: { hasProficiency: boolean; hasExpertise: boolean };
+    // Compétences basées sur le Charisme
+    deception: { hasProficiency: boolean; hasExpertise: boolean };
+    intimidation: { hasProficiency: boolean; hasExpertise: boolean };
+    performance: { hasProficiency: boolean; hasExpertise: boolean };
+    persuasion: { hasProficiency: boolean; hasExpertise: boolean };
+  };
 }
 
 export interface DndSpellElement extends BaseElement {
@@ -89,4 +111,4 @@ export interface EquipmentElement extends BaseElement {
   equipped?: boolean;
 }
 
-export type Element = TextElement | NumericElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillElement | DndSpellElement | EquipmentElement;
+export type Element = TextElement | NumericElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement;

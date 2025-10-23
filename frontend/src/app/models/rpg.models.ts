@@ -19,7 +19,8 @@ export enum DataType {
   ATTRIBUTES_GROUP = 'attributes_group',
   PROFICIENCY_BONUS = 'proficiency_bonus',
   DND_PROFICIENCY_BONUS = 'dnd_proficiency_bonus',
-  DND_LEVEL = 'dnd_level'
+  DND_LEVEL = 'dnd_level',
+  DND_SKILLS_GROUP = 'dnd_skills_group'
 }
 
 export enum GameSystem {
@@ -85,7 +86,6 @@ export interface DataItem {
   metadata?: {
     dnd5eType?: string;
     attributeCode?: string;
-    skillCode?: string;
     linkedAttribute?: string;
     hasProficiency?: boolean;
     hasExpertise?: boolean;

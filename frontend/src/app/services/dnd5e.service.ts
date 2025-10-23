@@ -39,6 +39,10 @@ export class Dnd5eService {
       console.log('Création du groupe d\'attributs...');
       elementsToCreate.push(this.createAttributesGroup(character.userId));
 
+      // 4a-qua - Création du groupe de compétences
+      console.log('Création du groupe de compétences...');
+      elementsToCreate.push(this.createSkillsGroup(character.userId));
+
       // 4b - Anciens attributs individuels désactivés - remplacés par le groupe d'attributs
       /*
       if (dnd5eData.attributes) {
@@ -48,14 +52,6 @@ export class Dnd5eService {
         });
       }
       */
-
-      // 4c - Création des compétences dans la zone centrale
-      if (dnd5eData.skills) {
-        console.log('Création des compétences:', dnd5eData.skills.length);
-        dnd5eData.skills.forEach((skill: any) => {
-          elementsToCreate.push(this.createSkill(skill, character.userId));
-        });
-      }
 
       // 4d - Création de l'élément Origine
       if (dnd5eData.origins) {
@@ -151,6 +147,50 @@ export class Dnd5eService {
   }
 
   /**
+   * Crée le groupe de compétences D&D 5e
+   */
+  private createSkillsGroup(userId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Compétences',
+      type: DataType.DND_SKILLS_GROUP,
+      value: 'Compétences', // Nom d'affichage
+      zone: DashboardZone.CENTER,
+      order: 0,
+      userId,
+      description: 'Toutes les compétences D&D 5e avec maîtrise et expertise',
+      metadata: {
+        dnd5eType: 'dnd-skills-group',
+        skills: {
+          // Compétences basées sur la Force
+          athletics: { hasProficiency: false, hasExpertise: false },
+          // Compétences basées sur la Dextérité
+          acrobatics: { hasProficiency: false, hasExpertise: false },
+          sleightOfHand: { hasProficiency: false, hasExpertise: false },
+          stealth: { hasProficiency: false, hasExpertise: false },
+          // Compétences basées sur l'Intelligence
+          arcana: { hasProficiency: false, hasExpertise: false },
+          history: { hasProficiency: false, hasExpertise: false },
+          investigation: { hasProficiency: false, hasExpertise: false },
+          nature: { hasProficiency: false, hasExpertise: false },
+          religion: { hasProficiency: false, hasExpertise: false },
+          // Compétences basées sur la Sagesse
+          animalHandling: { hasProficiency: false, hasExpertise: false },
+          insight: { hasProficiency: false, hasExpertise: false },
+          medicine: { hasProficiency: false, hasExpertise: false },
+          perception: { hasProficiency: false, hasExpertise: false },
+          survival: { hasProficiency: false, hasExpertise: false },
+          // Compétences basées sur le Charisme
+          deception: { hasProficiency: false, hasExpertise: false },
+          intimidation: { hasProficiency: false, hasExpertise: false },
+          performance: { hasProficiency: false, hasExpertise: false },
+          persuasion: { hasProficiency: false, hasExpertise: false }
+        }
+      }
+    };
+  }
+
+  /**
    * Crée le groupe d'attributs D&D 5e
    */
   private createAttributesGroup(userId: string): DataItem {
@@ -195,30 +235,6 @@ export class Dnd5eService {
       metadata: {
         dnd5eType: 'attribute',
         attributeCode: attrData.attribute
-      }
-    };
-  }
-
-  /**
-   * Crée un élément compétence
-   */
-  private createSkill(skillData: any, userId: string): DataItem {
-    return {
-      id: this.storageService.generateId(),
-      name: skillData.name,
-      type: DataType.TEXT, // Pour le moment, on utilise TEXT pour afficher la valeur calculée
-      value: '+0', // Sera calculé dynamiquement
-      zone: DashboardZone.CENTER,
-      order: skillData.order || 0,
-      userId,
-      description: skillData.description || '',
-      allowQuickModification: false,
-      metadata: {
-        dnd5eType: 'skill',
-        skillCode: skillData.skill,
-        linkedAttribute: skillData['linked-attribute'],
-        hasProficiency: false,
-        hasExpertise: false
       }
     };
   }
@@ -314,27 +330,8 @@ export class Dnd5eService {
     
     const proficiencyBonus = proficiencyBonusItem ? Number(proficiencyBonusItem.value) : 2;
 
-    // Mettre à jour les compétences
-    character.dataItems.forEach(item => {
-      if (item.metadata?.dnd5eType === 'skill') {
-        const linkedAttrCode = item.metadata.linkedAttribute;
-        const attributeItem = character.dataItems.find(attr => 
-          attr.metadata?.attributeCode === linkedAttrCode && attr.metadata?.dnd5eType === 'attribute'
-        );
-
-        if (attributeItem) {
-          const attributeValue = Number(attributeItem.value);
-          const hasProficiency = item.metadata.hasProficiency || false;
-          const hasExpertise = item.metadata.hasExpertise || false;
-          
-          const skillValue = this.calculateSkillValue(attributeValue, hasProficiency, hasExpertise, proficiencyBonus);
-          item.value = skillValue >= 0 ? `+${skillValue}` : `${skillValue}`;
-          
-          // Sauvegarder la modification
-          this.storageService.saveDataItem(item);
-        }
-      }
-    });
+    // Note: Les compétences sont maintenant gérées par le DndSkillsGroupElement
+    // et ne nécessitent plus de mise à jour individuelle
   }
 
   /**

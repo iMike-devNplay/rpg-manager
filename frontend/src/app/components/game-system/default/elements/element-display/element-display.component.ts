@@ -12,6 +12,7 @@ import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-ty
 import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attributes-group/dnd-attributes-group.component';
 import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
 import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.component';
+import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-group/dnd-skills-group.component';
 
 @Component({
   selector: 'app-element-display',
@@ -24,6 +25,7 @@ import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.c
     DndAttributesGroupComponent,
     DndProficiencyBonusComponent,
     DndLevelComponent,
+    DndSkillsGroupComponent,
     EquipmentElementComponent
   ],
   templateUrl: './element-display.component.html',
@@ -102,6 +104,36 @@ export class ElementDisplayComponent {
           ...baseElement,
           type: 'dnd-level',
           level: this.item.value as number
+        };
+      case 'dnd_skills_group':
+        return {
+          ...baseElement,
+          type: 'dnd-skills-group',
+          skills: this.item.metadata?.['skills'] || {
+            // Compétences basées sur la Force
+            athletics: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur la Dextérité
+            acrobatics: { hasProficiency: false, hasExpertise: false },
+            sleightOfHand: { hasProficiency: false, hasExpertise: false },
+            stealth: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur l'Intelligence
+            arcana: { hasProficiency: false, hasExpertise: false },
+            history: { hasProficiency: false, hasExpertise: false },
+            investigation: { hasProficiency: false, hasExpertise: false },
+            nature: { hasProficiency: false, hasExpertise: false },
+            religion: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur la Sagesse
+            animalHandling: { hasProficiency: false, hasExpertise: false },
+            insight: { hasProficiency: false, hasExpertise: false },
+            medicine: { hasProficiency: false, hasExpertise: false },
+            perception: { hasProficiency: false, hasExpertise: false },
+            survival: { hasProficiency: false, hasExpertise: false },
+            // Compétences basées sur le Charisme
+            deception: { hasProficiency: false, hasExpertise: false },
+            intimidation: { hasProficiency: false, hasExpertise: false },
+            performance: { hasProficiency: false, hasExpertise: false },
+            persuasion: { hasProficiency: false, hasExpertise: false }
+          }
         };
       default:
         // Fallback vers text

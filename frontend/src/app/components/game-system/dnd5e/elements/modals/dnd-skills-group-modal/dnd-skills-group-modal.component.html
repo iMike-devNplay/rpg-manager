@@ -1,0 +1,92 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editingElement ? 'Modifier' : 'Créer' }} un groupe de compétences</h3>
+      <button class="close-button" (click)="onClose()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Informations générales -->
+      <div class="form-group">
+        <label for="name">Nom du groupe :</label>
+        <input 
+          type="text" 
+          id="name" 
+          [(ngModel)]="element.name" 
+          class="form-control"
+          placeholder="Nom du groupe">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description :</label>
+        <textarea 
+          id="description" 
+          [(ngModel)]="element.description" 
+          class="form-control"
+          rows="2"
+          placeholder="Description du groupe">
+        </textarea>
+      </div>
+
+      <!-- Configuration des compétences -->
+      <div class="skills-configuration">
+        <h4>Configuration des compétences</h4>
+        <p class="skills-help">
+          Configurez la maîtrise et l'expertise pour chaque compétence. 
+          L'expertise nécessite d'avoir la maîtrise.
+        </p>
+        
+        <div class="skills-by-attribute">
+          <ng-container *ngFor="let attribute of getSkillsByAttribute() | keyvalue">
+            <div class="attribute-group">
+              <h5 class="attribute-title">{{ getAttributeName(attribute.key) }}</h5>
+              
+              <div class="skills-grid">
+                <div 
+                  *ngFor="let skillKey of attribute.value" 
+                  class="skill-row">
+                  
+                  <div class="skill-name">
+                    {{ getSkillName(skillKey) }}
+                  </div>
+                  
+                  <div class="skill-controls">
+                    <!-- Maîtrise -->
+                    <label class="proficiency-label">
+                      <input 
+                        type="checkbox" 
+                        [checked]="getSkillProficiency(skillKey)"
+                        (change)="toggleProficiency(skillKey)">
+                      <span class="checkmark proficiency"></span>
+                      ⭐ Maîtrise
+                    </label>
+                    
+                    <!-- Expertise -->
+                    <label class="expertise-label">
+                      <input 
+                        type="checkbox" 
+                        [checked]="getSkillExpertise(skillKey)"
+                        [disabled]="isExpertiseDisabled(skillKey)"
+                        (change)="toggleExpertise(skillKey)">
+                      <span class="checkmark expertise"></span>
+                      ♦ Expertise
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onClose()">
+        Annuler
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSave()">
+        {{ editingElement ? 'Modifier' : 'Créer' }}
+      </button>
+    </div>
+  </div>
+</div>

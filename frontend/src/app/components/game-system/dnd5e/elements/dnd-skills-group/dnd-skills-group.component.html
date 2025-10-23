@@ -1,0 +1,41 @@
+<div class="dnd-skills-group">
+  <div class="skills-header">
+    <h4>Compétences</h4>
+    <span class="skills-count">18 compétences</span>
+  </div>
+
+  <div class="skills-grid">
+    <!-- Compétences groupées par attribut -->
+    <div class="attribute-group" *ngFor="let group of getSkillsByAttribute()">
+      
+      <div class="attribute-header">
+        <span class="attribute-label">{{ group.name }}</span>
+        <span class="attribute-modifier">{{ getAttributeModifier(group.attribute) >= 0 ? '+' : '' }}{{ getAttributeModifier(group.attribute) }}</span>
+      </div>
+      
+      <div class="skills-list">
+        <div class="skill-item" *ngFor="let skill of group.skills">
+          <div class="skill-indicators">
+            <!-- Expertise -->
+            <span class="expertise-indicator" 
+                  [class.active]="getSkillExpertise(skill.key)"
+                  title="Expertise (x2)">
+              ♦
+            </span>
+            <!-- Maîtrise -->
+            <span class="proficiency-indicator" 
+                  [class.active]="getSkillProficiency(skill.key)"
+                  title="Maîtrise">
+              ⭐
+            </span>
+          </div>
+          
+          <div class="skill-content">
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-value">{{ getSkillValueDisplay(skill.key) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

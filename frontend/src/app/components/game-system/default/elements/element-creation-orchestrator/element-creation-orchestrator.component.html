@@ -78,3 +78,12 @@
   (close)="onElementModalClose()"
   (save)="onElementSaved($event)">
 </app-dnd-spell-modal>
+
+<!-- Modal pour groupe de compétences D&D -->
+<app-dnd-skills-group-modal
+  [isOpen]="showElementModal && selectedType === 'dnd-skills-group'"
+  [editingElement]="dndSkillsGroupElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-dnd-skills-group-modal>

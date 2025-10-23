@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ElementTypeSelectionModalComponent } from '../element-type-selection-modal/element-type-selection-modal.component';
 import { TextElementModalComponent } from '../element-creation-modals/text-element-modal/text-element-modal.component';
 import { NumericElementModalComponent } from '../element-creation-modals/numeric-element-modal/numeric-element-modal.component';
+import { HpModalComponent } from '../element-creation-modals/hp-modal/hp-modal.component';
+import { AttackModalComponent } from '../element-creation-modals/attack-modal/attack-modal.component';
 import { DndAttributeModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-attribute-modal/dnd-attribute-modal.component';
 import { DndAttributesGroupModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-attributes-group-modal/dnd-attributes-group-modal.component';
 import { DndProficiencyBonusModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-proficiency-bonus-modal/dnd-proficiency-bonus-modal.component';
@@ -20,6 +22,8 @@ import { ElementType, Element, GameSystem } from '../../../../../models/element-
     ElementTypeSelectionModalComponent,
     TextElementModalComponent,
     NumericElementModalComponent,
+    HpModalComponent,
+    AttackModalComponent,
     DndAttributeModalComponent,
     DndAttributesGroupModalComponent,
     DndProficiencyBonusModalComponent,
@@ -132,5 +136,13 @@ export class ElementCreationOrchestratorComponent {
 
   get dndSkillsGroupElement() {
     return this.editingElement?.type === 'dnd-skills-group' ? this.editingElement : null;
+  }
+
+  get hpElement() {
+    return this.editingElement?.type === 'hp' ? this.editingElement : null;
+  }
+
+  get attackElement() {
+    return this.editingElement?.type === 'attack' ? this.editingElement : null;
   }
 }

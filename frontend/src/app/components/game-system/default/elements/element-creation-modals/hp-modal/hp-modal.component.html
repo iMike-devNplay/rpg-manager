@@ -1,0 +1,96 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-wrapper">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <!-- En-tête -->
+      <div class="modal-header">
+        <h2>{{ editingElement ? 'Modifier' : 'Créer' }} Points de vie</h2>
+        <button class="close-btn" (click)="onCancel()" type="button">×</button>
+      </div>
+
+      <!-- Corps -->
+      <form (ngSubmit)="onSubmit()" class="modal-body">
+        <!-- Nom de l'élément -->
+        <div class="form-group">
+          <label for="hp-name">Nom de l'élément</label>
+          <input
+            id="hp-name"
+            type="text"
+            [(ngModel)]="hpData.name"
+            name="name"
+            class="form-control"
+            placeholder="Points de vie"
+          />
+          <small class="form-text">Laissez vide pour "Points de vie" par défaut</small>
+        </div>
+
+        <!-- PV Maximum -->
+        <div class="form-group">
+          <label for="hp-max">Points de vie maximum</label>
+          <input
+            id="hp-max"
+            type="number"
+            [(ngModel)]="hpData.maxHp"
+            (ngModelChange)="onMaxHpChange()"
+            name="maxHp"
+            class="form-control"
+            min="1"
+            required
+          />
+          <small class="form-text">Le nombre maximum de points de vie</small>
+        </div>
+
+        <!-- PV Courants (seulement en mode édition) -->
+        <div class="form-group" *ngIf="editingElement">
+          <label for="hp-current">Points de vie actuels</label>
+          <input
+            id="hp-current"
+            type="number"
+            [(ngModel)]="hpData.currentHp"
+            name="currentHp"
+            class="form-control"
+            min="0"
+            [max]="hpData.maxHp! + hpData.temporaryHp!"
+          />
+          <small class="form-text">Les points de vie actuels (0 - {{ hpData.maxHp! + hpData.temporaryHp! }})</small>
+        </div>
+
+        <!-- PV Temporaires (seulement en mode édition) -->
+        <div class="form-group" *ngIf="editingElement">
+          <label for="hp-temp">Points de vie temporaires</label>
+          <input
+            id="hp-temp"
+            type="number"
+            [(ngModel)]="hpData.temporaryHp"
+            name="temporaryHp"
+            class="form-control"
+            min="0"
+          />
+          <small class="form-text">Les points de vie temporaires actuels</small>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="hp-description">Description (optionnelle)</label>
+          <textarea
+            id="hp-description"
+            [(ngModel)]="hpData.description"
+            name="description"
+            class="form-control"
+            rows="2"
+            placeholder="Ex: Points de vie du personnage"
+          ></textarea>
+        </div>
+
+        <!-- Pied de page avec boutons -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ editingElement ? 'Mettre à jour' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

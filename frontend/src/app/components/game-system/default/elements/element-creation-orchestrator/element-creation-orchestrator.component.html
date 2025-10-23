@@ -26,6 +26,24 @@
   (save)="onElementSaved($event)">
 </app-numeric-element-modal>
 
+<!-- Modal pour points de vie (HP) -->
+<app-hp-modal
+  [isOpen]="showElementModal && selectedType === 'hp'"
+  [editingElement]="hpElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-hp-modal>
+
+<!-- Modal pour attaque -->
+<app-attack-modal
+  [isOpen]="showElementModal && selectedType === 'attack'"
+  [editingElement]="attackElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-attack-modal>
+
 <!-- Modal pour attribut D&D -->
 <app-dnd-attribute-modal
   [isOpen]="showElementModal && selectedType === 'dnd-attribute'"

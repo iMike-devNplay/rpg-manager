@@ -20,7 +20,9 @@ export enum DataType {
   PROFICIENCY_BONUS = 'proficiency_bonus',
   DND_PROFICIENCY_BONUS = 'dnd_proficiency_bonus',
   DND_LEVEL = 'dnd_level',
-  DND_SKILLS_GROUP = 'dnd_skills_group'
+  DND_SKILLS_GROUP = 'dnd_skills_group',
+  HP = 'hp',
+  ATTACK = 'attack'
 }
 
 export enum GameSystem {

@@ -1,0 +1,81 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-wrapper">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <!-- En-tête -->
+      <div class="modal-header">
+        <h2>{{ editingElement ? 'Modifier' : 'Créer' }} une attaque</h2>
+        <button class="close-btn" (click)="onClose()" type="button">×</button>
+      </div>
+
+      <!-- Corps -->
+      <form (ngSubmit)="onSave()" class="modal-body">
+        <!-- Nom de l'attaque -->
+        <div class="form-group">
+          <label for="attack-name">Nom de l'attaque *</label>
+          <input
+            id="attack-name"
+            type="text"
+            [(ngModel)]="attackData.name"
+            name="name"
+            class="form-control"
+            placeholder="Ex: Épée longue, Boule de feu, etc."
+            required
+          />
+          <small class="form-text">Nom de l'arme ou du sort</small>
+        </div>
+
+        <!-- Bonus d'attaque / DD -->
+        <div class="form-group">
+          <label for="attack-bonus">Attaque</label>
+          <input
+            id="attack-bonus"
+            type="text"
+            [(ngModel)]="attackData.attackBonus"
+            name="attackBonus"
+            class="form-control"
+            placeholder="Ex: +5, DD 15 (Dex), etc."
+          />
+          <small class="form-text">Bonus d'attaque ou DD du sort avec type de sauvegarde</small>
+        </div>
+
+        <!-- Dégâts -->
+        <div class="form-group">
+          <label for="attack-damage">Dégâts</label>
+          <input
+            id="attack-damage"
+            type="text"
+            [(ngModel)]="attackData.damage"
+            name="damage"
+            class="form-control"
+            placeholder="Ex: 1d8+3, 8d6, etc."
+          />
+          <small class="form-text">Montant ou formule des dégâts</small>
+        </div>
+
+        <!-- Divers -->
+        <div class="form-group">
+          <label for="attack-misc">Divers</label>
+          <input
+            id="attack-misc"
+            type="text"
+            [(ngModel)]="attackData.misc"
+            name="misc"
+            class="form-control"
+            placeholder="Ex: Tranchants, À deux mains, etc."
+          />
+          <small class="form-text">Type de dégâts, propriétés de l'arme, portée, etc.</small>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ editingElement ? 'Modifier' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

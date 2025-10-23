@@ -71,12 +71,6 @@
     </button>
   </nav>
 
-  <!-- Composant spécialisé D&D 5e -->
-  <app-dnd5e-dashboard 
-    *ngIf="currentView === 'dashboard' && currentCharacter?.gameSystem === 'dnd5e'"
-    [character]="currentCharacter">
-  </app-dnd5e-dashboard>
-
   <!-- Dashboard principal -->
   <main class="dashboard-main" *ngIf="currentView === 'dashboard'">
     <div class="dashboard-grid">

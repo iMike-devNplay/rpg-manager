@@ -1,0 +1,20 @@
+<div class="attack-element">
+  <div class="attack-header">
+    <span class="attack-name">{{ element.name }}</span>
+  </div>
+  <div class="attack-details">
+    <div class="attack-info">
+      <span class="info-label">Attaque:</span>
+      <span class="info-value">{{ element.attackBonus }}</span>
+    </div>
+    <div class="attack-info">
+      <span class="info-label">Dégâts:</span>
+      <span class="info-value">{{ element.damage }}</span>
+    </div>
+    @if (element.misc) {
+      <div class="attack-info misc">
+        <span class="info-value">{{ element.misc }}</span>
+      </div>
+    }
+  </div>
+</div>

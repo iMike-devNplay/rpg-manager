@@ -11,7 +11,6 @@ import { ElementCreationOrchestratorComponent } from '../elements/element-creati
 import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
 import { CombatManagementComponent } from '../../../dungeon-master/combat-management/combat-management.component';
 import { PlayersManagementComponent } from '../../../dungeon-master/players-management/players-management.component';
-import { Dnd5eDashboardComponent } from '../../dnd5e/dnd5e-dashboard/dnd5e-dashboard.component';
 import { User, UserMode, DashboardZone, DataItem, DataType, PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../../../models/rpg.models';
 import { Element, GameSystem as ElementGameSystem } from '../../../../models/element-types';
 import { ElementService } from '../../../../services/element.service';
@@ -25,8 +24,7 @@ import { ElementService } from '../../../../services/element.service';
     ElementCreationOrchestratorComponent,
     ElementDisplayComponent,
     CombatManagementComponent,
-    PlayersManagementComponent,
-    Dnd5eDashboardComponent
+    PlayersManagementComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -231,6 +229,22 @@ export class DashboardComponent implements OnInit {
     // Propriétés spécifiques selon le type
     if (element.type === 'numeric') {
       dataItem.allowQuickModification = element.canQuickModify ?? true;
+    } else if (element.type === 'hp') {
+      // Activer la modification rapide pour les HP
+      dataItem.allowQuickModification = true;
+      // Stocker les PV dans metadata
+      dataItem.metadata = {
+        maxHp: element.maxHp,
+        currentHp: element.currentHp,
+        temporaryHp: element.temporaryHp
+      };
+    } else if (element.type === 'attack') {
+      // Stocker les informations d'attaque dans metadata
+      dataItem.metadata = {
+        attackBonus: element.attackBonus,
+        damage: element.damage,
+        misc: element.misc
+      };
     } else if (element.type === 'dnd-attribute') {
       dataItem.hasProficiency = element.hasProficiency;
     } else if (element.type === 'dnd-attributes-group') {
@@ -260,6 +274,8 @@ export class DashboardComponent implements OnInit {
     switch (elementType) {
       case 'text': return DataType.TEXT;
       case 'numeric': return DataType.NUMERIC;
+      case 'hp': return DataType.HP;
+      case 'attack': return DataType.ATTACK;
       case 'dnd-attribute': return DataType.ATTRIBUTE;
       case 'dnd-attributes-group': return DataType.ATTRIBUTES_GROUP;
       case 'dnd-proficiency-bonus': return DataType.DND_PROFICIENCY_BONUS;
@@ -273,6 +289,8 @@ export class DashboardComponent implements OnInit {
     switch (element.type) {
       case 'text': return element.value;
       case 'numeric': return element.value;
+      case 'hp': return element.maxHp; // Utiliser maxHp comme valeur principale
+      case 'attack': return element.name; // Nom de l'attaque comme valeur d'affichage
       case 'dnd-attribute': return element.value;
       case 'dnd-attributes-group': return 'Attributs'; // Nom générique pour l'affichage
       case 'dnd-proficiency-bonus': return element.value;

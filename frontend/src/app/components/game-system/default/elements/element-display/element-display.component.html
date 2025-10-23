@@ -101,6 +101,22 @@
       (equipToggle)="onEquipmentToggle($event)">
     </app-equipment-element>
 
+    <!-- Points de vie (HP) -->
+    <app-hp-element 
+      *ngIf="element.type === 'hp'"
+      [element]="element"
+      [canQuickModify]="canQuickModify()"
+      (edit)="editItem()"
+      (delete)="deleteItem()"
+      (hpChange)="onHpChange($event)">
+    </app-hp-element>
+
+    <!-- Attaque -->
+    <app-attack-element 
+      *ngIf="element.type === 'attack'"
+      [element]="element">
+    </app-attack-element>
+
   </div>
 
   <!-- Description qui s'affiche au hover -->

@@ -1,0 +1,75 @@
+<div class="hp-element-content">
+  <div class="hp-display">
+    <!-- Barre de vie visuelle -->
+    <div class="hp-bar-container">
+      <div 
+        class="hp-bar" 
+        [style.width.%]="getHpPercentage()"
+        [class.low-hp]="isLowHp()"
+        [class.critical-hp]="isCriticalHp()">
+      </div>
+    </div>
+
+    <!-- Valeurs numériques -->
+    <div class="hp-values">
+      <div class="hp-main">
+        <span class="current-hp" [class.low-hp]="isLowHp()" [class.critical-hp]="isCriticalHp()">
+          {{ element.currentHp }}
+        </span>
+        <span class="hp-separator">/</span>
+        <span class="max-hp">{{ element.maxHp }}</span>
+      </div>
+
+      <!-- Affichage des PV temporaires s'il y en a -->
+      <div class="temp-hp" *ngIf="element.temporaryHp > 0">
+        <span class="temp-hp-icon">🛡️</span>
+        <span class="temp-hp-value">+{{ element.temporaryHp }}</span>
+      </div>
+    </div>
+
+    <!-- Boutons de modification -->
+    <div class="hp-controls" *ngIf="canQuickModify">
+      <button 
+        class="hp-btn decrease" 
+        (click)="decreaseHp()" 
+        [disabled]="element.currentHp <= 0 && element.temporaryHp <= 0"
+        title="Diminuer les PV">
+        −
+      </button>
+      <button 
+        class="hp-btn increase" 
+        (click)="increaseHp()" 
+        [disabled]="element.currentHp >= element.maxHp"
+        title="Augmenter les PV">
+        +
+      </button>
+      <button 
+        class="hp-btn temp" 
+        (click)="showAddTempHp()" 
+        *ngIf="!showTempHpInput"
+        title="Ajouter des PV temporaires">
+        🛡️
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal inline pour ajouter des PV temporaires -->
+  <div class="temp-hp-input-container" *ngIf="showTempHpInput">
+    <div class="temp-hp-input-wrapper">
+      <label for="temp-hp-input">PV temporaires :</label>
+      <input 
+        id="temp-hp-input"
+        type="number" 
+        [(ngModel)]="tempHpInputValue" 
+        min="0" 
+        step="1"
+        class="temp-hp-input"
+        (keyup.enter)="confirmTempHp()"
+        (keyup.escape)="cancelTempHp()">
+      <div class="temp-hp-buttons">
+        <button class="btn-confirm" (click)="confirmTempHp()" title="Confirmer">✓</button>
+        <button class="btn-cancel" (click)="cancelTempHp()" title="Annuler">✗</button>
+      </div>
+    </div>
+  </div>
+</div>

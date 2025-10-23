@@ -19,11 +19,27 @@ export const ELEMENT_TYPES_CONFIG: ElementTypeConfig[] = [
     category: 'basic'
   },
   {
+    id: 'hp',
+    name: 'Points de vie',
+    description: 'Gestion des points de vie (max, courant, temporaires)',
+    gameSystem: null,
+    icon: '❤️',
+    category: 'combat'
+  },
+  {
+    id: 'attack',
+    name: 'Attaque',
+    description: 'Information d\'attaque (arme ou sort) avec bonus, dégâts et propriétés',
+    gameSystem: null,
+    icon: '⚔️',
+    category: 'combat'
+  },
+  {
     id: 'equipment',
     name: 'Équipement',
     description: 'Objet avec quantité, poids et statut d\'équipement',
     gameSystem: null,
-    icon: '⚔️',
+    icon: '🎒',
     category: 'equipment'
   },
 

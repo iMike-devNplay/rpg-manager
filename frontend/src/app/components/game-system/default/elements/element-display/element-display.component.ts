@@ -8,6 +8,8 @@ import { CharacterService } from '../../../../../services/character.service';
 import { TextElementComponent } from '../element-types/text-element/text-element.component';
 import { NumericElementComponent } from '../element-types/numeric-element/numeric-element.component';
 import { EquipmentElementComponent } from '../element-types/equipment-element/equipment-element.component';
+import { HpElementComponent } from '../../../../elements/element-types/hp-element/hp-element.component';
+import { AttackElementComponent } from '../../../../elements/element-types/attack-element/attack-element.component';
 import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-types/dnd-attribute-element/dnd-attribute-element.component';
 import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attributes-group/dnd-attributes-group.component';
 import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
@@ -26,7 +28,9 @@ import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-grou
     DndProficiencyBonusComponent,
     DndLevelComponent,
     DndSkillsGroupComponent,
-    EquipmentElementComponent
+    EquipmentElementComponent,
+    HpElementComponent,
+    AttackElementComponent
   ],
   templateUrl: './element-display.component.html',
   styleUrls: ['./element-display.component.scss']
@@ -135,6 +139,22 @@ export class ElementDisplayComponent {
             persuasion: { hasProficiency: false, hasExpertise: false }
           }
         };
+      case DataType.HP:
+        return {
+          ...baseElement,
+          type: 'hp',
+          maxHp: this.item.metadata?.['maxHp'] || this.item.value as number || 10,
+          currentHp: this.item.metadata?.['currentHp'] !== undefined ? this.item.metadata['currentHp'] : (this.item.value as number || 10),
+          temporaryHp: this.item.metadata?.['temporaryHp'] || 0
+        };
+      case DataType.ATTACK:
+        return {
+          ...baseElement,
+          type: 'attack',
+          attackBonus: this.item.metadata?.['attackBonus'] || '',
+          damage: this.item.metadata?.['damage'] || '',
+          misc: this.item.metadata?.['misc'] || ''
+        };
       default:
         // Fallback vers text
         return {
@@ -175,6 +195,23 @@ export class ElementDisplayComponent {
   }
 
   /**
+   * Gestionnaire pour les changements de HP
+   */
+  onHpChange(hpData: Partial<import('../../../../../models/element-types').HpElement>): void {
+    const updatedItem = { 
+      ...this.item, 
+      metadata: {
+        ...this.item.metadata,
+        maxHp: hpData.maxHp,
+        currentHp: hpData.currentHp,
+        temporaryHp: hpData.temporaryHp
+      }
+    };
+    this.storageService.saveDataItem(updatedItem);
+    this.itemUpdated.emit(updatedItem);
+  }
+
+  /**
    * Récupère le bonus de maîtrise actuel du personnage
    */
   getCurrentProficiencyBonus(): number {
@@ -199,7 +236,8 @@ export class ElementDisplayComponent {
            this.item.allowQuickModification !== false &&
            (this.item.type === DataType.NUMERIC || 
             this.item.type === DataType.ATTRIBUTE || 
-            this.item.type === DataType.PROFICIENCY_BONUS);
+            this.item.type === DataType.PROFICIENCY_BONUS ||
+            this.item.type === DataType.HP);
   }
 
   /**

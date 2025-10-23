@@ -1,17 +1,9 @@
-<div class="dnd-proficiency-bonus">
-  <div class="bonus-header">
-    <span class="bonus-label">Bonus de maîtrise</span>
-  </div>
+<div class="dnd-proficiency-bonus compact" 
+     [title]="element.description">
   
-  <div class="bonus-value">
-    {{ getDisplayValue() }}
+  <div class="bonus-content">
+    <div class="bonus-label">Maîtrise</div>
+    <div class="bonus-value">{{ getDisplayValue() }}</div>
   </div>
-  
-  <div class="bonus-info">
-    <small class="level-range">{{ getLevelRange() }}</small>
-  </div>
-  
-  <div class="bonus-description" *ngIf="element.description">
-    <small>{{ element.description }}</small>
-  </div>
+
 </div>

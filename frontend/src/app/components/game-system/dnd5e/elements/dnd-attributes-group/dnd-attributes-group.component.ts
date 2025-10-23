@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DndAttributesGroupElement } from '../../../../../models/element-types';
 import { Dnd5eService } from '../../../../../services/dnd5e.service';
@@ -12,10 +12,11 @@ import { PlayerCharacter } from '../../../../../models/rpg.models';
   templateUrl: './dnd-attributes-group.component.html',
   styleUrls: ['./dnd-attributes-group.component.scss']
 })
-export class DndAttributesGroupComponent implements OnInit {
+export class DndAttributesGroupComponent implements OnInit, OnChanges {
   @Input() element!: DndAttributesGroupElement;
+  @Input() proficiencyBonus?: number; // Bonus passé depuis le parent
   
-  proficiencyBonus = 2;
+  private _proficiencyBonus = 2; // Valeur par défaut interne
 
   attributeLabels = {
     strength: 'FOR',
@@ -44,13 +45,36 @@ export class DndAttributesGroupComponent implements OnInit {
     this.loadProficiencyBonus();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // Si le bonus de maîtrise a changé via l'Input, on l'utilise
+    if (changes['proficiencyBonus'] && changes['proficiencyBonus'].currentValue) {
+      // Le composant se met automatiquement à jour avec le nouveau bonus
+    }
+  }
+
+  /**
+   * Retourne le bonus de maîtrise effectif (Input ou chargé depuis les données)
+   */
+  get effectiveProficiencyBonus(): number {
+    return this.proficiencyBonus ?? this._proficiencyBonus;
+  }
+
   private loadProficiencyBonus(): void {
     const character = this.characterService.getCurrentCharacter();
     if (character) {
-      const proficiencyBonusItem = character.dataItems.find(item => 
-        item.metadata?.dnd5eType === 'proficiency-bonus'
+      // Chercher d'abord le nouveau type de bonus de maîtrise D&D
+      let proficiencyBonusItem = character.dataItems.find(item => 
+        item.metadata?.dnd5eType === 'dnd-proficiency-bonus'
       );
-      this.proficiencyBonus = proficiencyBonusItem ? Number(proficiencyBonusItem.value) : 2;
+      
+      // Fallback vers l'ancien type si pas trouvé
+      if (!proficiencyBonusItem) {
+        proficiencyBonusItem = character.dataItems.find(item => 
+          item.metadata?.dnd5eType === 'proficiency-bonus'
+        );
+      }
+      
+      this._proficiencyBonus = proficiencyBonusItem ? Number(proficiencyBonusItem.value) : 2;
     }
   }
 
@@ -64,7 +88,7 @@ export class DndAttributesGroupComponent implements OnInit {
   }
 
   getSavingThrow(attributeValue: number, hasProficiency: boolean): number {
-    return this.dnd5eService.calculateSavingThrow(attributeValue, hasProficiency, this.proficiencyBonus);
+    return this.dnd5eService.calculateSavingThrow(attributeValue, hasProficiency, this.effectiveProficiencyBonus);
   }
 
   getSavingThrowDisplay(attributeValue: number, hasProficiency: boolean): string {

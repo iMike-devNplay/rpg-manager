@@ -18,7 +18,8 @@ export enum DataType {
   ATTRIBUTE = 'attribute',
   ATTRIBUTES_GROUP = 'attributes_group',
   PROFICIENCY_BONUS = 'proficiency_bonus',
-  DND_PROFICIENCY_BONUS = 'dnd_proficiency_bonus'
+  DND_PROFICIENCY_BONUS = 'dnd_proficiency_bonus',
+  DND_LEVEL = 'dnd_level'
 }
 
 export enum GameSystem {

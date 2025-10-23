@@ -6,6 +6,7 @@ import { UserService } from '../../../../services/user.service';
 import { Subscription } from 'rxjs';
 import { StorageService } from '../../../../services/storage.service';
 import { CharacterService } from '../../../../services/character.service';
+import { Dnd5eService } from '../../../../services/dnd5e.service';
 import { ElementCreationOrchestratorComponent } from '../elements/element-creation-orchestrator/element-creation-orchestrator.component';
 import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
 import { CombatManagementComponent } from '../../../dungeon-master/combat-management/combat-management.component';
@@ -57,6 +58,7 @@ export class DashboardComponent implements OnInit {
     private storageService: StorageService,
     public characterService: CharacterService,
     private elementService: ElementService,
+    private dnd5eService: Dnd5eService,
     private router: Router
   ) {}
 
@@ -255,6 +257,7 @@ export class DashboardComponent implements OnInit {
       case 'dnd-attribute': return DataType.ATTRIBUTE;
       case 'dnd-attributes-group': return DataType.ATTRIBUTES_GROUP;
       case 'dnd-proficiency-bonus': return DataType.DND_PROFICIENCY_BONUS;
+      case 'dnd-level': return DataType.DND_LEVEL;
       default: return DataType.TEXT;
     }
   }
@@ -266,6 +269,7 @@ export class DashboardComponent implements OnInit {
       case 'dnd-attribute': return element.value;
       case 'dnd-attributes-group': return 'Attributs'; // Nom générique pour l'affichage
       case 'dnd-proficiency-bonus': return element.value;
+      case 'dnd-level': return element.level;
       case 'equipment': return element.name; // Nom de l'équipement comme valeur
       default: return element.name;
     }
@@ -369,6 +373,14 @@ export class DashboardComponent implements OnInit {
         };
         console.log('DEBUG: convertDataItemToElement returning (dnd-proficiency-bonus):', proficiencyBonusElement);
         return proficiencyBonusElement;
+      case DataType.DND_LEVEL:
+        const levelElement = {
+          ...baseElement,
+          type: 'dnd-level' as const,
+          level: item.value as number
+        };
+        console.log('DEBUG: convertDataItemToElement returning (dnd-level):', levelElement);
+        return levelElement;
       default:
         const defaultElement = {
           ...baseElement,
@@ -497,6 +509,21 @@ export class DashboardComponent implements OnInit {
     // L'élément a déjà été sauvegardé par le service
     // On peut optionnellement faire une mise à jour locale ici
     this.currentCharacter = this.characterService.getCurrentCharacter();
+    
+    // Synchronisation automatique niveau → bonus de maîtrise pour D&D 5e
+    if (this.currentCharacter && this.currentCharacter.gameSystem === 'dnd5e') {
+      if (item.type === DataType.DND_LEVEL) {
+        // Le niveau a changé, synchroniser le bonus de maîtrise et recalculer les valeurs dérivées
+        const newLevel = item.value as number;
+        this.dnd5eService.syncProficiencyBonusWithLevel(this.currentCharacter, newLevel);
+        // Recalculer toutes les valeurs dérivées (jets de sauvegarde, compétences, etc.)
+        this.dnd5eService.updateCalculatedValues(this.currentCharacter);
+        // Recharger le personnage pour refléter les changements
+        this.currentCharacter = this.characterService.getCurrentCharacter();
+        // Forcer le rechargement complet de la vue pour mettre à jour tous les composants
+        this.loadCharacterData();
+      }
+    }
   }
 
   /**

@@ -1,6 +1,6 @@
 export type GameSystem = 'dnd5e' | 'pathfinder' | 'call-of-cthulhu' | null;
 
-export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-skill' | 'dnd-spell' | 'equipment';
+export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skill' | 'dnd-spell' | 'equipment';
 
 export interface ElementTypeConfig {
   id: ElementType;
@@ -58,6 +58,11 @@ export interface DndProficiencyBonusElement extends BaseElement {
   level?: number; // Niveau du personnage (optionnel pour calcul automatique)
 }
 
+export interface DndLevelElement extends BaseElement {
+  type: 'dnd-level';
+  level: number; // Niveau du personnage (1-20)
+}
+
 export interface DndSkillElement extends BaseElement {
   type: 'dnd-skill';
   attribute: 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
@@ -84,4 +89,4 @@ export interface EquipmentElement extends BaseElement {
   equipped?: boolean;
 }
 
-export type Element = TextElement | NumericElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndSkillElement | DndSpellElement | EquipmentElement;
+export type Element = TextElement | NumericElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillElement | DndSpellElement | EquipmentElement;

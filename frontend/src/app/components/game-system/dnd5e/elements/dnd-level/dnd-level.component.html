@@ -1,0 +1,27 @@
+<div class="dnd-level" [class.editing]="isEditing" (click)="!isEditing && startEdit()">
+  
+  <!-- Mode affichage -->
+  <div class="level-header" *ngIf="!isEditing">
+    <span class="level-label">Niveau</span>
+    <span class="level-value">{{ element.level }}</span>
+  </div>
+
+  <!-- Mode édition -->
+  <div class="edit-mode" *ngIf="isEditing">
+    <span class="level-label">Niveau</span>
+    <input 
+      type="number" 
+      class="edit-input" 
+      [(ngModel)]="editValue"
+      min="1" 
+      max="20"
+      placeholder="1-20"
+      (keydown)="onKeyPress($event)"
+      #editInput>
+    <div class="edit-actions">
+      <button class="btn-save" (click)="saveEdit()" [disabled]="editValue < 1 || editValue > 20">✓</button>
+      <button class="btn-cancel" (click)="cancelEdit()">✕</button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,62 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editingElement ? 'Modifier' : 'Créer' }} un élément Niveau D&D</h3>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Nom de l'élément -->
+      <div class="form-group">
+        <label for="elementName">Nom de l'élément</label>
+        <input
+          id="elementName"
+          type="text"
+          [(ngModel)]="elementName"
+          placeholder="Ex: Niveau"
+          class="form-control">
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="elementDescription">Description (optionnelle)</label>
+        <textarea
+          id="elementDescription"
+          [(ngModel)]="elementDescription"
+          placeholder="Description de cet élément..."
+          class="form-control"
+          rows="3">
+        </textarea>
+      </div>
+
+      <!-- Niveau -->
+      <div class="form-group">
+        <label for="level">Niveau actuel</label>
+        <div class="level-input-container">
+          <input
+            id="level"
+            type="number"
+            [(ngModel)]="level"
+            min="1"
+            max="20"
+            class="form-control level-input">
+          <div class="level-info">
+            <small>Niveau 1-20</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">
+        Annuler
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="onSave()"
+        [disabled]="!isFormValid()">
+        {{ editingElement ? 'Modifier' : 'Créer' }}
+      </button>
+    </div>
+  </div>
+</div>

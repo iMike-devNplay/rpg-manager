@@ -65,7 +65,9 @@
     <!-- Groupe d'attributs D&D -->
     <app-dnd-attributes-group 
       *ngIf="element.type === 'dnd-attributes-group'"
-      [element]="element">
+      [element]="element"
+      [proficiencyBonus]="getCurrentProficiencyBonus()"
+      [attr.data-proficiency-bonus]="getCurrentProficiencyBonus()">
     </app-dnd-attributes-group>
 
     <!-- Bonus de maîtrise D&D -->
@@ -73,6 +75,13 @@
       *ngIf="element.type === 'dnd-proficiency-bonus'"
       [element]="element">
     </app-dnd-proficiency-bonus>
+
+    <!-- Niveau D&D -->
+    <app-dnd-level 
+      *ngIf="element.type === 'dnd-level'"
+      [element]="element"
+      (valueChange)="onLevelChange($event)">
+    </app-dnd-level>
 
     <!-- Équipement -->
     <app-equipment-element 

@@ -4,12 +4,14 @@ import { DataItem, DataType } from '../../../../../models/rpg.models';
 import { Element } from '../../../../../models/element-types';
 import { ElementService } from '../../../../../services/element.service';
 import { StorageService } from '../../../../../services/storage.service';
+import { CharacterService } from '../../../../../services/character.service';
 import { TextElementComponent } from '../element-types/text-element/text-element.component';
 import { NumericElementComponent } from '../element-types/numeric-element/numeric-element.component';
 import { EquipmentElementComponent } from '../element-types/equipment-element/equipment-element.component';
 import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-types/dnd-attribute-element/dnd-attribute-element.component';
 import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attributes-group/dnd-attributes-group.component';
 import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
+import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.component';
 
 @Component({
   selector: 'app-element-display',
@@ -21,6 +23,7 @@ import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-profic
     DndAttributeElementComponent,
     DndAttributesGroupComponent,
     DndProficiencyBonusComponent,
+    DndLevelComponent,
     EquipmentElementComponent
   ],
   templateUrl: './element-display.component.html',
@@ -36,7 +39,7 @@ export class ElementDisplayComponent {
   @Output() itemDragEnd = new EventEmitter<void>();
   @Output() itemDroppedOn = new EventEmitter<{draggedItemId: string, targetItem: DataItem}>();
 
-  constructor(private elementService: ElementService, private storageService: StorageService) {}
+  constructor(private elementService: ElementService, private storageService: StorageService, private characterService: CharacterService) {}
 
   /**
    * Convertit le DataItem legacy vers le nouveau format Element
@@ -94,6 +97,12 @@ export class ElementDisplayComponent {
           value: this.item.value as number,
           level: this.item.metadata?.['level'] || 1
         };
+      case 'dnd_level':
+        return {
+          ...baseElement,
+          type: 'dnd-level',
+          level: this.item.value as number
+        };
       default:
         // Fallback vers text
         return {
@@ -122,6 +131,32 @@ export class ElementDisplayComponent {
     // Persist equipment toggle
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
+  }
+
+  /**
+   * Gestionnaire pour les changements de niveau
+   */
+  onLevelChange(newLevel: number): void {
+    const updatedItem = { ...this.item, value: newLevel };
+    this.storageService.saveDataItem(updatedItem);
+    this.itemUpdated.emit(updatedItem);
+  }
+
+  /**
+   * Récupère le bonus de maîtrise actuel du personnage
+   */
+  getCurrentProficiencyBonus(): number {
+    const character = this.characterService.getCurrentCharacter();
+    if (character) {
+      // Chercher le bonus de maîtrise D&D
+      const proficiencyBonusItem = character.dataItems.find(item => 
+        item.type === DataType.DND_PROFICIENCY_BONUS
+      );
+      if (proficiencyBonusItem) {
+        return Number(proficiencyBonusItem.value) || 2;
+      }
+    }
+    return 2; // Valeur par défaut
   }
 
   /**

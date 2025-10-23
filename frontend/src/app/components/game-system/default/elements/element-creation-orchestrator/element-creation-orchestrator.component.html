@@ -53,6 +53,14 @@
   (save)="onElementSaved($event)">
 </app-dnd-proficiency-bonus-modal>
 
+<!-- Modal pour niveau D&D -->
+<app-dnd-level-modal
+  [isOpen]="showElementModal && selectedType === 'dnd-level'"
+  [editingElement]="dndLevelElement"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-dnd-level-modal>
+
 <!-- Modal pour équipement -->
 <app-equipment-modal
   [isOpen]="showElementModal && selectedType === 'equipment'"

@@ -31,7 +31,11 @@ export class Dnd5eService {
       console.log('Création du bonus de maîtrise D&D...');
       elementsToCreate.push(this.createDndProficiencyBonus(character.userId));
 
-      // 4a-bis - Création du groupe d'attributs
+      // 4a-bis - Création du niveau D&D
+      console.log('Création du niveau D&D...');
+      elementsToCreate.push(this.createDndLevel(character.userId));
+
+      // 4a-ter - Création du groupe d'attributs
       console.log('Création du groupe d\'attributs...');
       elementsToCreate.push(this.createAttributesGroup(character.userId));
 
@@ -123,6 +127,25 @@ export class Dnd5eService {
       metadata: {
         dnd5eType: 'dnd-proficiency-bonus',
         level: 1
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément niveau D&D spécialisé
+   */
+  private createDndLevel(userId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Niveau',
+      type: DataType.DND_LEVEL,
+      value: 1, // Niveau par défaut
+      zone: DashboardZone.TOP,
+      order: 1,
+      userId,
+      description: 'Niveau du personnage (1-20)',
+      metadata: {
+        dnd5eType: 'dnd-level'
       }
     };
   }
@@ -312,5 +335,47 @@ export class Dnd5eService {
         }
       }
     });
+  }
+
+  /**
+   * Calcule le bonus de maîtrise basé sur le niveau D&D 5e
+   * @param level Niveau du personnage (1-20)
+   * @returns Bonus de maîtrise correspondant
+   */
+  calculateProficiencyBonusFromLevel(level: number): number {
+    if (level <= 0) return 2;
+    if (level <= 4) return 2;
+    if (level <= 8) return 3;
+    if (level <= 12) return 4;
+    if (level <= 16) return 5;
+    return 6; // Niveau 17-20
+  }
+
+  /**
+   * Synchronise le bonus de maîtrise avec le niveau du personnage
+   * @param character Personnage à mettre à jour
+   * @param newLevel Nouveau niveau
+   */
+  syncProficiencyBonusWithLevel(character: PlayerCharacter, newLevel: number): void {
+    // Trouver l'élément bonus de maîtrise
+    const proficiencyBonusItem = character.dataItems.find((item: DataItem) => 
+      item.type === DataType.DND_PROFICIENCY_BONUS
+    );
+    
+    if (proficiencyBonusItem) {
+      const newBonus = this.calculateProficiencyBonusFromLevel(newLevel);
+      proficiencyBonusItem.value = newBonus;
+      
+      // Mettre à jour les métadonnées
+      if (!proficiencyBonusItem.metadata) {
+        proficiencyBonusItem.metadata = {};
+      }
+      proficiencyBonusItem.metadata['level'] = newLevel;
+      
+      // Sauvegarder
+      this.storageService.saveDataItem(proficiencyBonusItem);
+      
+      console.log(`Bonus de maîtrise mis à jour: niveau ${newLevel} → bonus +${newBonus}`);
+    }
   }
 }

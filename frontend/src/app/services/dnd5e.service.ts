@@ -27,17 +27,23 @@ export class Dnd5eService {
 
       const elementsToCreate: DataItem[] = [];
 
-      // 4a - Création du bonus de maîtrise
-      console.log('Création du bonus de maîtrise...');
-      elementsToCreate.push(this.createProficiencyBonus(character.userId));
+      // 4a - Création du nouveau bonus de maîtrise D&D
+      console.log('Création du bonus de maîtrise D&D...');
+      elementsToCreate.push(this.createDndProficiencyBonus(character.userId));
 
-      // 4b - Création des attributs dans la zone de gauche
+      // 4a-bis - Création du groupe d'attributs
+      console.log('Création du groupe d\'attributs...');
+      elementsToCreate.push(this.createAttributesGroup(character.userId));
+
+      // 4b - Anciens attributs individuels désactivés - remplacés par le groupe d'attributs
+      /*
       if (dnd5eData.attributes) {
         console.log('Création des attributs:', dnd5eData.attributes.length);
         dnd5eData.attributes.forEach((attr: any) => {
           elementsToCreate.push(this.createAttribute(attr, character.userId));
         });
       }
+      */
 
       // 4c - Création des compétences dans la zone centrale
       if (dnd5eData.skills) {
@@ -82,7 +88,7 @@ export class Dnd5eService {
   }
 
   /**
-   * Crée l'élément bonus de maîtrise
+   * Crée l'élément bonus de maîtrise (ancien - à supprimer)
    */
   private createProficiencyBonus(userId: string): DataItem {
     return {
@@ -97,6 +103,53 @@ export class Dnd5eService {
       allowQuickModification: true,
       metadata: {
         dnd5eType: 'proficiency-bonus'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément bonus de maîtrise D&D spécialisé
+   */
+  private createDndProficiencyBonus(userId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Bonus de maîtrise',
+      type: DataType.DND_PROFICIENCY_BONUS,
+      value: 2, // Valeur par défaut
+      zone: DashboardZone.TOP,
+      order: 0,
+      userId,
+      description: 'Bonus de maîtrise du personnage (augmente avec le niveau)',
+      metadata: {
+        dnd5eType: 'dnd-proficiency-bonus',
+        level: 1
+      }
+    };
+  }
+
+  /**
+   * Crée le groupe d'attributs D&D 5e
+   */
+  private createAttributesGroup(userId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Attributs',
+      type: DataType.ATTRIBUTES_GROUP,
+      value: 'Attributs', // Nom d'affichage
+      zone: DashboardZone.LEFT,
+      order: 0,
+      userId,
+      description: 'Groupe des 6 attributs principaux avec modificateurs et jets de sauvegarde',
+      metadata: {
+        dnd5eType: 'attributes-group',
+        attributes: {
+          strength: { value: 10, hasProficiency: false },
+          dexterity: { value: 10, hasProficiency: false },
+          constitution: { value: 10, hasProficiency: false },
+          intelligence: { value: 10, hasProficiency: false },
+          wisdom: { value: 10, hasProficiency: false },
+          charisma: { value: 10, hasProficiency: false }
+        }
       }
     };
   }
@@ -225,9 +278,17 @@ export class Dnd5eService {
    * Met à jour les valeurs calculées d'un personnage D&D 5e
    */
   updateCalculatedValues(character: PlayerCharacter): void {
-    const proficiencyBonusItem = character.dataItems.find(item => 
-      item.metadata?.dnd5eType === 'proficiency-bonus'
+    // Chercher d'abord le nouveau bonus de maîtrise D&D, puis l'ancien en fallback
+    let proficiencyBonusItem = character.dataItems.find(item => 
+      item.metadata?.dnd5eType === 'dnd-proficiency-bonus'
     );
+    
+    if (!proficiencyBonusItem) {
+      proficiencyBonusItem = character.dataItems.find(item => 
+        item.metadata?.dnd5eType === 'proficiency-bonus'
+      );
+    }
+    
     const proficiencyBonus = proficiencyBonusItem ? Number(proficiencyBonusItem.value) : 2;
 
     // Mettre à jour les compétences

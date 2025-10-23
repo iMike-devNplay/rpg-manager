@@ -1,6 +1,6 @@
 export type GameSystem = 'dnd5e' | 'pathfinder' | 'call-of-cthulhu' | null;
 
-export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-skill' | 'dnd-spell' | 'equipment';
+export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-skill' | 'dnd-spell' | 'equipment';
 
 export interface ElementTypeConfig {
   id: ElementType;
@@ -40,6 +40,24 @@ export interface DndAttributeElement extends BaseElement {
   hasProficiency?: boolean; // Maîtrise du jet de sauvegarde
 }
 
+export interface DndAttributesGroupElement extends BaseElement {
+  type: 'dnd-attributes-group';
+  attributes: {
+    strength: { value: number; hasProficiency: boolean };
+    dexterity: { value: number; hasProficiency: boolean };
+    constitution: { value: number; hasProficiency: boolean };
+    intelligence: { value: number; hasProficiency: boolean };
+    wisdom: { value: number; hasProficiency: boolean };
+    charisma: { value: number; hasProficiency: boolean };
+  };
+}
+
+export interface DndProficiencyBonusElement extends BaseElement {
+  type: 'dnd-proficiency-bonus';
+  value: number; // Bonus de maîtrise (2-6 selon le niveau)
+  level?: number; // Niveau du personnage (optionnel pour calcul automatique)
+}
+
 export interface DndSkillElement extends BaseElement {
   type: 'dnd-skill';
   attribute: 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
@@ -66,4 +84,4 @@ export interface EquipmentElement extends BaseElement {
   equipped?: boolean;
 }
 
-export type Element = TextElement | NumericElement | DndAttributeElement | DndSkillElement | DndSpellElement | EquipmentElement;
+export type Element = TextElement | NumericElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndSkillElement | DndSpellElement | EquipmentElement;

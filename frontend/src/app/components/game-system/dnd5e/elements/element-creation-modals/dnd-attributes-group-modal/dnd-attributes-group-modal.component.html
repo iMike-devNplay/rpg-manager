@@ -1,0 +1,116 @@
+<div class="modal" [style.display]="isOpen ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form (ngSubmit)="onSave()" #attributesForm="ngForm">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            {{ editingElement ? 'Modifier' : 'Créer' }} le groupe d'attributs
+          </h4>
+          <button type="button" class="btn-close" (click)="onClose()">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <!-- Nom et description -->
+          <div class="mb-3">
+            <label for="name" class="form-label">Nom</label>
+            <input 
+              type="text" 
+              id="name"
+              class="form-control" 
+              [(ngModel)]="formData.name" 
+              name="name"
+              required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea 
+              id="description"
+              class="form-control" 
+              [(ngModel)]="formData.description" 
+              name="description"
+              rows="2">
+            </textarea>
+          </div>
+          
+          <!-- Attributs -->
+          <div class="attributes-section">
+            <h5>Valeurs des attributs</h5>
+            <div class="attributes-grid">
+              <div 
+                class="attribute-form-group" 
+                *ngFor="let attributeKey of getAttributeKeys()"
+              >
+                <label class="attribute-label">
+                  {{ attributeLabels[attributeKey] }}
+                </label>
+                
+                <div class="attribute-controls">
+                  <!-- Valeur de l'attribut -->
+                  <div class="value-group">
+                    <label class="small-label">Valeur</label>
+                    <input 
+                      type="number" 
+                      class="form-control form-control-sm"
+                      [(ngModel)]="formData.attributes[attributeKey].value"
+                      [name]="'attr_' + attributeKey + '_value'"
+                      min="1" 
+                      max="30"
+                      required>
+                  </div>
+                  
+                  <!-- Maîtrise du jet de sauvegarde -->
+                  <div class="proficiency-group">
+                    <label class="small-label">Maîtrise</label>
+                    <div class="form-check">
+                      <input 
+                        type="checkbox" 
+                        class="form-check-input"
+                        [(ngModel)]="formData.attributes[attributeKey].hasProficiency"
+                        [name]="'attr_' + attributeKey + '_prof'"
+                        [id]="'prof_' + attributeKey">
+                      <label 
+                        class="form-check-label" 
+                        [for]="'prof_' + attributeKey">
+                        ★
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Affichage du modificateur (calculé) -->
+                <div class="modifier-display" *ngIf="isAttributeValueValid(formData.attributes[attributeKey].value)">
+                  <small class="text-muted">
+                    Modificateur: {{ getModifierDisplay(formData.attributes[attributeKey].value) }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Aide -->
+          <div class="help-section">
+            <small class="text-muted">
+              <strong>Aide :</strong>
+              <br>• Valeurs d'attribut entre 1 et 30 (standard D&D 5e : 8-15 pour un niveau 1)
+              <br>• ★ = Maîtrise du jet de sauvegarde (ajoute le bonus de maîtrise)
+              <br>• Le modificateur est calculé automatiquement : (valeur - 10) ÷ 2 (arrondi vers le bas)
+            </small>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!isFormValid()">
+            {{ editingElement ? 'Modifier' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

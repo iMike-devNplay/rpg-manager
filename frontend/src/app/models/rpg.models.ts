@@ -16,7 +16,9 @@ export enum DataType {
   NUMERIC = 'numeric',
   TEXT = 'text',
   ATTRIBUTE = 'attribute',
-  PROFICIENCY_BONUS = 'proficiency_bonus'
+  ATTRIBUTES_GROUP = 'attributes_group',
+  PROFICIENCY_BONUS = 'proficiency_bonus',
+  DND_PROFICIENCY_BONUS = 'dnd_proficiency_bonus'
 }
 
 export enum GameSystem {

@@ -62,6 +62,18 @@
       (valueChange)="onElementValueChange($event)">
     </app-dnd-attribute-element>
 
+    <!-- Groupe d'attributs D&D -->
+    <app-dnd-attributes-group 
+      *ngIf="element.type === 'dnd-attributes-group'"
+      [element]="element">
+    </app-dnd-attributes-group>
+
+    <!-- Bonus de maîtrise D&D -->
+    <app-dnd-proficiency-bonus 
+      *ngIf="element.type === 'dnd-proficiency-bonus'"
+      [element]="element">
+    </app-dnd-proficiency-bonus>
+
     <!-- Équipement -->
     <app-equipment-element 
       *ngIf="element.type === 'equipment'"

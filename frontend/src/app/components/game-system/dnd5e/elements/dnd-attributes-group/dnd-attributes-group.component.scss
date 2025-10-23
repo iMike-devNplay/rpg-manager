@@ -1,0 +1,133 @@
+.dnd-attributes-group {
+  width: 100%;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.attributes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .attributes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .attributes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.attribute-block {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.attribute-block:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.attribute-header {
+  margin-bottom: 4px;
+}
+
+.attribute-label {
+  font-weight: bold;
+  font-size: 12px;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.attribute-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #212529;
+  margin: 4px 0;
+  line-height: 1;
+}
+
+.attribute-modifier {
+  font-size: 14px;
+  color: #6c757d;
+  margin: 2px 0;
+  font-weight: 500;
+}
+
+.saving-throw {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #e9ecef;
+}
+
+.proficiency-indicator {
+  font-size: 12px;
+  color: #ccc;
+  transition: color 0.2s ease;
+  cursor: default;
+}
+
+.proficiency-indicator.has-proficiency {
+  color: #ffc107;
+  text-shadow: 0 0 2px rgba(255, 193, 7, 0.5);
+}
+
+.saving-throw-value {
+  font-size: 12px;
+  font-weight: 500;
+  color: #495057;
+  min-width: 24px;
+}
+
+.legend {
+  text-align: center;
+  color: #6c757d;
+  border-top: 1px solid #dee2e6;
+  padding-top: 8px;
+}
+
+/* Styles pour les grands écrans - affichage plus compact */
+@media (min-width: 1200px) {
+  .attributes-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  
+  .attribute-block {
+    padding: 6px;
+  }
+  
+  .attribute-value {
+    font-size: 20px;
+  }
+}
+
+/* Animation pour les changements de valeur */
+.attribute-value,
+.attribute-modifier,
+.saving-throw-value {
+  transition: all 0.3s ease;
+}
+
+.attribute-block.updated .attribute-value,
+.attribute-block.updated .attribute-modifier,
+.attribute-block.updated .saving-throw-value {
+  color: #28a745;
+  transform: scale(1.05);
+}

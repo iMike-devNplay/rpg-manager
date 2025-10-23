@@ -1,0 +1,123 @@
+<div class="modal" [style.display]="isOpen ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form (ngSubmit)="onSave()" #bonusForm="ngForm">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            {{ editingElement ? 'Modifier' : 'Créer' }} le bonus de maîtrise
+          </h4>
+          <button type="button" class="btn-close" (click)="onClose()">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <!-- Nom -->
+          <div class="mb-3">
+            <label for="name" class="form-label">Nom</label>
+            <input 
+              type="text" 
+              id="name"
+              class="form-control" 
+              [(ngModel)]="formData.name" 
+              name="name"
+              required>
+          </div>
+          
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea 
+              id="description"
+              class="form-control" 
+              [(ngModel)]="formData.description" 
+              name="description"
+              rows="2">
+            </textarea>
+          </div>
+          
+          <!-- Configuration du bonus -->
+          <div class="bonus-config">
+            <h5>Configuration du bonus</h5>
+            
+            <!-- Méthode de saisie -->
+            <div class="input-methods">
+              <div class="method-group">
+                <label>Niveau du personnage</label>
+                <div class="level-input">
+                  <input 
+                    type="number" 
+                    class="form-control"
+                    [(ngModel)]="formData.level"
+                    name="level"
+                    min="1" 
+                    max="20"
+                    (ngModelChange)="onLevelChange()">
+                  <small class="form-text">Le bonus se calcule automatiquement</small>
+                </div>
+              </div>
+              
+              <div class="separator">ou</div>
+              
+              <div class="method-group">
+                <label>Bonus direct</label>
+                <div class="bonus-input">
+                  <input 
+                    type="number" 
+                    class="form-control"
+                    [(ngModel)]="formData.value"
+                    name="value"
+                    min="2" 
+                    max="6"
+                    (ngModelChange)="onBonusChange()">
+                  <small class="form-text">Le niveau s'ajuste automatiquement</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Aperçu -->
+            <div class="bonus-preview">
+              <div class="preview-card">
+                <div class="preview-bonus">+{{ formData.value }}</div>
+                <div class="preview-info">
+                  <div>Niveau {{ formData.level }}</div>
+                  <div class="range-info">Niveaux {{ getCurrentRange() }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Table de référence -->
+          <div class="reference-table">
+            <h6>Référence D&D 5e</h6>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Niveaux</th>
+                  <th>Bonus</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let entry of proficiencyTable" 
+                    [class.current]="entry.bonus === formData.value">
+                  <td>{{ entry.range }}</td>
+                  <td>+{{ entry.bonus }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!isFormValid()">
+            {{ editingElement ? 'Modifier' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

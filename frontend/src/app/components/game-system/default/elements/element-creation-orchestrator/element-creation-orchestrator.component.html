@@ -35,6 +35,24 @@
   (save)="onElementSaved($event)">
 </app-dnd-attribute-modal>
 
+<!-- Modal pour groupe d'attributs D&D -->
+<app-dnd-attributes-group-modal
+  [isOpen]="showElementModal && selectedType === 'dnd-attributes-group'"
+  [editingElement]="dndAttributesGroupElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-dnd-attributes-group-modal>
+
+<!-- Modal pour bonus de maîtrise D&D -->
+<app-dnd-proficiency-bonus-modal
+  [isOpen]="showElementModal && selectedType === 'dnd-proficiency-bonus'"
+  [editingElement]="dndProficiencyBonusElement"
+  [zone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onElementSaved($event)">
+</app-dnd-proficiency-bonus-modal>
+
 <!-- Modal pour équipement -->
 <app-equipment-modal
   [isOpen]="showElementModal && selectedType === 'equipment'"

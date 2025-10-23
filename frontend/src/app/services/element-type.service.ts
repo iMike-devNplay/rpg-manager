@@ -37,6 +37,22 @@ export const ELEMENT_TYPES_CONFIG: ElementTypeConfig[] = [
     category: 'attribute'
   },
   {
+    id: 'dnd-attributes-group',
+    name: 'Groupe d\'attributs D&D',
+    description: 'Groupe des 6 attributs principaux avec modificateurs et jets de sauvegarde',
+    gameSystem: 'dnd5e',
+    icon: '📊',
+    category: 'attribute'
+  },
+  {
+    id: 'dnd-proficiency-bonus',
+    name: 'Bonus de maîtrise D&D',
+    description: 'Bonus de maîtrise avec calcul automatique selon le niveau',
+    gameSystem: 'dnd5e',
+    icon: '🎯',
+    category: 'attribute'
+  },
+  {
     id: 'dnd-skill',
     name: 'Compétence D&D',
     description: 'Compétence D&D avec maîtrise et expertise',

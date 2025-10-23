@@ -1,0 +1,44 @@
+<div class="dnd-attributes-group">
+  <div class="attributes-grid">
+    <div 
+      class="attribute-block" 
+      *ngFor="let attributeKey of getAttributeKeys()"
+    >
+      <!-- En-tête avec le nom court de l'attribut -->
+      <div class="attribute-header">
+        <span class="attribute-label">{{ attributeLabels[attributeKey] }}</span>
+      </div>
+      
+      <!-- Valeur principale de l'attribut -->
+      <div class="attribute-value">
+        {{ element.attributes[attributeKey].value }}
+      </div>
+      
+      <!-- Modificateur -->
+      <div class="attribute-modifier">
+        {{ getModifierDisplay(element.attributes[attributeKey].value) }}
+      </div>
+      
+      <!-- Jet de sauvegarde avec indicateur de maîtrise -->
+      <div class="saving-throw">
+        <span 
+          class="proficiency-indicator"
+          [class.has-proficiency]="element.attributes[attributeKey].hasProficiency"
+          title="Maîtrise du jet de sauvegarde"
+        >
+          ★
+        </span>
+        <span class="saving-throw-value">
+          {{ getSavingThrowDisplay(element.attributes[attributeKey].value, element.attributes[attributeKey].hasProficiency) }}
+        </span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Légende en bas -->
+  <div class="legend">
+    <small>
+      <strong>★</strong> = Maîtrise du jet de sauvegarde
+    </small>
+  </div>
+</div>

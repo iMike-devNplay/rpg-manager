@@ -4,6 +4,8 @@ import { ElementTypeSelectionModalComponent } from '../element-type-selection-mo
 import { TextElementModalComponent } from '../element-creation-modals/text-element-modal/text-element-modal.component';
 import { NumericElementModalComponent } from '../element-creation-modals/numeric-element-modal/numeric-element-modal.component';
 import { DndAttributeModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-attribute-modal/dnd-attribute-modal.component';
+import { DndAttributesGroupModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-attributes-group-modal/dnd-attributes-group-modal.component';
+import { DndProficiencyBonusModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-proficiency-bonus-modal/dnd-proficiency-bonus-modal.component';
 import { DndSpellModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-spell-modal/dnd-spell-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
 import { ElementType, Element, GameSystem } from '../../../../../models/element-types';
@@ -17,6 +19,8 @@ import { ElementType, Element, GameSystem } from '../../../../../models/element-
     TextElementModalComponent,
     NumericElementModalComponent,
     DndAttributeModalComponent,
+    DndAttributesGroupModalComponent,
+    DndProficiencyBonusModalComponent,
     DndSpellModalComponent,
     EquipmentModalComponent
   ],
@@ -100,6 +104,14 @@ export class ElementCreationOrchestratorComponent {
 
   get dndAttributeElement() {
     return this.editingElement?.type === 'dnd-attribute' ? this.editingElement : null;
+  }
+
+  get dndAttributesGroupElement() {
+    return this.editingElement?.type === 'dnd-attributes-group' ? this.editingElement : null;
+  }
+
+  get dndProficiencyBonusElement() {
+    return this.editingElement?.type === 'dnd-proficiency-bonus' ? this.editingElement : null;
   }
 
   get equipmentElement() {

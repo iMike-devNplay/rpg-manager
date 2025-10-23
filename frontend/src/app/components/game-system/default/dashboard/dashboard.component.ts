@@ -231,6 +231,18 @@ export class DashboardComponent implements OnInit {
       dataItem.allowQuickModification = element.canQuickModify ?? true;
     } else if (element.type === 'dnd-attribute') {
       dataItem.hasProficiency = element.hasProficiency;
+    } else if (element.type === 'dnd-attributes-group') {
+      // Stocker les attributs comme metadata pour préserver la structure
+      dataItem.metadata = {
+        dnd5eType: 'attributes-group',
+        attributes: element.attributes
+      };
+    } else if (element.type === 'dnd-proficiency-bonus') {
+      // Stocker le niveau comme metadata
+      dataItem.metadata = {
+        dnd5eType: 'dnd-proficiency-bonus',
+        level: element.level || 1
+      };
     }
 
     return dataItem;
@@ -241,6 +253,8 @@ export class DashboardComponent implements OnInit {
       case 'text': return DataType.TEXT;
       case 'numeric': return DataType.NUMERIC;
       case 'dnd-attribute': return DataType.ATTRIBUTE;
+      case 'dnd-attributes-group': return DataType.ATTRIBUTES_GROUP;
+      case 'dnd-proficiency-bonus': return DataType.DND_PROFICIENCY_BONUS;
       default: return DataType.TEXT;
     }
   }
@@ -250,6 +264,8 @@ export class DashboardComponent implements OnInit {
       case 'text': return element.value;
       case 'numeric': return element.value;
       case 'dnd-attribute': return element.value;
+      case 'dnd-attributes-group': return 'Attributs'; // Nom générique pour l'affichage
+      case 'dnd-proficiency-bonus': return element.value;
       case 'equipment': return element.name; // Nom de l'équipement comme valeur
       default: return element.name;
     }
@@ -329,6 +345,30 @@ export class DashboardComponent implements OnInit {
         };
         console.log('DEBUG: convertDataItemToElement returning (attribute):', attributeElement);
         return attributeElement;
+      case DataType.ATTRIBUTES_GROUP:
+        const attributesGroupElement = {
+          ...baseElement,
+          type: 'dnd-attributes-group' as const,
+          attributes: item.metadata?.['attributes'] || {
+            strength: { value: 10, hasProficiency: false },
+            dexterity: { value: 10, hasProficiency: false },
+            constitution: { value: 10, hasProficiency: false },
+            intelligence: { value: 10, hasProficiency: false },
+            wisdom: { value: 10, hasProficiency: false },
+            charisma: { value: 10, hasProficiency: false }
+          }
+        };
+        console.log('DEBUG: convertDataItemToElement returning (attributes-group):', attributesGroupElement);
+        return attributesGroupElement;
+      case DataType.DND_PROFICIENCY_BONUS:
+        const proficiencyBonusElement = {
+          ...baseElement,
+          type: 'dnd-proficiency-bonus' as const,
+          value: item.value as number,
+          level: item.metadata?.['level'] || 1
+        };
+        console.log('DEBUG: convertDataItemToElement returning (dnd-proficiency-bonus):', proficiencyBonusElement);
+        return proficiencyBonusElement;
       default:
         const defaultElement = {
           ...baseElement,

@@ -8,6 +8,8 @@ import { TextElementComponent } from '../element-types/text-element/text-element
 import { NumericElementComponent } from '../element-types/numeric-element/numeric-element.component';
 import { EquipmentElementComponent } from '../element-types/equipment-element/equipment-element.component';
 import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-types/dnd-attribute-element/dnd-attribute-element.component';
+import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attributes-group/dnd-attributes-group.component';
+import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
 
 @Component({
   selector: 'app-element-display',
@@ -17,6 +19,8 @@ import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-ty
     TextElementComponent,
     NumericElementComponent,
     DndAttributeElementComponent,
+    DndAttributesGroupComponent,
+    DndProficiencyBonusComponent,
     EquipmentElementComponent
   ],
   templateUrl: './element-display.component.html',
@@ -69,6 +73,26 @@ export class ElementDisplayComponent {
           type: 'dnd-attribute',
           value: this.item.value as number,
           hasProficiency: this.item.hasProficiency
+        };
+      case 'attributes_group':
+        return {
+          ...baseElement,
+          type: 'dnd-attributes-group',
+          attributes: this.item.metadata?.['attributes'] || {
+            strength: { value: 10, hasProficiency: false },
+            dexterity: { value: 10, hasProficiency: false },
+            constitution: { value: 10, hasProficiency: false },
+            intelligence: { value: 10, hasProficiency: false },
+            wisdom: { value: 10, hasProficiency: false },
+            charisma: { value: 10, hasProficiency: false }
+          }
+        };
+      case 'dnd_proficiency_bonus':
+        return {
+          ...baseElement,
+          type: 'dnd-proficiency-bonus',
+          value: this.item.value as number,
+          level: this.item.metadata?.['level'] || 1
         };
       default:
         // Fallback vers text

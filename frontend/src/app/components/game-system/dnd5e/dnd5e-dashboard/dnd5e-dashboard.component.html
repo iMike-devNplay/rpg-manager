@@ -1,56 +1,12 @@
 <div class="dnd5e-dashboard" *ngIf="character">
-  <div class="auto-calculations">
-    <h3>🧮 Calculs automatiques D&D 5e</h3>
-    <div class="calculation-grid">
-      
-      <!-- Bonus de maîtrise -->
-      <div class="calc-item" *ngIf="proficiencyBonus">
-        <label>Bonus de maîtrise</label>
-        <span class="value">+{{ proficiencyBonus }}</span>
-      </div>
-
-      <!-- Modificateurs d'attributs -->
-      <div class="calc-section">
-        <h4>Modificateurs</h4>
-        <div class="modifiers-grid">
-          <div *ngFor="let attr of attributes" class="modifier-item">
-            <span class="attr-name">{{ attr.name }}</span>
-            <span class="attr-value">{{ attr.value }}</span>
-            <span class="modifier">{{ getModifierDisplay(attr.value) }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Jets de sauvegarde -->
-      <div class="calc-section">
-        <h4>Jets de sauvegarde</h4>
-        <div class="saves-grid">
-          <div *ngFor="let attr of attributes" class="save-item">
-            <span class="save-name">{{ attr.name }}</span>
-            <span class="save-value">{{ getSavingThrowDisplay(attr) }}</span>
-            <label class="proficiency-label">
-              <input 
-                type="checkbox" 
-                [checked]="attr.hasProficiency"
-                (change)="toggleSaveProficiency(attr, $event)"
-              >
-              Maîtrise
-            </label>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Bouton de recalcul -->
-    <div class="actions">
-      <button 
-        class="btn btn-primary" 
-        (click)="recalculateAll()"
-        title="Recalcule toutes les valeurs dérivées"
-      >
-        🔄 Recalculer tout
-      </button>
-    </div>
+  <!-- Section de calculs automatiques supprimée - remplacée par les nouveaux composants d'éléments -->
+  
+  <div class="dnd5e-info">
+    <p class="info-message">
+      🎲 <strong>Dashboard D&D 5e</strong><br>
+      Les calculs se font maintenant automatiquement dans les éléments du dashboard principal.
+      <br>• <strong>Groupe d'attributs</strong> : Affichage compact avec modificateurs et jets de sauvegarde
+      <br>• <strong>Bonus de maîtrise</strong> : Élément dédié avec calcul automatique selon le niveau
+    </p>
   </div>
 </div>

@@ -71,22 +71,48 @@
     </button>
   </nav>
 
-  <!-- Dashboard principal -->
-  <main class="dashboard-main" *ngIf="currentView === 'dashboard'">
-    <div class="dashboard-grid">
-      <!-- Zone Top -->
-      <div class="dashboard-zone zone-top" [attr.data-zone]="zones.TOP">
-        <div class="zone-header">
-          <button class="btn-add" (click)="addItem(zones.TOP)">📌</button>
-        </div>
+  <!-- Dashboard principal avec système d'onglets -->
+  <main class="dashboard-main" *ngIf="currentView === 'dashboard' && currentCharacter">
+    <!-- Barre d'onglets -->
+    <app-tab-bar
+      [tabs]="dashboardTabs"
+      [activeTabId]="activeTabId"
+      [canAddTab]="canAddTab"
+      (tabSelected)="onTabSelected($event)"
+      (tabAdd)="onTabAdd()"
+      (tabEdit)="onTabEdit($event)"
+      (tabDelete)="onTabDelete($event)"
+      (tabDropped)="onTabDropped($event)"
+      (elementAdd)="addItem()">
+    </app-tab-bar>
+
+    <!-- Contenu de l'onglet actif -->
+    <div class="tab-content" *ngIf="activeTabId">
+      <!-- Affichage multi-colonnes dynamique -->
+      <div class="columns-container" *ngIf="getActiveTabItems().length > 0">
         <div 
-          class="zone-content zone-top-content" 
-          (dragover)="onDragOver($event)" 
-          (drop)="onDrop($event, zones.TOP)"
-          [attr.data-zone]="zones.TOP"
+          *ngFor="let columnIndex of getColumns()"
+          class="column"
+          [attr.data-column]="columnIndex"
+          [attr.data-column-width]="getColumnWidth(columnIndex)"
+          [class.drag-over]="draggedOverColumn === columnIndex"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDropColumn($event, columnIndex)"
         >
+          <!-- Header de la colonne avec bouton de largeur -->
+          <div class="column-header">
+            <button 
+              class="column-width-btn" 
+              (click)="toggleColumnWidth(columnIndex)"
+              [title]="'Largeur: ' + getColumnWidth(columnIndex) + ' colonne(s)'"
+            >
+              <span class="width-indicator">{{ getColumnWidth(columnIndex) }}x</span>
+            </button>
+          </div>
+          
           <app-element-display 
-            *ngFor="let item of getItemsByZone(zones.TOP)" 
+            *ngFor="let item of getItemsByColumn(columnIndex)" 
             [item]="item"
             [showQuickModification]="true"
             (itemUpdated)="onItemUpdated($event)"
@@ -96,126 +122,36 @@
             (itemDragEnd)="onItemDragEnd()"
             (itemDroppedOn)="onItemDroppedOn($event)">
           </app-element-display>
-          <div class="empty-zone" *ngIf="getItemsByZone(zones.TOP).length === 0">
-            <p>Aucun élément dans cette zone</p>
-            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
+        </div>
+        
+        <!-- Zone de drop pour créer une nouvelle colonne -->
+        <div 
+          class="column column-new"
+          [class.drag-over]="draggedOverColumn === getColumnCount()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDropColumn($event, getColumnCount())"
+          *ngIf="draggedItem"
+        >
+          <div class="new-column-placeholder">
+            <span class="placeholder-icon">➕</span>
+            <span class="placeholder-text">Nouvelle colonne</span>
           </div>
         </div>
       </div>
 
-      <!-- Zone Left -->
-      <div class="dashboard-zone zone-left" [attr.data-zone]="zones.LEFT">
-        <div class="zone-header">
-          <button class="btn-add" (click)="addItem(zones.LEFT)">📋</button>
-        </div>
-        <div 
-          class="zone-content" 
-          (dragover)="onDragOver($event)" 
-          (drop)="onDrop($event, zones.LEFT)"
-          [attr.data-zone]="zones.LEFT"
-        >
-          <app-element-display 
-            *ngFor="let item of getItemsByZone(zones.LEFT)" 
-            [item]="item"
-            [showQuickModification]="true"
-            (itemUpdated)="onItemUpdated($event)"
-            (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)"
-            (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()"
-            (itemDroppedOn)="onItemDroppedOn($event)">
-          </app-element-display>
-          <div class="empty-zone" *ngIf="getItemsByZone(zones.LEFT).length === 0">
-            <p>Aucun élément dans cette zone</p>
-            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Zone Center -->
-      <div class="dashboard-zone zone-center" [attr.data-zone]="zones.CENTER">
-        <div class="zone-header">
-          <button class="btn-add" (click)="addItem(zones.CENTER)">🎯</button>
-        </div>
-        <div 
-          class="zone-content" 
-          (dragover)="onDragOver($event)" 
-          (drop)="onDrop($event, zones.CENTER)"
-          [attr.data-zone]="zones.CENTER"
-        >
-          <app-element-display 
-            *ngFor="let item of getItemsByZone(zones.CENTER)" 
-            [item]="item"
-            [showQuickModification]="true"
-            (itemUpdated)="onItemUpdated($event)"
-            (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)"
-            (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()"
-            (itemDroppedOn)="onItemDroppedOn($event)">
-          </app-element-display>
-          <div class="empty-zone" *ngIf="getItemsByZone(zones.CENTER).length === 0">
-            <p>Aucun élément dans cette zone</p>
-            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Zone Right -->
-      <div class="dashboard-zone zone-right" [attr.data-zone]="zones.RIGHT">
-        <div class="zone-header">
-          <button class="btn-add" (click)="addItem(zones.RIGHT)">📝</button>
-        </div>
-        <div 
-          class="zone-content" 
-          (dragover)="onDragOver($event)" 
-          (drop)="onDrop($event, zones.RIGHT)"
-          [attr.data-zone]="zones.RIGHT"
-        >
-          <app-element-display 
-            *ngFor="let item of getItemsByZone(zones.RIGHT)" 
-            [item]="item"
-            [showQuickModification]="true"
-            (itemUpdated)="onItemUpdated($event)"
-            (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)"
-            (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()"
-            (itemDroppedOn)="onItemDroppedOn($event)">
-          </app-element-display>
-          <div class="empty-zone" *ngIf="getItemsByZone(zones.RIGHT).length === 0">
-            <p>Aucun élément dans cette zone</p>
-            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Zone Bottom -->
-      <div class="dashboard-zone zone-bottom" [attr.data-zone]="zones.BOTTOM">
-        <div class="zone-header">
-          <button class="btn-add" (click)="addItem(zones.BOTTOM)">📦</button>
-        </div>
-        <div 
-          class="zone-content" 
-          (dragover)="onDragOver($event)" 
-          (drop)="onDrop($event, zones.BOTTOM)"
-          [attr.data-zone]="zones.BOTTOM"
-        >
-          <app-element-display 
-            *ngFor="let item of getItemsByZone(zones.BOTTOM)" 
-            [item]="item"
-            [showQuickModification]="true"
-            (itemUpdated)="onItemUpdated($event)"
-            (itemDeleted)="onItemDeleted($event)"
-            (itemEdit)="onItemEdit($event)"
-            (itemDragStart)="onItemDragStart($event)"
-            (itemDragEnd)="onItemDragEnd()"
-            (itemDroppedOn)="onItemDroppedOn($event)">
-          </app-element-display>
-          <div class="empty-zone" *ngIf="getItemsByZone(zones.BOTTOM).length === 0">
-            <p>Aucun élément dans cette zone</p>
-            <small>Cliquez sur "+ Ajouter" pour créer votre premier élément</small>
-          </div>
+      <!-- Zone vide -->
+      <div 
+        class="empty-tab"
+        *ngIf="getActiveTabItems().length === 0"
+        (dragover)="onDragOver($event)"
+        (drop)="onDropColumn($event, 0)"
+      >
+        <div class="empty-tab-content">
+          <span class="empty-icon">📋</span>
+          <h3>Aucun élément dans cet onglet</h3>
+          <p>Cliquez sur le bouton ➕ dans la barre d'onglets pour ajouter un élément</p>
+          <p class="drag-hint" *ngIf="draggedItem">Ou déposez un élément ici</p>
         </div>
       </div>
     </div>
@@ -232,45 +168,15 @@
   </main>
 </div>
 
-<!-- Modal pour ajouter un élément -->
-<div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <h3>Ajouter un élément</h3>
-    <form (ngSubmit)="saveNewItem()">
-      <div class="form-group">
-        <label>Nom</label>
-        <input type="text" [(ngModel)]="newItem.name" name="name" required>
-      </div>
-      <div class="form-group">
-        <label>Type</label>
-        <select [(ngModel)]="newItem.type" name="type">
-          <option [value]="dataTypes.NUMERIC">Numérique</option>
-          <option [value]="dataTypes.TEXT">Texte</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Valeur</label>
-        <input 
-          [type]="newItem.type === dataTypes.NUMERIC ? 'number' : 'text'" 
-          [(ngModel)]="newItem.value" 
-          name="value" 
-          required
-        >
-      </div>
-      <div class="form-group">
-        <label>Description (optionnel)</label>
-        <textarea [(ngModel)]="newItem.description" name="description"></textarea>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Annuler</button>
-        <button type="submit" class="btn btn-primary">Ajouter</button>
-      </div>
-    </form>
-  </div>
-</div>
+<!-- Modal pour la gestion des onglets -->
+<app-tab-modal
+  [isOpen]="showTabModal"
+  [editingTab]="editingTab"
+  (save)="onTabSave($event)"
+  (close)="closeTabModal()">
+</app-tab-modal>
 
-<!-- Modales externalisées -->
-
+<!-- Modal pour ajouter/éditer un élément -->
 <app-element-creation-orchestrator
   [isOpen]="showCreateElementModal"
   [gameSystem]="getGameSystemForNewElement()"

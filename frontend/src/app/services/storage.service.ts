@@ -8,7 +8,10 @@ import {
   GameSession, 
   ExportData,
   UserMode,
-  GameSystem 
+  GameSystem,
+  DashboardTab,
+  TabIcon,
+  DashboardZone
 } from '../models/rpg.models';
 
 @Injectable({
@@ -372,5 +375,232 @@ export class StorageService {
         'bottom': { name: 'Bas', items: [] }
       }
     };
+  }
+
+  // ============================================
+  // Gestion des onglets du dashboard
+  // ============================================
+
+  /**
+   * Récupère les onglets d'un personnage
+   */
+  getDashboardTabs(characterId: string): DashboardTab[] {
+    console.log('=== getDashboardTabs appelé ===');
+    console.log('characterId:', characterId);
+    
+    // Récupérer tous les personnages sans filtrer par userId
+    const data = this.getStorageData();
+    const characters: PlayerCharacter[] = data.characters || [];
+    const character = characters.find(c => c.id === characterId);
+    
+    console.log('Personnage trouvé:', character?.name);
+    console.log('Tabs bruts:', character?.dashboardTabs);
+    
+    if (character?.dashboardTabs && character.dashboardTabs.length > 0) {
+      // Trier les onglets par ordre
+      const sortedTabs = [...character.dashboardTabs].sort((a, b) => a.order - b.order);
+      console.log('Tabs triés:', sortedTabs);
+      return sortedTabs;
+    }
+    
+    // Si aucun onglet n'existe, créer un onglet par défaut
+    console.log('Aucun onglet trouvé, création du tab par défaut');
+    return this.createDefaultTab(characterId);
+  }
+
+  /**
+   * Crée un onglet par défaut
+   */
+  private createDefaultTab(characterId: string): DashboardTab[] {
+    const defaultTab: DashboardTab = {
+      id: this.generateId(),
+      name: 'Principal',
+      icon: '📊',
+      order: 0,
+      characterId
+    };
+    return [defaultTab];
+  }
+
+  /**
+   * Sauvegarde les onglets d'un personnage
+   */
+  saveDashboardTabs(characterId: string, tabs: DashboardTab[]): void {
+    console.log('=== saveDashboardTabs appelé ===');
+    console.log('characterId:', characterId);
+    console.log('tabs à sauvegarder:', tabs);
+    
+    const data = this.getStorageData();
+    if (!data.characters) return;
+    
+    const characterIndex = data.characters.findIndex((c: PlayerCharacter) => c.id === characterId);
+    if (characterIndex !== -1) {
+      data.characters[characterIndex].dashboardTabs = tabs;
+      data.characters[characterIndex].updatedAt = new Date();
+      this.setStorageData(data);
+      
+      console.log('Tabs sauvegardés dans localStorage');
+      console.log('Tabs du personnage après sauvegarde:', data.characters[characterIndex].dashboardTabs);
+      
+      // Mettre à jour le personnage courant si c'est celui-ci
+      if (this.currentCharacterSubject.value?.id === characterId) {
+        console.log('Mise à jour du currentCharacterSubject ET du current-character localStorage');
+        this.setCurrentCharacter(data.characters[characterIndex]);
+      }
+    } else {
+      console.log('Personnage non trouvé!');
+    }
+  }
+
+  /**
+   * Ajoute un nouvel onglet
+   */
+  addDashboardTab(characterId: string, name: string, icon: TabIcon): DashboardTab {
+    const tabs = this.getDashboardTabs(characterId);
+    
+    // Limiter à 5 onglets maximum
+    if (tabs.length >= 5) {
+      throw new Error('Nombre maximum d\'onglets atteint (5)');
+    }
+    
+    const newTab: DashboardTab = {
+      id: this.generateId(),
+      name,
+      icon,
+      order: tabs.length,
+      characterId
+    };
+    
+    tabs.push(newTab);
+    this.saveDashboardTabs(characterId, tabs);
+    
+    return newTab;
+  }
+
+  /**
+   * Met à jour un onglet existant
+   */
+  updateDashboardTab(characterId: string, tabId: string, updates: Partial<DashboardTab>): void {
+    const tabs = this.getDashboardTabs(characterId);
+    const tabIndex = tabs.findIndex(t => t.id === tabId);
+    
+    if (tabIndex !== -1) {
+      tabs[tabIndex] = { ...tabs[tabIndex], ...updates };
+      this.saveDashboardTabs(characterId, tabs);
+    }
+  }
+
+  /**
+   * Supprime un onglet (seulement s'il est vide)
+   */
+  deleteDashboardTab(characterId: string, tabId: string): boolean {
+    const tabs = this.getDashboardTabs(characterId);
+    
+    // Ne pas permettre de supprimer le dernier onglet
+    if (tabs.length <= 1) {
+      return false;
+    }
+    
+    // Vérifier que l'onglet est vide
+    const data = this.getStorageData();
+    const characters: PlayerCharacter[] = data.characters || [];
+    const character = characters.find(c => c.id === characterId);
+    const hasItems = character?.dataItems.some(item => item.tabId === tabId);
+    
+    if (hasItems) {
+      return false; // Ne pas supprimer un onglet avec des éléments
+    }
+    
+    // Supprimer l'onglet et réorganiser les ordres
+    const filteredTabs = tabs.filter(t => t.id !== tabId);
+    filteredTabs.forEach((tab, index) => {
+      tab.order = index;
+    });
+    
+    this.saveDashboardTabs(characterId, filteredTabs);
+    return true;
+  }
+
+  /**
+   * Migration des anciennes zones vers le système d'onglets
+   */
+  migrateLegacyZonesToTabs(character: PlayerCharacter): PlayerCharacter {
+    // Si le personnage a déjà des onglets, ne rien faire
+    if (character.dashboardTabs && character.dashboardTabs.length > 0) {
+      return character;
+    }
+
+    // Créer des onglets basés sur les zones existantes
+    const tabs: DashboardTab[] = [];
+    const zoneMapping: Record<string, { name: string; icon: TabIcon; order: number }> = {
+      'top': { name: 'Principal', icon: '📊', order: 0 },
+      'left': { name: 'Combat', icon: '⚔️', order: 1 },
+      'center': { name: 'Centre', icon: '📝', order: 2 },
+      'right': { name: 'Équipement', icon: '🎒', order: 3 },
+      'bottom': { name: 'Notes', icon: '📖', order: 4 }
+    };
+
+    // Trouver quelles zones contiennent des éléments
+    const usedZones = new Set<string>();
+    character.dataItems.forEach(item => {
+      if (item.zone) {
+        usedZones.add(item.zone);
+      }
+    });
+
+    // Si aucune zone n'est utilisée, créer un onglet par défaut
+    if (usedZones.size === 0) {
+      tabs.push({
+        id: this.generateId(),
+        name: 'Principal',
+        icon: '📊',
+        order: 0,
+        characterId: character.id
+      });
+    } else {
+      // Créer un onglet pour chaque zone utilisée
+      usedZones.forEach(zone => {
+        const config = zoneMapping[zone] || { name: zone, icon: '📝', order: tabs.length };
+        tabs.push({
+          id: this.generateId(),
+          name: config.name,
+          icon: config.icon,
+          order: config.order,
+          characterId: character.id
+        });
+      });
+
+      // Trier par ordre
+      tabs.sort((a, b) => a.order - b.order);
+
+      // Mettre à jour les dataItems pour utiliser tabId au lieu de zone
+      const zoneToTabId: Record<string, string> = {};
+      tabs.forEach(tab => {
+        const zoneName = Object.keys(zoneMapping).find(
+          key => zoneMapping[key].name === tab.name
+        );
+        if (zoneName) {
+          zoneToTabId[zoneName] = tab.id;
+        }
+      });
+
+      character.dataItems = character.dataItems.map(item => {
+        if (item.zone && zoneToTabId[item.zone]) {
+          return {
+            ...item,
+            tabId: zoneToTabId[item.zone],
+            column: 0, // Par défaut, première colonne
+            zone: undefined // Supprimer l'ancienne propriété
+          };
+        }
+        return item;
+      });
+    }
+
+    // Assigner les onglets au personnage
+    character.dashboardTabs = tabs;
+    this.saveCharacter(character);
+
+    return character;
   }
 }

@@ -133,7 +133,7 @@ export class DndSkillsGroupComponent implements OnInit, OnChanges {
           id: attributesGroupItem.id,
           name: attributesGroupItem.name,
           type: 'dnd-attributes-group',
-          zone: attributesGroupItem.zone,
+          zone: attributesGroupItem.zone as string, // Conversion vers string
           position: 0,
           attributes: attributesGroupItem.metadata['attributes']
         };

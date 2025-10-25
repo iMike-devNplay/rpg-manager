@@ -25,23 +25,32 @@ export class Dnd5eService {
         throw new Error('Impossible de charger les données D&D 5e');
       }
 
+      // Récupérer ou créer les onglets du personnage
+      let tabs = this.storageService.getDashboardTabs(character.id);
+      if (!tabs || tabs.length === 0) {
+        console.log('Aucun onglet trouvé, création d\'un onglet par défaut');
+        tabs = [this.storageService.addDashboardTab(character.id, 'Principal', '📊')];
+      }
+      const firstTabId = tabs[0].id;
+      console.log('Utilisation de l\'onglet:', firstTabId);
+
       const elementsToCreate: DataItem[] = [];
 
       // 4a - Création du nouveau bonus de maîtrise D&D
       console.log('Création du bonus de maîtrise D&D...');
-      elementsToCreate.push(this.createDndProficiencyBonus(character.userId));
+      elementsToCreate.push(this.createDndProficiencyBonus(character.userId, firstTabId));
 
       // 4a-bis - Création du niveau D&D
       console.log('Création du niveau D&D...');
-      elementsToCreate.push(this.createDndLevel(character.userId));
+      elementsToCreate.push(this.createDndLevel(character.userId, firstTabId));
 
       // 4a-ter - Création du groupe d'attributs
       console.log('Création du groupe d\'attributs...');
-      elementsToCreate.push(this.createAttributesGroup(character.userId));
+      elementsToCreate.push(this.createAttributesGroup(character.userId, firstTabId));
 
       // 4a-qua - Création du groupe de compétences
       console.log('Création du groupe de compétences...');
-      elementsToCreate.push(this.createSkillsGroup(character.userId));
+      elementsToCreate.push(this.createSkillsGroup(character.userId, firstTabId));
 
       // 4b - Anciens attributs individuels désactivés - remplacés par le groupe d'attributs
       /*
@@ -56,13 +65,13 @@ export class Dnd5eService {
       // 4d - Création de l'élément Origine
       if (dnd5eData.origins) {
         console.log('Création de l\'origine...');
-        elementsToCreate.push(this.createOriginElement(dnd5eData.origins, character.userId));
+        elementsToCreate.push(this.createOriginElement(dnd5eData.origins, character.userId, firstTabId));
       }
 
       // 4e - Création de l'élément Classe
       if (dnd5eData.classes) {
         console.log('Création de la classe...');
-        elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId));
+        elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId, firstTabId));
       }
 
       console.log('Éléments à créer:', elementsToCreate.length);
@@ -110,13 +119,14 @@ export class Dnd5eService {
   /**
    * Crée l'élément bonus de maîtrise D&D spécialisé
    */
-  private createDndProficiencyBonus(userId: string): DataItem {
+  private createDndProficiencyBonus(userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Bonus de maîtrise',
       type: DataType.DND_PROFICIENCY_BONUS,
       value: 2, // Valeur par défaut
-      zone: DashboardZone.TOP,
+      tabId: tabId,
+      column: 0,
       order: 0,
       userId,
       description: 'Bonus de maîtrise du personnage (augmente avec le niveau)',
@@ -130,13 +140,14 @@ export class Dnd5eService {
   /**
    * Crée l'élément niveau D&D spécialisé
    */
-  private createDndLevel(userId: string): DataItem {
+  private createDndLevel(userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Niveau',
       type: DataType.DND_LEVEL,
       value: 1, // Niveau par défaut
-      zone: DashboardZone.TOP,
+      tabId: tabId,
+      column: 0,
       order: 1,
       userId,
       description: 'Niveau du personnage (1-20)',
@@ -149,13 +160,14 @@ export class Dnd5eService {
   /**
    * Crée le groupe de compétences D&D 5e
    */
-  private createSkillsGroup(userId: string): DataItem {
+  private createSkillsGroup(userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Compétences',
       type: DataType.DND_SKILLS_GROUP,
       value: 'Compétences', // Nom d'affichage
-      zone: DashboardZone.CENTER,
+      tabId: tabId,
+      column: 2,
       order: 0,
       userId,
       description: 'Toutes les compétences D&D 5e avec maîtrise et expertise',
@@ -193,13 +205,14 @@ export class Dnd5eService {
   /**
    * Crée le groupe d'attributs D&D 5e
    */
-  private createAttributesGroup(userId: string): DataItem {
+  private createAttributesGroup(userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Attributs',
       type: DataType.ATTRIBUTES_GROUP,
       value: 'Attributs', // Nom d'affichage
-      zone: DashboardZone.LEFT,
+      tabId: tabId,
+      column: 1,
       order: 0,
       userId,
       description: 'Groupe des 6 attributs principaux avec modificateurs et jets de sauvegarde',
@@ -242,14 +255,15 @@ export class Dnd5eService {
   /**
    * Crée l'élément Origine
    */
-  private createOriginElement(origins: any[], userId: string): DataItem {
+  private createOriginElement(origins: any[], userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Origine',
       type: DataType.TEXT,
       value: 'Non définie',
-      zone: DashboardZone.TOP,
-      order: 1,
+      tabId: tabId,
+      column: 0,
+      order: 2,
       userId,
       description: 'Origine/Race du personnage',
       allowQuickModification: true,
@@ -263,14 +277,15 @@ export class Dnd5eService {
   /**
    * Crée l'élément Classe
    */
-  private createClassElement(classes: any[], userId: string): DataItem {
+  private createClassElement(classes: any[], userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Classe',
       type: DataType.TEXT,
       value: 'Non définie',
-      zone: DashboardZone.TOP,
-      order: 2,
+      tabId: tabId,
+      column: 0,
+      order: 3,
       userId,
       description: 'Classe du personnage',
       allowQuickModification: true,

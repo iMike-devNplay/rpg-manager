@@ -4,6 +4,7 @@ export enum UserMode {
   GAMEMASTER = 'gamemaster'
 }
 
+// Ancienne énumération - conservée pour compatibilité de migration
 export enum DashboardZone {
   TOP = 'top',
   LEFT = 'left',
@@ -11,6 +12,24 @@ export enum DashboardZone {
   BOTTOM = 'bottom',
   CENTER = 'center'
 }
+
+// Icônes disponibles pour les onglets
+export type TabIcon = '📊' | '⚔️' | '🎒' | '📖' | '🗺️' | '✨' | '💰' | '🛡️' | '🎯' | '📝';
+
+export const TAB_ICONS: TabIcon[] = ['📊', '⚔️', '🎒', '📖', '🗺️', '✨', '💰', '🛡️', '🎯', '📝'];
+
+export const TAB_ICON_LABELS: Record<TabIcon, string> = {
+  '📊': 'Statistiques',
+  '⚔️': 'Combat',
+  '🎒': 'Équipement',
+  '📖': 'Compétences',
+  '🗺️': 'Exploration',
+  '✨': 'Magie',
+  '💰': 'Richesses',
+  '🛡️': 'Défense',
+  '🎯': 'Actions',
+  '📝': 'Notes'
+};
 
 export enum DataType {
   NUMERIC = 'numeric',
@@ -66,13 +85,29 @@ export interface User {
   createdAt: Date;
 }
 
+// Interface pour les onglets du dashboard
+export interface DashboardTab {
+  id: string;
+  name: string;
+  icon: TabIcon;
+  order: number;
+  characterId: string;
+  // Configuration des colonnes pour cet onglet
+  columnWidths?: { [columnIndex: number]: number }; // Ex: { 0: 1, 1: 2, 2: 1 }
+}
+
 export interface DataItem {
   id: string;
   name: string;
   type: DataType;
   value: string | number;
   description?: string;
-  zone: DashboardZone;
+  // NOUVEAU: remplace 'zone' par 'tabId' pour le système d'onglets
+  tabId?: string;
+  // Position de colonne pour le nouveau système (0 = première colonne, 1 = deuxième, etc.)
+  column?: number;
+  // ANCIEN: conservé pour compatibilité de migration
+  zone?: DashboardZone;
   groupId?: string;
   order: number;
   userId: string;
@@ -99,7 +134,10 @@ export interface DataItem {
 export interface DataGroup {
   id: string;
   name: string;
-  zone: DashboardZone;
+  // NOUVEAU: remplace 'zone' par 'tabId'
+  tabId?: string;
+  // ANCIEN: conservé pour compatibilité
+  zone?: DashboardZone;
   items: DataItem[];
   order: number;
   userId: string;
@@ -112,6 +150,8 @@ export interface PlayerCharacter {
   userId: string;
   dataItems: DataItem[];
   dataGroups: DataGroup[];
+  // NOUVEAU: liste des onglets du dashboard
+  dashboardTabs?: DashboardTab[];
   createdAt: Date;
   updatedAt: Date;
 }

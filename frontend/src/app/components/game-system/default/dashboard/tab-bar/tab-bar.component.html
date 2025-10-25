@@ -1,0 +1,55 @@
+<div class="tab-bar">
+  <div class="tabs-container">
+    <!-- Onglets existants -->
+    <div 
+      *ngFor="let tab of tabs" 
+      class="tab"
+      [class.active]="tab.id === activeTabId"
+      [class.drag-over]="dragOverTabId === tab.id"
+      (click)="onTabClick(tab.id)"
+      (dragover)="onDragOver($event, tab.id)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event, tab.id)"
+    >
+      <span class="tab-icon">{{ tab.icon }}</span>
+      <span class="tab-name">{{ tab.name }}</span>
+      
+      <div class="tab-actions">
+        <button 
+          class="btn-edit" 
+          (click)="onEditTab($event, tab.id)"
+          title="Modifier l'onglet"
+        >
+          ✏️
+        </button>
+        <button 
+          *ngIf="tabs.length > 1"
+          class="btn-delete" 
+          (click)="onDeleteTab($event, tab.id)"
+          title="Supprimer l'onglet (si vide)"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- Bouton pour ajouter un élément -->
+    <button 
+      class="tab tab-add-element"
+      (click)="onAddElement()"
+      title="Ajouter un élément"
+    >
+      <span class="add-icon">➕</span>
+    </button>
+
+    <!-- Bouton pour ajouter un onglet -->
+    <button 
+      *ngIf="canAddTab"
+      class="tab tab-add"
+      (click)="onAddTab()"
+      title="Ajouter un onglet (max 5)"
+    >
+      <span class="add-icon">📑</span>
+    </button>
+  </div>
+</div>

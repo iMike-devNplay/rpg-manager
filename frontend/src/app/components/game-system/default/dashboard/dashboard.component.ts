@@ -11,7 +11,9 @@ import { ElementCreationOrchestratorComponent } from '../elements/element-creati
 import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
 import { CombatManagementComponent } from '../../../dungeon-master/combat-management/combat-management.component';
 import { PlayersManagementComponent } from '../../../dungeon-master/players-management/players-management.component';
-import { User, UserMode, DashboardZone, DataItem, DataType, PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../../../../models/rpg.models';
+import { TabBarComponent } from './tab-bar/tab-bar.component';
+import { TabModalComponent } from './tab-modal/tab-modal.component';
+import { User, UserMode, DashboardZone, DataItem, DataType, PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS, DashboardTab, TabIcon } from '../../../../models/rpg.models';
 import { Element, GameSystem as ElementGameSystem } from '../../../../models/element-types';
 import { ElementService } from '../../../../services/element.service';
 
@@ -24,7 +26,9 @@ import { ElementService } from '../../../../services/element.service';
     ElementCreationOrchestratorComponent,
     ElementDisplayComponent,
     CombatManagementComponent,
-    PlayersManagementComponent
+    PlayersManagementComponent,
+    TabBarComponent,
+    TabModalComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -40,16 +44,23 @@ export class DashboardComponent implements OnInit {
   gameSystemLabels = GAME_SYSTEM_LABELS;
   dataItems: DataItem[] = [];
   
+  // Système d'onglets
+  dashboardTabs: DashboardTab[] = [];
+  activeTabId: string | null = null;
+  showTabModal = false;
+  editingTab: DashboardTab | null = null;
+  
   // Modal pour ajouter des éléments
   showAddModal = false;
   showCreateElementModal = false;
   newItem: Partial<DataItem> = {};
-  currentZone: DashboardZone = DashboardZone.CENTER;
+  currentZone: DashboardZone = DashboardZone.CENTER; // Conservé pour compatibilité temporaire
   editingItem: DataItem | null = null;
   editingElementConverted: Element | null = null; // Cache pour éviter les reconversions
   
   // Drag and drop
   draggedItem: DataItem | null = null;
+  draggedOverColumn: number | null = null;
 
   constructor(
     private userService: UserService,
@@ -111,11 +122,29 @@ export class DashboardComponent implements OnInit {
     console.log('=== loadCharacterData début ===');
     if (this.currentCharacter) {
       console.log('=== Personnage actuel trouvé:', this.currentCharacter.name);
+      
+      // Migration automatique vers le système d'onglets
+      if (!this.currentCharacter.dashboardTabs || this.currentCharacter.dashboardTabs.length === 0) {
+        console.log('=== Migration nécessaire vers le système d\'onglets ===');
+        this.currentCharacter = this.storageService.migrateLegacyZonesToTabs(this.currentCharacter);
+      }
+      
+      // Charger les onglets
+      this.dashboardTabs = this.storageService.getDashboardTabs(this.currentCharacter.id);
+      
+      // Sélectionner le premier onglet par défaut
+      if (this.dashboardTabs.length > 0 && !this.activeTabId) {
+        this.activeTabId = this.dashboardTabs[0].id;
+      }
+      
       this.dataItems = this.currentCharacter.dataItems || [];
       console.log('=== Nombre d\'éléments chargés:', this.dataItems.length);
+      console.log('=== Nombre d\'onglets:', this.dashboardTabs.length);
     } else {
       console.log('=== Aucun personnage actuel ===');
       this.dataItems = [];
+      this.dashboardTabs = [];
+      this.activeTabId = null;
     }
     console.log('=== loadCharacterData terminé ===');
   }
@@ -149,19 +178,247 @@ export class DashboardComponent implements OnInit {
     this.userService.switchMode(newMode);
   }
 
+  // ============================================
+  // Gestion des onglets
+  // ============================================
+
+  onTabSelected(tabId: string): void {
+    this.activeTabId = tabId;
+  }
+
+  onTabAdd(): void {
+    this.editingTab = null;
+    this.showTabModal = true;
+  }
+
+  onTabEdit(tabId: string): void {
+    const tab = this.dashboardTabs.find(t => t.id === tabId);
+    if (tab) {
+      this.editingTab = tab;
+      this.showTabModal = true;
+    }
+  }
+
+  onTabDelete(tabId: string): void {
+    if (!this.currentCharacter) return;
+    
+    const success = this.storageService.deleteDashboardTab(this.currentCharacter.id, tabId);
+    if (success) {
+      this.dashboardTabs = this.storageService.getDashboardTabs(this.currentCharacter.id);
+      // Si l'onglet supprimé était actif, sélectionner le premier
+      if (this.activeTabId === tabId && this.dashboardTabs.length > 0) {
+        this.activeTabId = this.dashboardTabs[0].id;
+      }
+    } else {
+      alert('Impossible de supprimer cet onglet. Il doit être vide et il doit rester au moins un onglet.');
+    }
+  }
+
+  onTabSave(data: { name: string; icon: TabIcon }): void {
+    console.log('=== onTabSave appelé ===');
+    console.log('data:', data);
+    console.log('editingTab:', this.editingTab);
+    console.log('currentCharacter:', this.currentCharacter);
+    
+    if (!this.currentCharacter) return;
+
+    if (this.editingTab) {
+      // Modification d'un onglet existant
+      console.log('Mode EDITION - ID:', this.editingTab.id);
+      this.storageService.updateDashboardTab(
+        this.currentCharacter.id,
+        this.editingTab.id,
+        { name: data.name, icon: data.icon }
+      );
+    } else {
+      // Création d'un nouvel onglet
+      console.log('Mode CREATION');
+      try {
+        const newTab = this.storageService.addDashboardTab(
+          this.currentCharacter.id,
+          data.name,
+          data.icon
+        );
+        console.log('Nouvel onglet créé:', newTab);
+        this.activeTabId = newTab.id; // Sélectionner le nouvel onglet
+      } catch (error) {
+        alert((error as Error).message);
+        return;
+      }
+    }
+
+    // Recharger les onglets et le personnage
+    console.log('Rechargement du personnage...');
+    this.currentCharacter = this.characterService.getCurrentCharacter();
+    console.log('Personnage rechargé:', this.currentCharacter);
+    
+    this.dashboardTabs = this.storageService.getDashboardTabs(this.currentCharacter!.id);
+    console.log('Tabs rechargés:', this.dashboardTabs);
+    
+    this.closeTabModal();
+  }
+
+  closeTabModal(): void {
+    this.showTabModal = false;
+    this.editingTab = null;
+  }
+
+  /**
+   * Gestion du drop d'un élément sur un onglet
+   */
+  onTabDropped(targetTabId: string): void {
+    console.log('=== onTabDropped appelé ===');
+    console.log('targetTabId:', targetTabId);
+    console.log('draggedItem:', this.draggedItem);
+    
+    if (!this.draggedItem || !this.currentCharacter) {
+      console.log('Pas d\'élément dragué ou pas de personnage');
+      return;
+    }
+
+    // Ne rien faire si on drop sur l'onglet actuel
+    if (this.draggedItem.tabId === targetTabId) {
+      console.log('Drop sur le même onglet, rien à faire');
+      return;
+    }
+
+    console.log('Déplacement de l\'élément vers l\'onglet:', targetTabId);
+
+    // Mettre à jour l'élément : nouveau tabId et colonne 0
+    const updatedItem: DataItem = {
+      ...this.draggedItem,
+      tabId: targetTabId,
+      column: 0, // Première colonne du nouvel onglet
+      zone: undefined // Retirer la zone si elle existe
+    };
+
+    // Mettre à jour l'élément dans les données du personnage
+    const updatedCharacter = {
+      ...this.currentCharacter,
+      dataItems: this.currentCharacter.dataItems.map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    };
+
+    // Sauvegarder les modifications
+    this.characterService.updateCharacter(updatedCharacter);
+    
+    // Mettre à jour le personnage courant
+    this.currentCharacter = updatedCharacter;
+    this.dataItems = updatedCharacter.dataItems;
+
+    // Réinitialiser le drag
+    this.draggedItem = null;
+    
+    console.log('Élément déplacé avec succès');
+  }
+
+  get canAddTab(): boolean {
+    return this.dashboardTabs.length < 5;
+  }
+
+  /**
+   * Récupère les éléments de l'onglet actif
+   */
+  getActiveTabItems(): DataItem[] {
+    if (!this.activeTabId) return [];
+    return this.dataItems
+      .filter(item => item.tabId === this.activeTabId)
+      .sort((a, b) => a.order - b.order);
+  }
+
+  /**
+   * Récupère les éléments d'une colonne spécifique de l'onglet actif
+   */
+  getItemsByColumn(column: number): DataItem[] {
+    return this.getActiveTabItems()
+      .filter(item => (item.column || 0) === column)
+      .sort((a, b) => a.order - b.order);
+  }
+
+  /**
+   * Calcule le nombre de colonnes nécessaires pour l'onglet actif
+   */
+  getColumnCount(): number {
+    const items = this.getActiveTabItems();
+    if (items.length === 0) return 1;
+    
+    const maxColumn = Math.max(...items.map(item => item.column || 0));
+    return maxColumn + 1;
+  }
+
+  /**
+   * Génère un tableau des numéros de colonnes
+   */
+  getColumns(): number[] {
+    const count = this.getColumnCount();
+    return Array.from({ length: count }, (_, i) => i);
+  }
+
+  /**
+   * Récupère la largeur d'une colonne (1-4, par défaut 1)
+   */
+  getColumnWidth(columnIndex: number): number {
+    if (!this.activeTabId) return 1;
+    const activeTab = this.dashboardTabs.find(t => t.id === this.activeTabId);
+    if (!activeTab || !activeTab.columnWidths) return 1;
+    return activeTab.columnWidths[columnIndex] || 1;
+  }
+
+  /**
+   * Change la largeur d'une colonne (cycle entre 1, 2, 3, 4)
+   */
+  toggleColumnWidth(columnIndex: number): void {
+    if (!this.activeTabId || !this.currentCharacter) return;
+    
+    const activeTab = this.dashboardTabs.find(t => t.id === this.activeTabId);
+    if (!activeTab) return;
+    
+    // Initialiser columnWidths si nécessaire
+    if (!activeTab.columnWidths) {
+      activeTab.columnWidths = {};
+    }
+    
+    // Cycle entre 1, 2, 3, 4
+    const currentWidth = activeTab.columnWidths[columnIndex] || 1;
+    const newWidth = currentWidth >= 4 ? 1 : currentWidth + 1;
+    activeTab.columnWidths[columnIndex] = newWidth;
+    
+    // Sauvegarder les onglets
+    this.storageService.saveDashboardTabs(this.currentCharacter.id, this.dashboardTabs);
+    
+    // Recharger le personnage pour synchroniser
+    this.currentCharacter = this.characterService.getCurrentCharacter();
+  }
+
+  // ============================================
+  // Fin gestion des onglets
+  // ============================================
+
   getItemsByZone(zone: DashboardZone): DataItem[] {
     return this.dataItems
       .filter(item => item.zone === zone)
       .sort((a, b) => a.order - b.order);
   }
 
-  addItem(zone: DashboardZone): void {
-    this.currentZone = zone;
-    this.openCreateElementModal(zone);
+  addItem(zone?: DashboardZone, column?: number): void {
+    // Pour compatibilité avec l'ancien système
+    if (zone) {
+      this.currentZone = zone;
+    }
+    this.openCreateElementModal(zone, column);
   }
 
   // Nouvelle modale d'éléments
-  openCreateElementModal(zone?: DashboardZone): void {
+  openCreateElementModal(zone?: DashboardZone, column?: number): void {
+    // Utiliser le système d'onglets si disponible
+    if (!zone && this.activeTabId) {
+      // Nouveau système: pas de zone spécifiée, utiliser l'onglet actif
+      this.showCreateElementModal = true;
+      return;
+    }
+    
+    // Ancien système pour compatibilité
     this.currentZone = zone || DashboardZone.CENTER;
     this.showCreateElementModal = true;
   }
@@ -188,11 +445,25 @@ export class DashboardComponent implements OnInit {
         // Mode création : créer un nouvel élément avec l'ordre correct
         const currentCharacter = this.characterService.getCurrentCharacter();
         const existingItems = currentCharacter?.dataItems || [];
+        
+        // Utiliser tabId si disponible, sinon zone pour compatibilité
+        const tabId = this.activeTabId || undefined;
+        const zone = elementData.zone || undefined;
+        
         const newDataItem = this.convertElementToDataItem({
           ...elementData,
           id: this.generateId(),
-          position: this.getNextPosition(existingItems, elementData.zone!)
+          zone: zone || 'center', // Fallback pour la compatibilité
+          position: this.getNextPosition(existingItems, zone || 'center')
         } as Element);
+        
+        // Assigner au bon onglet si système d'onglets actif
+        if (tabId) {
+          newDataItem.tabId = tabId;
+          newDataItem.column = 0; // Par défaut, première colonne
+          delete newDataItem.zone; // Supprimer l'ancienne propriété
+        }
+        
         console.log('DEBUG: Creating new element:', newDataItem);
         this.storageService.saveDataItem(newDataItem);
       }
@@ -342,7 +613,7 @@ export class DashboardComponent implements OnInit {
       id: item.id,
       name: item.name,
       description: item.description,
-      zone: item.zone,
+      zone: item.zone as string, // Conversion de DashboardZone | undefined vers string
       position: item.order || 0,
       gameSystem
     };
@@ -598,7 +869,7 @@ export class DashboardComponent implements OnInit {
     console.log('DEBUG: onItemEdit called with item:', item);
     // Ouvrir la modal de modification de l'élément
     this.showCreateElementModal = true;
-    this.currentZone = item.zone;
+    this.currentZone = (item.zone || DashboardZone.CENTER); // Fournir une valeur par défaut si undefined
     this.editingItem = item;
     
     // Convertir et mettre en cache l'élément pour la modal
@@ -630,13 +901,77 @@ export class DashboardComponent implements OnInit {
   onDragOver(event: DragEvent): void {
     event.preventDefault(); // Nécessaire pour permettre le drop
     
-    // Ajouter une classe CSS pour l'effet visuel
+    // Détecter la colonne survolée
     const target = event.currentTarget as HTMLElement;
-    target.classList.add('drag-over');
+    const columnAttr = target.getAttribute('data-column');
+    if (columnAttr !== null) {
+      this.draggedOverColumn = parseInt(columnAttr, 10);
+    }
   }
 
   /**
-   * Gestion du drop sur une zone
+   * Gestion du dragleave sur une colonne
+   */
+  onDragLeave(event: DragEvent): void {
+    const target = event.currentTarget as HTMLElement;
+    const relatedTarget = event.relatedTarget as HTMLElement;
+    
+    // Vérifier si on quitte vraiment la colonne (pas juste un enfant)
+    if (!target.contains(relatedTarget)) {
+      this.draggedOverColumn = null;
+    }
+  }
+
+  /**
+   * Gestion du drop sur une colonne (nouveau système d'onglets)
+   */
+  onDropColumn(event: DragEvent, targetColumn: number): void {
+    event.preventDefault();
+    
+    // Réinitialiser l'état de survol
+    this.draggedOverColumn = null;
+    
+    // Récupérer l'ID de l'élément depuis le dataTransfer
+    const itemId = event.dataTransfer?.getData('text/plain');
+    
+    if (!itemId || !this.draggedItem || !this.currentCharacter || !this.activeTabId) {
+      return;
+    }
+
+    // Vérifier que l'élément dragué correspond à l'ID récupéré
+    if (this.draggedItem.id !== itemId) {
+      return;
+    }
+
+    // Créer une copie de l'élément avec le nouvel onglet et la nouvelle colonne
+    const updatedItem: DataItem = {
+      ...this.draggedItem,
+      tabId: this.activeTabId,
+      column: targetColumn,
+      zone: undefined // Retirer la zone si elle existe (migration)
+    };
+
+    // Mettre à jour l'élément dans les données du personnage
+    const updatedCharacter = {
+      ...this.currentCharacter,
+      dataItems: this.currentCharacter.dataItems.map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    };
+
+    // Sauvegarder les modifications
+    this.characterService.updateCharacter(updatedCharacter);
+    
+    // Mettre à jour le personnage courant
+    this.currentCharacter = updatedCharacter;
+    this.dataItems = updatedCharacter.dataItems;
+
+    // Réinitialiser le drag
+    this.draggedItem = null;
+  }
+
+  /**
+   * Gestion du drop sur une zone (ancien système - conservé pour compatibilité)
    */
   onDrop(event: DragEvent, targetZone: DashboardZone): void {
     event.preventDefault();

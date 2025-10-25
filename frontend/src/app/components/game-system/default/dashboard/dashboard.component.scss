@@ -182,7 +182,193 @@
 .dashboard-main {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
+
+// ========================================
+// Nouveau système d'onglets
+// ========================================
+
+.tab-content {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.columns-container {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0.5rem;
+  min-height: 0;
+}
+
+.column {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  
+  // Largeurs dynamiques basées sur data-column-width
+  &[data-column-width="2"] {
+    flex: 2;
+    max-width: calc(800px + 1rem);
+  }
+  
+  &[data-column-width="3"] {
+    flex: 3;
+    max-width: calc(1200px + 2rem);
+  }
+  
+  &[data-column-width="4"] {
+    flex: 4;
+    max-width: calc(1600px + 3rem);
+  }
+  
+  &.drag-over {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: #667eea;
+    border-style: dashed;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  }
+  
+  &.column-new {
+    border-style: dashed;
+    border-color: #ccc;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    
+    &.drag-over {
+      background: rgba(102, 126, 234, 0.1);
+      border-color: #667eea;
+    }
+  }
+}
+
+.column-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.column-width-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+
+  .width-indicator {
+    font-size: 0.8rem;
+    letter-spacing: -0.5px;
+  }
+
+  &:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.new-column-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #999;
+  
+  .placeholder-icon {
+    font-size: 2rem;
+    opacity: 0.5;
+  }
+  
+  .placeholder-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
+
+.empty-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  transition: all 0.2s ease;
+  
+  &.drag-over {
+    background: rgba(102, 126, 234, 0.05);
+    border: 2px dashed #667eea;
+    border-radius: 8px;
+  }
+}
+
+.empty-tab-content {
+  text-align: center;
+  color: #666;
+  
+  .empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #444;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    color: #888;
+    font-size: 0.9rem;
+  }
+  
+  .drag-hint {
+    margin-top: 1rem;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+}
+
+// ========================================
+// Ancien système de zones (conservé pour compatibilité)
+// ========================================
 
 .dashboard-grid {
   display: grid;
@@ -225,43 +411,30 @@
   display: flex;
   flex-direction: column;
   min-height: 120px;
-  // Suppression de max-height pour permettre l'expansion
 }
-
-// Suppression des contraintes de hauteur max
-// .zone-top,
-// .zone-bottom {
-//   max-height: 300px;
-// }
-
-// .zone-left,
-// .zone-center,
-// .zone-right {
-//   max-height: 600px;
-// }
 
 .zone-header {
   background: #f8f9fa;
-  padding: 0.25rem 1rem; // Réduction de moitié (était 0.5rem)
+  padding: 0.25rem 1rem;
   border-bottom: 1px solid #ddd;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex-shrink: 0;
-  min-height: 20px; // Réduction de moitié (était 40px)
+  min-height: 20px;
 }
 
 .btn-add {
   background: transparent;
   color: white;
   border: none;
-  padding: 4px 8px; // Réduction proportionnelle
+  padding: 4px 8px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 12px; // Réduction de la taille de police
+  font-size: 12px;
   font-weight: bold;
-  width: 24px; // Réduction de la taille (était 32px)
-  height: 24px; // Réduction de la taille (était 32px)
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -274,36 +447,27 @@
 .zone-content {
   padding: 0.75rem;
   flex: 1;
-  // Suppression de overflow-y: auto pour éviter les scrollbars
   min-height: 0;
+  transition: all 0.2s ease;
   
-  // Layout spécialisé pour zone-top : 4 colonnes
   &.zone-top-content {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.5rem;
     align-items: start;
   }
+  
+  &.drag-over {
+    background: rgba(76, 175, 80, 0.1);
+    border: 2px dashed #4caf50;
+    transform: scale(1.02);
+  }
+  
+  &.zone-top-content.drag-over {
+    transform: none;
+    background: rgba(76, 175, 80, 0.15);
+  }
 }
-
-// Suppression des styles de scrollbar puisqu'on n'en veut plus
-// .zone-content::-webkit-scrollbar {
-//   width: 6px;
-// }
-
-// .zone-content::-webkit-scrollbar-track {
-//   background: #f1f1f1;
-//   border-radius: 3px;
-// }
-
-// .zone-content::-webkit-scrollbar-thumb {
-//   background: #c1c1c1;
-//   border-radius: 3px;
-// }
-
-// .zone-content::-webkit-scrollbar-thumb:hover {
-//   background: #a1a1a1;
-// }
 
 .empty-zone {
   text-align: center;
@@ -312,53 +476,15 @@
   background: #f9f9f9;
   border-radius: 8px;
   border: 2px dashed #ddd;
-}
-
-.empty-zone p {
-  margin: 0 0 0.5rem 0;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.empty-zone small {
-  color: #999;
-  font-size: 0.8rem;
-}
-
-.combat-view, 
-.players-view {
-  padding: 2rem;
-  background: white;
-  margin: 2rem;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.import-export-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.hidden-file-input {
-  display: none;
-}
-
-// Styles pour le drag and drop
-.zone-content {
-  transition: all 0.2s ease;
   
-  &.drag-over {
-    background: rgba(76, 175, 80, 0.1);
-    border: 2px dashed #4caf50;
-    transform: scale(1.02);
+  p {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 500;
   }
   
-  // Style spécialisé pour la zone-top avec grid
-  &.zone-top-content.drag-over {
-    // Pour le grid, on évite le transform qui pourrait causer des problèmes
-    transform: none;
-    background: rgba(76, 175, 80, 0.15);
+  small {
+    color: #999;
+    font-size: 0.8rem;
   }
 }

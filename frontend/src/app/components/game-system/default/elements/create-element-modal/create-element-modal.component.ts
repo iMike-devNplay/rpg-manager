@@ -67,7 +67,7 @@ export class CreateElementModalComponent implements OnInit, OnChanges {
         type: this.editingItem.type,
         value: this.editingItem.value,
         description: this.editingItem.description || '',
-        zone: this.editingItem.zone,
+        zone: this.editingItem.zone || DashboardZone.CENTER, // Fournir une valeur par défaut
         hasProficiency: this.editingItem.hasProficiency || false,
         proficiencyBonusValue: 2, // Sera récupéré automatiquement
         allowQuickModification: this.editingItem.allowQuickModification !== false

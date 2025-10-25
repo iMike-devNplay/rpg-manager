@@ -1,0 +1,66 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-wrapper">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <!-- En-tête -->
+      <div class="modal-header">
+        <h2>{{ editingTab ? 'Modifier' : 'Créer' }} un onglet</h2>
+        <button class="close-btn" (click)="onClose()" type="button">×</button>
+      </div>
+
+      <!-- Corps -->
+      <form (ngSubmit)="onSave()" class="modal-body">
+        <!-- Nom de l'onglet -->
+        <div class="form-group">
+          <label for="tab-name">Nom de l'onglet *</label>
+          <input
+            id="tab-name"
+            type="text"
+            [(ngModel)]="tabName"
+            name="name"
+            class="form-control"
+            placeholder="Ex: Principal, Combat, Équipement..."
+            required
+            maxlength="20"
+          />
+          <small class="form-text">Maximum 20 caractères</small>
+        </div>
+
+        <!-- Sélection d'icône -->
+        <div class="form-group">
+          <label>Icône de l'onglet</label>
+          <div class="icon-grid">
+            <div
+              *ngFor="let icon of availableIcons"
+              class="icon-option"
+              [class.selected]="icon === selectedIcon"
+              (click)="onIconSelect(icon)"
+              [title]="iconLabels[icon]"
+            >
+              <span class="icon">{{ icon }}</span>
+              <span class="icon-label">{{ iconLabels[icon] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aperçu -->
+        <div class="form-group">
+          <label>Aperçu</label>
+          <div class="tab-preview">
+            <span class="preview-icon">{{ selectedIcon }}</span>
+            <span class="preview-name">{{ tabName || 'Nom de l\'onglet' }}</span>
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ editingTab ? 'Modifier' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

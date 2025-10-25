@@ -169,7 +169,12 @@ export class ElementDisplayComponent {
    * Gestionnaire pour les changements de valeur des éléments
    */
   onElementValueChange(newValue: any): void {
+    console.log('=== onElementValueChange ===');
+    console.log('Original item:', JSON.stringify(this.item, null, 2));
+    
     const updatedItem = { ...this.item, value: newValue };
+    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
+    
     // Persist the change immediately so parent views reflect saved state
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
@@ -179,7 +184,12 @@ export class ElementDisplayComponent {
    * Gestionnaire pour le toggle d'équipement
    */
   onEquipmentToggle(equipped: boolean): void {
+    console.log('=== onEquipmentToggle ===');
+    console.log('Original item:', JSON.stringify(this.item, null, 2));
+    
     const updatedItem = { ...this.item, equipped };
+    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
+    
     // Persist equipment toggle
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
@@ -189,7 +199,12 @@ export class ElementDisplayComponent {
    * Gestionnaire pour les changements de niveau
    */
   onLevelChange(newLevel: number): void {
+    console.log('=== onLevelChange ===');
+    console.log('Original item:', JSON.stringify(this.item, null, 2));
+    
     const updatedItem = { ...this.item, value: newLevel };
+    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
+    
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
   }
@@ -198,6 +213,9 @@ export class ElementDisplayComponent {
    * Gestionnaire pour les changements de HP
    */
   onHpChange(hpData: Partial<import('../../../../../models/element-types').HpElement>): void {
+    console.log('=== onHpChange ===');
+    console.log('Original item:', JSON.stringify(this.item, null, 2));
+    
     const updatedItem = { 
       ...this.item, 
       metadata: {
@@ -207,6 +225,8 @@ export class ElementDisplayComponent {
         temporaryHp: hpData.temporaryHp
       }
     };
+    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
+    
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
   }
@@ -244,8 +264,13 @@ export class ElementDisplayComponent {
    * Modifie rapidement la valeur
    */
   quickModify(change: number): void {
+    console.log('=== quickModify ===');
+    console.log('Original item:', JSON.stringify(this.item, null, 2));
+    
     if (this.canQuickModify()) {
       const updatedItem = this.elementService.quickModifyValue(this.item, change);
+      console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
+      
       // Ensure change is persisted
       this.storageService.saveDataItem(updatedItem);
       this.itemUpdated.emit(updatedItem);

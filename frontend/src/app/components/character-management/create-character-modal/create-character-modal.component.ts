@@ -36,7 +36,10 @@ export class CreateCharacterModalComponent {
         name: this.newCharacterName.trim(),
         gameSystem: this.selectedGameSystem
       });
-      // Ne pas réinitialiser immédiatement - laisser le parent gérer la fermeture
+      // Réinitialiser le formulaire après émission
+      this.resetForm();
+      // Émettre l'événement de fermeture
+      this.close.emit();
     }
   }
 

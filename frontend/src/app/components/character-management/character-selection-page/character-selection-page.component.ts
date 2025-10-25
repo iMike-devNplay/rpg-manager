@@ -98,6 +98,10 @@ export class CharacterSelectionPageComponent {
 
   closeCreate() {
     this.showCreate = false;
+    // Recharger la liste après fermeture pour être sûr d'avoir les dernières données
+    console.log('=== closeCreate: rechargement de la liste ===');
+    this.userCharacters = this.characterService.getUserCharacters();
+    console.log('=== Nombre de personnages après rechargement:', this.userCharacters.length);
   }
 
   async onCreated(data: any) {
@@ -105,11 +109,11 @@ export class CharacterSelectionPageComponent {
       console.log('=== Création personnage depuis character-selection ===');
       // Créer le personnage
       const newCharacter = await this.characterService.createCharacter(data.name, data.gameSystem);
-      console.log('=== Personnage créé, navigation vers dashboard ===');
+      console.log('=== Personnage créé:', newCharacter.id, newCharacter.name);
       
-      // Fermer la modale et naviguer directement vers le dashboard
-      this.showCreate = false;
-      this.router.navigate(['/dashboard']);
+      // Recharger la liste des personnages APRÈS la création complète
+      this.userCharacters = this.characterService.getUserCharacters();
+      console.log('=== Liste rechargée dans onCreated, nb personnages:', this.userCharacters.length);
     } catch (error) {
       console.error('Erreur lors de la création du personnage:', error);
       alert('Erreur lors de la création du personnage. Veuillez réessayer.');

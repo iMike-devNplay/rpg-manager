@@ -41,9 +41,6 @@ export class StorageService {
     
     // Ajouter l'utilisateur à la liste des utilisateurs existants
     this.addUserToList(user);
-    
-    // Créer un personnage par défaut si aucun n'existe
-    this.ensureDefaultCharacter(user);
   }
 
   getCurrentUser(): User | null {
@@ -61,28 +58,6 @@ export class StorageService {
   clearCurrentUser(): void {
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
-  }
-
-  // Créer un personnage par défaut si aucun n'existe
-  private ensureDefaultCharacter(user: User): void {
-    const existingCharacters = this.getCharacters(user.id);
-    if (existingCharacters.length === 0) {
-      const defaultCharacter: PlayerCharacter = {
-        id: this.generateId(),
-        name: `Personnage de ${user.username}`,
-        gameSystem: GameSystem.OTHER,
-        userId: user.id,
-        dataItems: [],
-        dataGroups: [],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      this.saveCharacter(defaultCharacter);
-      this.setCurrentCharacter(defaultCharacter);
-    } else {
-      // Si des personnages existent, charger le premier par défaut
-      this.setCurrentCharacter(existingCharacters[0]);
-    }
   }
 
   // Gestion des données générales
@@ -315,13 +290,25 @@ export class StorageService {
 
   // Gestion avancée des personnages
   createNewCharacter(name: string, gameSystem: GameSystem, userId: string): PlayerCharacter {
-    const newCharacter: PlayerCharacter = {
+    const characterId = this.generateId();
+    
+    // Créer l'onglet par défaut
+    const defaultTab: DashboardTab = {
       id: this.generateId(),
+      name: 'Principal',
+      icon: '📊',
+      order: 0,
+      characterId
+    };
+    
+    const newCharacter: PlayerCharacter = {
+      id: characterId,
       name: name.trim(),
       gameSystem,
       userId,
       dataItems: [],
       dataGroups: [],
+      dashboardTabs: [defaultTab],
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -419,6 +406,10 @@ export class StorageService {
       order: 0,
       characterId
     };
+    
+    // Sauvegarder l'onglet par défaut
+    this.saveDashboardTabs(characterId, [defaultTab]);
+    
     return [defaultTab];
   }
 

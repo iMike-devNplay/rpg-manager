@@ -85,17 +85,6 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    // Show character selector right after login
-    const sub = this.userService.justLoggedIn$.subscribe(flag => {
-      if (flag) {
-        // Rediriger vers la page de sélection de personnage
-        this.router.navigate(['/character']);
-        // reset the flag so it doesn't reopen repeatedly
-        this.userService.clearJustLoggedInFlag();
-      }
-    });
-    this.subscriptions.push(sub);
-
     this.characterService.currentCharacter$.subscribe(character => {
       this.currentCharacter = character;
       this.loadCharacterData();
@@ -104,18 +93,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
-  }
-
-  private loadUserData(): void {
-    if (this.currentUser) {
-      const characters = this.storageService.getCharacters(this.currentUser.id);
-      if (characters.length > 0) {
-        this.dataItems = characters[0].dataItems || [];
-      } else {
-        // Si aucun personnage n'existe, en créer un par défaut
-        this.dataItems = [];
-      }
-    }
   }
 
   private loadCharacterData(): void {
@@ -491,10 +468,11 @@ export class DashboardComponent implements OnInit {
       name: element.name,
       type: this.convertElementTypeToDataType(element.type),
       value: this.getNewElementValue(element),
-      zone: element.zone as DashboardZone,
+      tabId: this.activeTabId!, // Utiliser le tabId de l'onglet actif
+      column: 0, // Colonne par défaut
       order: element.position,
       description: element.description,
-      userId: this.userService.getCurrentUser()?.username || 'user' // Ajouter l'userId requis
+      userId: this.userService.getCurrentUser()?.id || '' // Utiliser l'ID de l'utilisateur
     };
 
     // Propriétés spécifiques selon le type

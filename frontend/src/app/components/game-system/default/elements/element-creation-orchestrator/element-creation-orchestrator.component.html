@@ -26,6 +26,15 @@
   (save)="onElementSaved($event)">
 </app-numeric-element-modal>
 
+<!-- Modal pour élément de sélection -->
+<app-select-element-modal
+  [isOpen]="showElementModal && selectedType === 'select'"
+  [editingElement]="selectDataItem"
+  [tabId]="zone"
+  (close)="onElementModalClose()"
+  (save)="onSelectElementSaved($event)">
+</app-select-element-modal>
+
 <!-- Modal pour points de vie (HP) -->
 <app-hp-modal
   [isOpen]="showElementModal && selectedType === 'hp'"

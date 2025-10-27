@@ -10,9 +10,10 @@
 >
   <!-- En-tête avec nom et boutons d'action -->
   <div class="element-header">
-    <span class="element-name">{{ item.name }}</span>
+    <span class="element-name" *ngIf="!shouldHideHeaderElements()">{{ item.name }}</span>
     <div class="element-actions">
       <button 
+        *ngIf="!shouldHideEditButton()"
         class="edit-btn" 
         (click)="editItem()" 
         title="Modifier l'élément"
@@ -20,6 +21,7 @@
         ✏️
       </button>
       <button 
+        *ngIf="!shouldHideDeleteButton()"
         class="delete-btn" 
         (click)="deleteItem()" 
         title="Supprimer l'élément"
@@ -51,6 +53,13 @@
       (delete)="deleteItem()"
       (valueChange)="onElementValueChange($event)">
     </app-numeric-element>
+
+    <!-- Élément select (liste déroulante) -->
+    <app-select-element 
+      *ngIf="element.type === 'select'"
+      [item]="item"
+      (valueChange)="onElementValueChange($event)">
+    </app-select-element>
 
     <!-- Attribut D&D -->
     <app-dnd-attribute-element 

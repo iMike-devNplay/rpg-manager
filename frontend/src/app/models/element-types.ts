@@ -1,6 +1,6 @@
 export type GameSystem = 'dnd5e' | 'pathfinder' | 'call-of-cthulhu' | null;
 
-export type ElementType = 'text' | 'numeric' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment' | 'hp' | 'attack';
+export type ElementType = 'text' | 'numeric' | 'select' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment' | 'hp' | 'attack';
 
 export interface ElementTypeConfig {
   id: ElementType;
@@ -32,6 +32,12 @@ export interface NumericElement extends BaseElement {
   min?: number;
   max?: number;
   canQuickModify?: boolean;
+}
+
+export interface SelectElement extends BaseElement {
+  type: 'select';
+  value: string;
+  options: { label: string; value: string }[];
 }
 
 export interface DndAttributeElement extends BaseElement {
@@ -125,4 +131,4 @@ export interface AttackElement extends BaseElement {
   misc: string; // Type de dégâts, type d'arme, etc.
 }
 
-export type Element = TextElement | NumericElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement | HpElement | AttackElement;
+export type Element = TextElement | NumericElement | SelectElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement | HpElement | AttackElement;

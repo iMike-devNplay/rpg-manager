@@ -1,0 +1,18 @@
+<div class="select-element">
+  <div class="select-display" (click)="toggleDropdown()">
+    <span class="selected-value">{{ selectedLabel }}</span>
+    <span class="dropdown-icon">{{ isOpen ? '▲' : '▼' }}</span>
+  </div>
+  
+  <select 
+    *ngIf="isOpen"
+    [value]="item.value" 
+    (change)="onValueChange($any($event.target).value)"
+    class="select-input"
+    size="5">
+    <option value="">-- Sélectionner --</option>
+    <option *ngFor="let option of options" [value]="option.value">
+      {{ option.label }}
+    </option>
+  </select>
+</div>

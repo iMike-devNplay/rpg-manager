@@ -34,6 +34,7 @@ export const TAB_ICON_LABELS: Record<TabIcon, string> = {
 export enum DataType {
   NUMERIC = 'numeric',
   TEXT = 'text',
+  SELECT = 'select',
   ATTRIBUTE = 'attribute',
   ATTRIBUTES_GROUP = 'attributes_group',
   PROFICIENCY_BONUS = 'proficiency_bonus',

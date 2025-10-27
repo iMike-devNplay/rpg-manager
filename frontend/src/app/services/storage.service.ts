@@ -102,23 +102,30 @@ export class StorageService {
 
   // Gestion des éléments de données
   saveDataItem(item: DataItem): void {
-    console.log('DEBUG: saveDataItem called with:', item);
+    // Removed debug logging for production readiness
     const currentCharacter = this.getCurrentCharacter();
-    console.log('DEBUG: currentCharacter from storage:', currentCharacter);
-    
+
     if (currentCharacter) {
       const existingIndex = currentCharacter.dataItems.findIndex(i => i.id === item.id);
       if (existingIndex >= 0) {
-        console.log('DEBUG: Updating existing item at index:', existingIndex);
-        currentCharacter.dataItems[existingIndex] = item;
+        const oldItem = currentCharacter.dataItems[existingIndex];
+
+        // Préserver les metadata de l'ancien item et ne mettre à jour que ce qui change
+        currentCharacter.dataItems[existingIndex] = {
+          ...oldItem,
+          ...item,
+          metadata: {
+            ...(oldItem.metadata || {}),
+            ...(item.metadata || {})
+          }
+        };
       } else {
-        console.log('DEBUG: Adding new item to dataItems');
-        currentCharacter.dataItems.push(item);
+        currentCharacter.dataItems.push({...item});
       }
-      console.log('DEBUG: Calling updateCharacter with:', currentCharacter);
+
       this.updateCharacter(currentCharacter);
     } else {
-      console.error('DEBUG: No current character found!');
+      console.error('No current character found when saving data item');
     }
   }
 
@@ -224,21 +231,15 @@ export class StorageService {
   }
 
   setCurrentCharacter(character: PlayerCharacter): void {
-    console.log('=== setCurrentCharacter appelé ===');
-    console.log('Character reçu:', character.id, character.name);
-    
-    // Toujours récupérer les données fraîches depuis rpg-manager-data
+    // Refresh from master storage if available, otherwise use provided character
     const data = this.getStorageData();
     const freshCharacter = data.characters?.find((c: PlayerCharacter) => c.id === character.id);
-    
+
     if (freshCharacter) {
-      console.log('Personnage frais trouvé dans storage:', freshCharacter.id);
-      console.log('Nombre de dataItems:', freshCharacter.dataItems?.length || 0);
-      console.log('Nombre de dashboardTabs:', freshCharacter.dashboardTabs?.length || 0);
       localStorage.setItem(this.CURRENT_CHARACTER_KEY, JSON.stringify(freshCharacter));
       this.currentCharacterSubject.next(freshCharacter);
     } else {
-      console.warn('Personnage non trouvé dans storage, utilisation du personnage reçu');
+      console.warn('Character not found in storage, using provided character');
       localStorage.setItem(this.CURRENT_CHARACTER_KEY, JSON.stringify(character));
       this.currentCharacterSubject.next(character);
     }
@@ -336,15 +337,13 @@ export class StorageService {
   }
 
   updateCharacter(character: PlayerCharacter): void {
-    console.log('DEBUG: updateCharacter called with:', character);
+    // Update and persist character
     character.updatedAt = new Date();
     this.saveCharacter(character);
-    
-    // Si c'est le personnage actuel, le mettre à jour aussi
+
+    // If it's the current character, refresh it
     const currentCharacter = this.getCurrentCharacter();
-    console.log('DEBUG: Current character before update:', currentCharacter);
     if (currentCharacter && currentCharacter.id === character.id) {
-      console.log('DEBUG: Updating current character via setCurrentCharacter');
       this.setCurrentCharacter(character);
     }
   }
@@ -390,26 +389,18 @@ export class StorageService {
    * Récupère les onglets d'un personnage
    */
   getDashboardTabs(characterId: string): DashboardTab[] {
-    console.log('=== getDashboardTabs appelé ===');
-    console.log('characterId:', characterId);
-    
     // Récupérer tous les personnages sans filtrer par userId
     const data = this.getStorageData();
     const characters: PlayerCharacter[] = data.characters || [];
     const character = characters.find(c => c.id === characterId);
-    
-    console.log('Personnage trouvé:', character?.name);
-    console.log('Tabs bruts:', character?.dashboardTabs);
-    
+
     if (character?.dashboardTabs && character.dashboardTabs.length > 0) {
       // Trier les onglets par ordre
       const sortedTabs = [...character.dashboardTabs].sort((a, b) => a.order - b.order);
-      console.log('Tabs triés:', sortedTabs);
       return sortedTabs;
     }
-    
+
     // Si aucun onglet n'existe, créer un onglet par défaut
-    console.log('Aucun onglet trouvé, création du tab par défaut');
     return this.createDefaultTab(characterId);
   }
 
@@ -435,29 +426,19 @@ export class StorageService {
    * Sauvegarde les onglets d'un personnage
    */
   saveDashboardTabs(characterId: string, tabs: DashboardTab[]): void {
-    console.log('=== saveDashboardTabs appelé ===');
-    console.log('characterId:', characterId);
-    console.log('tabs à sauvegarder:', tabs);
-    
     const data = this.getStorageData();
     if (!data.characters) return;
-    
+
     const characterIndex = data.characters.findIndex((c: PlayerCharacter) => c.id === characterId);
     if (characterIndex !== -1) {
       data.characters[characterIndex].dashboardTabs = tabs;
       data.characters[characterIndex].updatedAt = new Date();
       this.setStorageData(data);
-      
-      console.log('Tabs sauvegardés dans localStorage');
-      console.log('Tabs du personnage après sauvegarde:', data.characters[characterIndex].dashboardTabs);
-      
+
       // Mettre à jour le personnage courant si c'est celui-ci
       if (this.currentCharacterSubject.value?.id === characterId) {
-        console.log('Mise à jour du currentCharacterSubject ET du current-character localStorage');
         this.setCurrentCharacter(data.characters[characterIndex]);
       }
-    } else {
-      console.log('Personnage non trouvé!');
     }
   }
 

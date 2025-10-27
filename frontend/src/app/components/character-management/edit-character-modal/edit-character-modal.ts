@@ -34,7 +34,6 @@ export class EditCharacterModalComponent implements OnInit, OnChanges {
   }
 
   onSubmit() {
-    console.log('Form submitted with:', this.characterName);
     if (this.characterName?.trim()) {
       this.characterUpdated.emit({ name: this.characterName.trim() });
       this.onClose();

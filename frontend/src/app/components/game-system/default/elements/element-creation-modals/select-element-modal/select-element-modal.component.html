@@ -1,0 +1,112 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ editingElement ? 'Modifier' : 'Créer' }} un élément de sélection</h2>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+    
+    <form (ngSubmit)="onSave()" class="modal-body">
+      <div class="form-group">
+        <label for="name">Nom de l'élément <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="name"
+          [(ngModel)]="formData.name"
+          name="name"
+          placeholder="Ex: Origine, Classe, Alignement..."
+          required
+          class="form-control"
+          [class.invalid]="formData.name.trim().length === 0 && formData.name.length > 0"
+        >
+        <small class="form-help">Le nom qui apparaîtra en en-tête de l'élément</small>
+      </div>
+
+      <!-- Valeur sélectionnée (déplacé ici) -->
+      <div class="form-group" *ngIf="formData.options.length > 0">
+        <label for="value">Valeur sélectionnée</label>
+        <select 
+          id="value"
+          [(ngModel)]="formData.value"
+          name="value"
+          class="form-control"
+        >
+          <option value="">-- Aucune sélection --</option>
+          <option *ngFor="let option of formData.options" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <small class="form-help">Valeur actuellement sélectionnée</small>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description (optionnel)</label>
+        <textarea 
+          id="description"
+          [(ngModel)]="formData.description"
+          name="description"
+          placeholder="Description ou notes additionnelles..."
+          class="form-control textarea"
+          rows="2"
+        ></textarea>
+        <small class="form-help">Apparaîtra au survol de l'élément</small>
+      </div>
+
+      <!-- Gestion des options -->
+      <div class="form-group">
+        <div class="options-header">
+          <label>Options de sélection <span class="required">*</span></label>
+          <button 
+            type="button" 
+            class="collapse-toggle" 
+            (click)="optionsCollapsed = !optionsCollapsed"
+            *ngIf="formData.options.length > 0"
+            [title]="optionsCollapsed ? 'Afficher les options' : 'Masquer les options'">
+            {{ optionsCollapsed ? '▼' : '▲' }} {{ formData.options.length }} option(s)
+          </button>
+        </div>
+        
+        <!-- Liste des options existantes (collapsible) -->
+        <div class="options-list" *ngIf="formData.options.length > 0 && !optionsCollapsed">
+          <div class="option-item" *ngFor="let option of formData.options; let i = index">
+            <span class="option-label">{{ option.label }}</span>
+            <span class="option-value">({{ option.value }})</span>
+            <button type="button" class="btn-remove" (click)="removeOption(i)" title="Supprimer cette option">×</button>
+          </div>
+        </div>
+
+        <!-- Ajout de nouvelles options -->
+        <div class="add-option-form">
+          <div class="add-option-inputs">
+            <input 
+              type="text" 
+              [(ngModel)]="newOptionLabel"
+              name="newOptionLabel"
+              placeholder="Libellé (ex: Humain)"
+              class="form-control small"
+            >
+            <input 
+              type="text" 
+              [(ngModel)]="newOptionValue"
+              name="newOptionValue"
+              placeholder="Valeur (ex: human)"
+              class="form-control small"
+            >
+            <button type="button" class="btn btn-add" (click)="addOption()" [disabled]="!newOptionLabel.trim() || !newOptionValue.trim()">
+              + Ajouter
+            </button>
+          </div>
+          <small class="form-help">Ajoutez au moins une option. Le libellé est affiché, la valeur est stockée.</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">
+          {{ editingElement ? 'Enregistrer' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

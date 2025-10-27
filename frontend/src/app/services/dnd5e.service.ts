@@ -17,10 +17,9 @@ export class Dnd5eService {
    * Initialise un personnage D&D 5e avec les éléments de base
    */
   async initializeDnd5eCharacter(character: PlayerCharacter): Promise<void> {
-    console.log('=== Initialisation D&D 5e démarrée ===');
+  // Initialisation D&D 5e démarrée
     try {
       const dnd5eData = await this.gameSystemDataService.loadGameSystemData(GameSystem.DND5E).toPromise();
-      console.log('Données D&D 5e chargées:', dnd5eData);
       if (!dnd5eData) {
         throw new Error('Impossible de charger les données D&D 5e');
       }
@@ -28,34 +27,31 @@ export class Dnd5eService {
       // Récupérer ou créer les onglets du personnage
       let tabs = this.storageService.getDashboardTabs(character.id);
       if (!tabs || tabs.length === 0) {
-        console.log('Aucun onglet trouvé, création d\'un onglet par défaut');
         tabs = [this.storageService.addDashboardTab(character.id, 'Principal', '📊')];
       }
       const firstTabId = tabs[0].id;
-      console.log('Utilisation de l\'onglet:', firstTabId);
 
       const elementsToCreate: DataItem[] = [];
 
       // 4a - Création du nouveau bonus de maîtrise D&D
-      console.log('Création du bonus de maîtrise D&D...');
+  // Création du bonus de maîtrise D&D
       elementsToCreate.push(this.createDndProficiencyBonus(character.userId, firstTabId));
 
       // 4a-bis - Création du niveau D&D
-      console.log('Création du niveau D&D...');
+  // Création du niveau D&D
       elementsToCreate.push(this.createDndLevel(character.userId, firstTabId));
 
       // 4a-ter - Création du groupe d'attributs
-      console.log('Création du groupe d\'attributs...');
+  // Création du groupe d'attributs
       elementsToCreate.push(this.createAttributesGroup(character.userId, firstTabId));
 
       // 4a-qua - Création du groupe de compétences
-      console.log('Création du groupe de compétences...');
+  // Création du groupe de compétences
       elementsToCreate.push(this.createSkillsGroup(character.userId, firstTabId));
 
       // 4b - Anciens attributs individuels désactivés - remplacés par le groupe d'attributs
       /*
       if (dnd5eData.attributes) {
-        console.log('Création des attributs:', dnd5eData.attributes.length);
         dnd5eData.attributes.forEach((attr: any) => {
           elementsToCreate.push(this.createAttribute(attr, character.userId));
         });
@@ -63,22 +59,19 @@ export class Dnd5eService {
       */
 
       // 4d - Création de l'élément Origine
-      if (dnd5eData.origins) {
-        console.log('Création de l\'origine...');
-        elementsToCreate.push(this.createOriginElement(dnd5eData.origins, character.userId, firstTabId));
+      if (dnd5eData.origines) {
+        elementsToCreate.push(this.createOriginElement(dnd5eData.origines, character.userId, firstTabId));
       }
 
       // 4e - Création de l'élément Classe
       if (dnd5eData.classes) {
-        console.log('Création de la classe...');
         elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId, firstTabId));
       }
 
-      console.log('Éléments à créer:', elementsToCreate.length);
+  // Nombre d'éléments à créer: elementsToCreate.length
 
       // Sauvegarder tous les éléments directement sur le personnage
       for (const element of elementsToCreate) {
-        console.log('Sauvegarde de:', element.name);
         // Ajouter directement à la liste des dataItems du personnage
         if (!character.dataItems) {
           character.dataItems = [];
@@ -89,31 +82,11 @@ export class Dnd5eService {
       // Mettre à jour le personnage dans le storage
       this.storageService.updateCharacter(character);
 
-      console.log('=== Initialisation D&D 5e terminée ===');
+  // Initialisation D&D 5e terminée
     } catch (error) {
       console.error('Erreur lors de l\'initialisation du personnage D&D 5e:', error);
       throw error;
     }
-  }
-
-  /**
-   * Crée l'élément bonus de maîtrise (ancien - à supprimer)
-   */
-  private createProficiencyBonus(userId: string): DataItem {
-    return {
-      id: this.storageService.generateId(),
-      name: 'Bonus de maîtrise',
-      type: DataType.NUMERIC,
-      value: 2, // 4f-1 - par défaut à 2
-      zone: DashboardZone.TOP,
-      order: 0,
-      userId,
-      description: 'Bonus de maîtrise du personnage (augmente avec le niveau)',
-      allowQuickModification: true,
-      metadata: {
-        dnd5eType: 'proficiency-bonus'
-      }
-    };
   }
 
   /**
@@ -255,12 +228,14 @@ export class Dnd5eService {
   /**
    * Crée l'élément Origine
    */
-  private createOriginElement(origins: any[], userId: string, tabId: string): DataItem {
+  private createOriginElement(origines: any[], userId: string, tabId: string): DataItem {
+  const mappedOptions = origines.map(o => ({ label: o.name, value: o.name }));
+    
     return {
       id: this.storageService.generateId(),
       name: 'Origine',
-      type: DataType.TEXT,
-      value: 'Non définie',
+      type: DataType.SELECT,
+      value: '',
       tabId: tabId,
       column: 0,
       order: 2,
@@ -269,7 +244,7 @@ export class Dnd5eService {
       allowQuickModification: true,
       metadata: {
         dnd5eType: 'origin',
-        availableOptions: origins
+        availableOptions: mappedOptions
       }
     };
   }
@@ -278,11 +253,13 @@ export class Dnd5eService {
    * Crée l'élément Classe
    */
   private createClassElement(classes: any[], userId: string, tabId: string): DataItem {
+  const mappedOptions = classes.map(c => ({ label: c.name, value: c.name }));
+    
     return {
       id: this.storageService.generateId(),
       name: 'Classe',
-      type: DataType.TEXT,
-      value: 'Non définie',
+      type: DataType.SELECT,
+      value: '',
       tabId: tabId,
       column: 0,
       order: 3,
@@ -291,7 +268,7 @@ export class Dnd5eService {
       allowQuickModification: true,
       metadata: {
         dnd5eType: 'class',
-        availableOptions: classes
+        availableOptions: mappedOptions
       }
     };
   }
@@ -386,8 +363,6 @@ export class Dnd5eService {
       
       // Sauvegarder
       this.storageService.saveDataItem(proficiencyBonusItem);
-      
-      console.log(`Bonus de maîtrise mis à jour: niveau ${newLevel} → bonus +${newBonus}`);
     }
   }
 }

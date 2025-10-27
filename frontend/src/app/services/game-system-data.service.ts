@@ -6,7 +6,7 @@ export interface GameSystemData {
   'game-system': string;
   name: string;
   classes?: any[];
-  origins?: any[];
+  origines?: any[];
   attributes?: any[];
 }
 

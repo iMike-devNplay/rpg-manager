@@ -8,6 +8,7 @@ import { CharacterService } from '../../../../../services/character.service';
 import { TextElementComponent } from '../element-types/text-element/text-element.component';
 import { NumericElementComponent } from '../element-types/numeric-element/numeric-element.component';
 import { EquipmentElementComponent } from '../element-types/equipment-element/equipment-element.component';
+import { SelectElementComponent } from '../../../../elements/element-types/select-element/select-element.component';
 import { HpElementComponent } from '../../../../elements/element-types/hp-element/hp-element.component';
 import { AttackElementComponent } from '../../../../elements/element-types/attack-element/attack-element.component';
 import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-types/dnd-attribute-element/dnd-attribute-element.component';
@@ -23,6 +24,7 @@ import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-grou
     CommonModule,
     TextElementComponent,
     NumericElementComponent,
+    SelectElementComponent,
     DndAttributeElementComponent,
     DndAttributesGroupComponent,
     DndProficiencyBonusComponent,
@@ -155,6 +157,14 @@ export class ElementDisplayComponent {
           damage: this.item.metadata?.['damage'] || '',
           misc: this.item.metadata?.['misc'] || ''
         };
+      case DataType.SELECT:
+      case 'select':
+        return {
+          ...baseElement,
+          type: 'select',
+          value: this.item.value as string,
+          options: this.item.metadata?.availableOptions || []
+        };
       default:
         // Fallback vers text
         return {
@@ -169,26 +179,34 @@ export class ElementDisplayComponent {
    * Gestionnaire pour les changements de valeur des éléments
    */
   onElementValueChange(newValue: any): void {
-    console.log('=== onElementValueChange ===');
-    console.log('Original item:', JSON.stringify(this.item, null, 2));
-    
-    const updatedItem = { ...this.item, value: newValue };
-    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
-    
-    // Persist the change immediately so parent views reflect saved state
-    this.storageService.saveDataItem(updatedItem);
-    this.itemUpdated.emit(updatedItem);
+    // Récupérer l'item directement depuis le localStorage brut
+    const rawData = localStorage.getItem('rpg-manager-data');
+    if (rawData) {
+      const parsedData = JSON.parse(rawData);
+      const currentCharacterId = this.storageService.getCurrentCharacter()?.id;
+      const character = parsedData.characters?.find((c: any) => c.id === currentCharacterId);
+      const itemFromRawStorage = character?.dataItems?.find((i: any) => i.id === this.item.id);
+      
+      if (!itemFromRawStorage) {
+        console.error('Item not found in storage!');
+        return;
+      }
+      
+      // Faire une copie profonde de l'item du storage
+      const updatedItem: DataItem = JSON.parse(JSON.stringify(itemFromRawStorage));
+      updatedItem.value = newValue;
+      
+      // Persist the change immediately so parent views reflect saved state
+      this.storageService.saveDataItem(updatedItem);
+      this.itemUpdated.emit(updatedItem);
+    }
   }
 
   /**
    * Gestionnaire pour le toggle d'équipement
    */
   onEquipmentToggle(equipped: boolean): void {
-    console.log('=== onEquipmentToggle ===');
-    console.log('Original item:', JSON.stringify(this.item, null, 2));
-    
     const updatedItem = { ...this.item, equipped };
-    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
     
     // Persist equipment toggle
     this.storageService.saveDataItem(updatedItem);
@@ -199,11 +217,7 @@ export class ElementDisplayComponent {
    * Gestionnaire pour les changements de niveau
    */
   onLevelChange(newLevel: number): void {
-    console.log('=== onLevelChange ===');
-    console.log('Original item:', JSON.stringify(this.item, null, 2));
-    
     const updatedItem = { ...this.item, value: newLevel };
-    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
     
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
@@ -213,9 +227,6 @@ export class ElementDisplayComponent {
    * Gestionnaire pour les changements de HP
    */
   onHpChange(hpData: Partial<import('../../../../../models/element-types').HpElement>): void {
-    console.log('=== onHpChange ===');
-    console.log('Original item:', JSON.stringify(this.item, null, 2));
-    
     const updatedItem = { 
       ...this.item, 
       metadata: {
@@ -225,7 +236,6 @@ export class ElementDisplayComponent {
         temporaryHp: hpData.temporaryHp
       }
     };
-    console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
     
     this.storageService.saveDataItem(updatedItem);
     this.itemUpdated.emit(updatedItem);
@@ -264,12 +274,8 @@ export class ElementDisplayComponent {
    * Modifie rapidement la valeur
    */
   quickModify(change: number): void {
-    console.log('=== quickModify ===');
-    console.log('Original item:', JSON.stringify(this.item, null, 2));
-    
     if (this.canQuickModify()) {
       const updatedItem = this.elementService.quickModifyValue(this.item, change);
-      console.log('Updated item:', JSON.stringify(updatedItem, null, 2));
       
       // Ensure change is persisted
       this.storageService.saveDataItem(updatedItem);
@@ -329,6 +335,41 @@ export class ElementDisplayComponent {
    */
   isAttribute(): boolean {
     return this.item.type === DataType.ATTRIBUTE;
+  }
+
+  /**
+   * Vérifie si on doit masquer le titre et le bouton supprimer
+   * (éléments avec leur propre titre intégré)
+   */
+  shouldHideHeaderElements(): boolean {
+    return this.item.type === DataType.DND_SKILLS_GROUP ||
+           this.item.type === DataType.ATTRIBUTES_GROUP ||
+           this.item.type === DataType.DND_PROFICIENCY_BONUS ||
+           this.item.type === DataType.DND_LEVEL;
+  }
+
+  /**
+   * Vérifie si on doit masquer le bouton modifier
+   * (éléments calculés automatiquement)
+   */
+  shouldHideEditButton(): boolean {
+    return this.item.type === DataType.DND_PROFICIENCY_BONUS ||
+           this.item.type === DataType.DND_LEVEL;
+  }
+
+  /**
+   * Vérifie si on doit masquer le bouton supprimer
+   * (éléments auto-créés par le système qui ne peuvent pas être supprimés)
+   */
+  shouldHideDeleteButton(): boolean {
+    // Éléments avec titre intégré
+    if (this.shouldHideHeaderElements()) {
+      return true;
+    }
+    
+    // Éléments auto-créés identifiés par leur nom
+    const autoCreatedElements = ['Origine', 'Classe', 'Race', 'Background'];
+    return autoCreatedElements.includes(this.item.name);
   }
 
   /**

@@ -19,6 +19,14 @@ export const ELEMENT_TYPES_CONFIG: ElementTypeConfig[] = [
     category: 'basic'
   },
   {
+    id: 'select',
+    name: 'Sélection',
+    description: 'Liste déroulante avec options prédéfinies',
+    gameSystem: null,
+    icon: '📋',
+    category: 'basic'
+  },
+  {
     id: 'hp',
     name: 'Points de vie',
     description: 'Gestion des points de vie (max, courant, temporaires)',

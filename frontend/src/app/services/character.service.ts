@@ -48,31 +48,21 @@ export class CharacterService {
 
   // Créer un nouveau personnage
   async createCharacter(name: string, gameSystem: GameSystem): Promise<PlayerCharacter> {
-    console.log('=== createCharacter service appelée ===');
+  // createCharacter called
     const user = this.userService.getCurrentUser();
     if (!user) {
       throw new Error('Aucun utilisateur connecté');
     }
 
-    console.log('=== Création du personnage via storage ===');
     const newCharacter = this.storageService.createNewCharacter(name, gameSystem, user.id);
-    
-    console.log('Character créé:', newCharacter);
-    console.log('GameSystem:', gameSystem);
-    console.log('Has game system data:', this.gameSystemDataService.hasGameSystemData(gameSystem));
-    
-    console.log('=== Vérification initialisation système ===');
+
     // Initialiser avec les données spécifiques au système de jeu si disponibles
     if (this.gameSystemDataService.hasGameSystemData(gameSystem)) {
-      console.log('Initialisation D&D 5e...');
       if (gameSystem === GameSystem.DND5E) {
-        console.log('=== Début initialisation D&D 5e ===');
         await this.dnd5eService.initializeDnd5eCharacter(newCharacter);
-        console.log('Initialisation D&D 5e terminée');
       }
     }
-    
-    console.log('=== createCharacter service terminée avec succès ===');
+
     return newCharacter;
   }
 

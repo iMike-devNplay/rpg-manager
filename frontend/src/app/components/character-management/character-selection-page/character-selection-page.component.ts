@@ -89,7 +89,6 @@ export class CharacterSelectionPageComponent implements OnInit {
 
   ngOnInit() {
     // Supprimer le personnage courant lors de l'arrivée sur l'écran de sélection
-    console.log('=== Arrivée sur écran de sélection - Suppression du personnage courant ===');
     this.characterService.clearCurrentCharacter();
   }
 
@@ -105,21 +104,16 @@ export class CharacterSelectionPageComponent implements OnInit {
   closeCreate() {
     this.showCreate = false;
     // Recharger la liste après fermeture pour être sûr d'avoir les dernières données
-    console.log('=== closeCreate: rechargement de la liste ===');
     this.userCharacters = this.characterService.getUserCharacters();
-    console.log('=== Nombre de personnages après rechargement:', this.userCharacters.length);
   }
 
   async onCreated(data: any) {
     try {
-      console.log('=== Création personnage depuis character-selection ===');
       // Créer le personnage
       const newCharacter = await this.characterService.createCharacter(data.name, data.gameSystem);
-      console.log('=== Personnage créé:', newCharacter.id, newCharacter.name);
       
       // Recharger la liste des personnages APRÈS la création complète
       this.userCharacters = this.characterService.getUserCharacters();
-      console.log('=== Liste rechargée dans onCreated, nb personnages:', this.userCharacters.length);
     } catch (error) {
       console.error('Erreur lors de la création du personnage:', error);
       alert('Erreur lors de la création du personnage. Veuillez réessayer.');

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ElementTypeSelectionModalComponent } from '../element-type-selection-modal/element-type-selection-modal.component';
 import { TextElementModalComponent } from '../element-creation-modals/text-element-modal/text-element-modal.component';
 import { NumericElementModalComponent } from '../element-creation-modals/numeric-element-modal/numeric-element-modal.component';
+import { SelectElementModalComponent } from '../element-creation-modals/select-element-modal/select-element-modal.component';
 import { HpModalComponent } from '../element-creation-modals/hp-modal/hp-modal.component';
 import { AttackModalComponent } from '../element-creation-modals/attack-modal/attack-modal.component';
 import { DndAttributeModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-attribute-modal/dnd-attribute-modal.component';
@@ -13,6 +14,7 @@ import { DndSpellModalComponent } from '../../../dnd5e/elements/element-creation
 import { DndSkillsGroupModalComponent } from '../../../dnd5e/elements/modals/dnd-skills-group-modal/dnd-skills-group-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
 import { ElementType, Element, GameSystem } from '../../../../../models/element-types';
+import { DataItem } from '../../../../../models/rpg.models';
 
 @Component({
   selector: 'app-element-creation-orchestrator',
@@ -22,6 +24,7 @@ import { ElementType, Element, GameSystem } from '../../../../../models/element-
     ElementTypeSelectionModalComponent,
     TextElementModalComponent,
     NumericElementModalComponent,
+    SelectElementModalComponent,
     HpModalComponent,
     AttackModalComponent,
     DndAttributeModalComponent,
@@ -40,6 +43,7 @@ export class ElementCreationOrchestratorComponent {
   @Input() gameSystem: GameSystem = null;
   @Input() zone = '';
   @Input() editingElement: Element | null = null; // null = création, sinon édition
+  @Input() editingDataItem: DataItem | null = null; // Pour les éléments qui utilisent DataItem (comme SELECT)
   
   @Output() close = new EventEmitter<void>();
   @Output() elementSaved = new EventEmitter<Partial<Element>>();
@@ -101,6 +105,12 @@ export class ElementCreationOrchestratorComponent {
     this.close.emit();
   }
 
+  onSelectElementSaved(elementData: Partial<DataItem>): void {
+    // Convertir DataItem en Element pour la compatibilité
+    this.elementSaved.emit(elementData as any);
+    this.close.emit();
+  }
+
   // Getters pour les éléments typés (casting sécurisé)
   get textElement() {
     return this.editingElement?.type === 'text' ? this.editingElement : null;
@@ -108,6 +118,17 @@ export class ElementCreationOrchestratorComponent {
 
   get numericElement() {
     return this.editingElement?.type === 'numeric' ? this.editingElement : null;
+  }
+
+  get selectElement() {
+    return this.editingElement?.type === 'select' ? this.editingElement : null;
+  }
+
+  get selectDataItem(): DataItem | null {
+    // Pour la modal SELECT qui utilise DataItem
+    // Utiliser editingDataItem si disponible (contient les metadata originaux)
+    // Sinon fallback sur editingElement
+    return this.editingDataItem || (this.editingElement as any);
   }
 
   get dndAttributeElement() {

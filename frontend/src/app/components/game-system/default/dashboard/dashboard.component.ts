@@ -96,13 +96,9 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadCharacterData(): void {
-    console.log('=== loadCharacterData début ===');
     if (this.currentCharacter) {
-      console.log('=== Personnage actuel trouvé:', this.currentCharacter.name);
-      
       // Migration automatique vers le système d'onglets
       if (!this.currentCharacter.dashboardTabs || this.currentCharacter.dashboardTabs.length === 0) {
-        console.log('=== Migration nécessaire vers le système d\'onglets ===');
         this.currentCharacter = this.storageService.migrateLegacyZonesToTabs(this.currentCharacter);
       }
       
@@ -115,15 +111,11 @@ export class DashboardComponent implements OnInit {
       }
       
       this.dataItems = this.currentCharacter.dataItems || [];
-      console.log('=== Nombre d\'éléments chargés:', this.dataItems.length);
-      console.log('=== Nombre d\'onglets:', this.dashboardTabs.length);
     } else {
-      console.log('=== Aucun personnage actuel ===');
       this.dataItems = [];
       this.dashboardTabs = [];
       this.activeTabId = null;
     }
-    console.log('=== loadCharacterData terminé ===');
   }
 
   getModeLabel(mode: UserMode): string {
@@ -192,16 +184,10 @@ export class DashboardComponent implements OnInit {
   }
 
   onTabSave(data: { name: string; icon: TabIcon }): void {
-    console.log('=== onTabSave appelé ===');
-    console.log('data:', data);
-    console.log('editingTab:', this.editingTab);
-    console.log('currentCharacter:', this.currentCharacter);
-    
     if (!this.currentCharacter) return;
 
     if (this.editingTab) {
       // Modification d'un onglet existant
-      console.log('Mode EDITION - ID:', this.editingTab.id);
       this.storageService.updateDashboardTab(
         this.currentCharacter.id,
         this.editingTab.id,
@@ -209,14 +195,12 @@ export class DashboardComponent implements OnInit {
       );
     } else {
       // Création d'un nouvel onglet
-      console.log('Mode CREATION');
       try {
         const newTab = this.storageService.addDashboardTab(
           this.currentCharacter.id,
           data.name,
           data.icon
         );
-        console.log('Nouvel onglet créé:', newTab);
         this.activeTabId = newTab.id; // Sélectionner le nouvel onglet
       } catch (error) {
         alert((error as Error).message);
@@ -225,12 +209,8 @@ export class DashboardComponent implements OnInit {
     }
 
     // Recharger les onglets et le personnage
-    console.log('Rechargement du personnage...');
     this.currentCharacter = this.characterService.getCurrentCharacter();
-    console.log('Personnage rechargé:', this.currentCharacter);
-    
     this.dashboardTabs = this.storageService.getDashboardTabs(this.currentCharacter!.id);
-    console.log('Tabs rechargés:', this.dashboardTabs);
     
     this.closeTabModal();
   }
@@ -244,22 +224,14 @@ export class DashboardComponent implements OnInit {
    * Gestion du drop d'un élément sur un onglet
    */
   onTabDropped(targetTabId: string): void {
-    console.log('=== onTabDropped appelé ===');
-    console.log('targetTabId:', targetTabId);
-    console.log('draggedItem:', this.draggedItem);
-    
     if (!this.draggedItem || !this.currentCharacter) {
-      console.log('Pas d\'élément dragué ou pas de personnage');
       return;
     }
 
     // Ne rien faire si on drop sur l'onglet actuel
     if (this.draggedItem.tabId === targetTabId) {
-      console.log('Drop sur le même onglet, rien à faire');
       return;
     }
-
-    console.log('Déplacement de l\'élément vers l\'onglet:', targetTabId);
 
     // Mettre à jour l'élément : nouveau tabId et colonne 0
     const updatedItem: DataItem = {
@@ -286,8 +258,6 @@ export class DashboardComponent implements OnInit {
 
     // Réinitialiser le drag
     this.draggedItem = null;
-    
-    console.log('Élément déplacé avec succès');
   }
 
   get canAddTab(): boolean {
@@ -407,16 +377,34 @@ export class DashboardComponent implements OnInit {
   }
 
   onElementCreated(elementData: Partial<Element>): void {
-    console.log('DEBUG: onElementCreated called with:', elementData);
-    console.log('DEBUG: currentCharacter:', this.currentCharacter);
-    console.log('DEBUG: storageService.getCurrentCharacter():', this.storageService.getCurrentCharacter());
-    
     try {
       if (elementData.id) {
         // Mode édition : mettre à jour l'élément existant
         // Conversion vers DataItem pour compatibilité avec le système existant
         const updatedElement = this.convertElementToDataItem(elementData as Element);
-        console.log('DEBUG: Editing element:', updatedElement);
+        
+        // Préserver les propriétés importantes de l'élément original
+        if (this.editingItem) {
+          // Préserver tabId et column pour ne pas déplacer l'élément
+          if (this.editingItem.tabId) {
+            updatedElement.tabId = this.editingItem.tabId;
+          }
+          if (this.editingItem.column !== undefined) {
+            updatedElement.column = this.editingItem.column;
+          }
+          if (this.editingItem.order !== undefined) {
+            updatedElement.order = this.editingItem.order;
+          }
+          
+          // Fusionner les metadata, l'élément original a la priorité pour préserver les données existantes
+          if (this.editingItem.metadata) {
+            updatedElement.metadata = {
+              ...updatedElement.metadata,
+              ...this.editingItem.metadata
+            };
+          }
+        }
+        
         this.storageService.saveDataItem(updatedElement);
       } else {
         // Mode création : créer un nouvel élément avec l'ordre correct
@@ -441,7 +429,6 @@ export class DashboardComponent implements OnInit {
           delete newDataItem.zone; // Supprimer l'ancienne propriété
         }
         
-        console.log('DEBUG: Creating new element:', newDataItem);
         this.storageService.saveDataItem(newDataItem);
       }
       
@@ -478,6 +465,12 @@ export class DashboardComponent implements OnInit {
     // Propriétés spécifiques selon le type
     if (element.type === 'numeric') {
       dataItem.allowQuickModification = element.canQuickModify ?? true;
+    } else if (element.type === 'select') {
+      // Préserver les options disponibles dans metadata
+      dataItem.metadata = {
+        availableOptions: element.options || []
+      };
+      dataItem.allowQuickModification = true;
     } else if (element.type === 'hp') {
       // Activer la modification rapide pour les HP
       dataItem.allowQuickModification = true;
@@ -523,6 +516,7 @@ export class DashboardComponent implements OnInit {
     switch (elementType) {
       case 'text': return DataType.TEXT;
       case 'numeric': return DataType.NUMERIC;
+      case 'select': return DataType.SELECT;
       case 'hp': return DataType.HP;
       case 'attack': return DataType.ATTACK;
       case 'dnd-attribute': return DataType.ATTRIBUTE;
@@ -538,6 +532,7 @@ export class DashboardComponent implements OnInit {
     switch (element.type) {
       case 'text': return element.value;
       case 'numeric': return element.value;
+      case 'select': return element.value;
       case 'hp': return element.maxHp; // Utiliser maxHp comme valeur principale
       case 'attack': return element.name; // Nom de l'attaque comme valeur d'affichage
       case 'dnd-attribute': return element.value;
@@ -581,8 +576,6 @@ export class DashboardComponent implements OnInit {
    * Convertit un DataItem vers un Element pour la modal
    */
   private convertDataItemToElement(item: DataItem): Element | null {
-    console.log('DEBUG: convertDataItemToElement called with item:', item);
-    
     if (!item) return null;
 
     // Conversion de DataItem vers Element
@@ -604,7 +597,6 @@ export class DashboardComponent implements OnInit {
           type: 'text' as const,
           value: item.value as string
         };
-        console.log('DEBUG: convertDataItemToElement returning (text):', textElement);
         return textElement;
       case DataType.NUMERIC:
         const numericElement = {
@@ -613,8 +605,15 @@ export class DashboardComponent implements OnInit {
           value: item.value as number,
           canQuickModify: item.allowQuickModification !== false
         };
-        console.log('DEBUG: convertDataItemToElement returning (numeric):', numericElement);
         return numericElement;
+      case DataType.SELECT:
+        const selectElement = {
+          ...baseElement,
+          type: 'select' as const,
+          value: item.value as string,
+          options: item.metadata?.availableOptions || []
+        };
+        return selectElement;
       case DataType.ATTRIBUTE:
         const attributeElement = {
           ...baseElement,
@@ -622,7 +621,6 @@ export class DashboardComponent implements OnInit {
           value: item.value as number,
           hasProficiency: item.hasProficiency || false
         };
-        console.log('DEBUG: convertDataItemToElement returning (attribute):', attributeElement);
         return attributeElement;
       case DataType.ATTRIBUTES_GROUP:
         const attributesGroupElement = {
@@ -637,7 +635,6 @@ export class DashboardComponent implements OnInit {
             charisma: { value: 10, hasProficiency: false }
           }
         };
-        console.log('DEBUG: convertDataItemToElement returning (attributes-group):', attributesGroupElement);
         return attributesGroupElement;
       case DataType.DND_PROFICIENCY_BONUS:
         const proficiencyBonusElement = {
@@ -646,7 +643,6 @@ export class DashboardComponent implements OnInit {
           value: item.value as number,
           level: item.metadata?.['level'] || 1
         };
-        console.log('DEBUG: convertDataItemToElement returning (dnd-proficiency-bonus):', proficiencyBonusElement);
         return proficiencyBonusElement;
       case DataType.DND_LEVEL:
         const levelElement = {
@@ -654,7 +650,6 @@ export class DashboardComponent implements OnInit {
           type: 'dnd-level' as const,
           level: item.value as number
         };
-        console.log('DEBUG: convertDataItemToElement returning (dnd-level):', levelElement);
         return levelElement;
       case DataType.DND_SKILLS_GROUP:
         const skillsGroupElement = {
@@ -686,7 +681,6 @@ export class DashboardComponent implements OnInit {
             persuasion: { hasProficiency: false, hasExpertise: false }
           }
         };
-        console.log('DEBUG: convertDataItemToElement returning (dnd-skills-group):', skillsGroupElement);
         return skillsGroupElement;
       default:
         const defaultElement = {
@@ -694,7 +688,6 @@ export class DashboardComponent implements OnInit {
           type: 'text' as const,
           value: String(item.value)
         };
-        console.log('DEBUG: convertDataItemToElement returning (default):', defaultElement);
         return defaultElement;
     }
   }
@@ -844,7 +837,6 @@ export class DashboardComponent implements OnInit {
    * Gestionnaire d'édition d'élément
    */
   onItemEdit(item: DataItem): void {
-    console.log('DEBUG: onItemEdit called with item:', item);
     // Ouvrir la modal de modification de l'élément
     this.showCreateElementModal = true;
     this.currentZone = (item.zone || DashboardZone.CENTER); // Fournir une valeur par défaut si undefined
@@ -852,7 +844,6 @@ export class DashboardComponent implements OnInit {
     
     // Convertir et mettre en cache l'élément pour la modal
     this.editingElementConverted = this.convertDataItemToElement(item);
-    console.log('DEBUG: Converted element for editing:', this.editingElementConverted);
   }
 
   /**

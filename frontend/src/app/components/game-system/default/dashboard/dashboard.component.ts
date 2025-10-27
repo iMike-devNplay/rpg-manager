@@ -396,11 +396,11 @@ export class DashboardComponent implements OnInit {
             updatedElement.order = this.editingItem.order;
           }
           
-          // Fusionner les metadata, l'élément original a la priorité pour préserver les données existantes
+          // Fusionner les metadata, les nouvelles données ont la priorité
           if (this.editingItem.metadata) {
             updatedElement.metadata = {
-              ...updatedElement.metadata,
-              ...this.editingItem.metadata
+              ...this.editingItem.metadata,
+              ...updatedElement.metadata
             };
           }
         }
@@ -682,6 +682,15 @@ export class DashboardComponent implements OnInit {
           }
         };
         return skillsGroupElement;
+      case DataType.HP:
+        const hpElement = {
+          ...baseElement,
+          type: 'hp' as const,
+          maxHp: item.metadata?.['maxHp'] || 0,
+          currentHp: item.metadata?.['currentHp'] || 0,
+          temporaryHp: item.metadata?.['temporaryHp'] || 0
+        };
+        return hpElement;
       default:
         const defaultElement = {
           ...baseElement,

@@ -68,6 +68,26 @@ export class Dnd5eService {
         elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId, firstTabId));
       }
 
+      // Création des éléments texte
+      elementsToCreate.push(this.createPeopleElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createBackgroundElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createPersonalityTraitElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createIdealElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createBondElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createFlawElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createLanguageElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createToolsElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createProficienciesElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createSpeedElement(character.userId, firstTabId));
+
+      // Création des éléments numériques
+      elementsToCreate.push(this.createInitiativeElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createArmorClassElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createPassivePerceptionElement(character.userId, firstTabId));
+
+      // Création de l'élément points de vie
+      elementsToCreate.push(this.createHitPointsElement(character.userId, firstTabId));
+
   // Nombre d'éléments à créer: elementsToCreate.length
 
       // Sauvegarder tous les éléments directement sur le personnage
@@ -269,6 +289,303 @@ export class Dnd5eService {
       metadata: {
         dnd5eType: 'class',
         availableOptions: mappedOptions
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Peuple
+   */
+  private createPeopleElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Peuple',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 4,
+      userId,
+      description: 'Peuple du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'people'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Historique
+   */
+  private createBackgroundElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Historique',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 5,
+      userId,
+      description: 'Historique du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'background'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Trait de personnalité
+   */
+  private createPersonalityTraitElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Trait de personnalité',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 6,
+      userId,
+      description: 'Traits de personnalité du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'personality-trait'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément numérique Initiative
+   */
+  private createInitiativeElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Initiative',
+      type: DataType.NUMERIC,
+      value: 0,
+      tabId: tabId,
+      column: 0,
+      order: 7,
+      userId,
+      description: 'Bonus d\'initiative (généralement modificateur de Dextérité)',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'initiative'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément numérique Classe d'armure
+   */
+  private createArmorClassElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Classe d\'armure',
+      type: DataType.NUMERIC,
+      value: 10,
+      tabId: tabId,
+      column: 0,
+      order: 8,
+      userId,
+      description: 'Classe d\'armure (CA) du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'armor-class'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Idéal
+   */
+  private createIdealElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Idéal',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 9,
+      userId,
+      description: 'Idéal du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'ideal'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Lien
+   */
+  private createBondElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Lien',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 10,
+      userId,
+      description: 'Lien du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'bond'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Défaut
+   */
+  private createFlawElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Défaut',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 11,
+      userId,
+      description: 'Défaut du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'flaw'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Langue
+   */
+  private createLanguageElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Langue',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 12,
+      userId,
+      description: 'Langues parlées par le personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'language'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Outils
+   */
+  private createToolsElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Outils',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 13,
+      userId,
+      description: 'Outils maîtrisés par le personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'tools'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Maîtrises
+   */
+  private createProficienciesElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Maîtrises',
+      type: DataType.TEXT,
+      value: '',
+      tabId: tabId,
+      column: 0,
+      order: 14,
+      userId,
+      description: 'Autres maîtrises du personnage (armes, armures, etc.)',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'proficiencies'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément texte Vitesse
+   */
+  private createSpeedElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Vitesse',
+      type: DataType.TEXT,
+      value: '9 m',
+      tabId: tabId,
+      column: 0,
+      order: 15,
+      userId,
+      description: 'Vitesse de déplacement du personnage',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'speed'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément numérique Perception passive
+   */
+  private createPassivePerceptionElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Perception passive',
+      type: DataType.NUMERIC,
+      value: 10,
+      tabId: tabId,
+      column: 0,
+      order: 16,
+      userId,
+      description: 'Perception passive (10 + modificateur de Sagesse + bonus de maîtrise si maîtrise de Perception)',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'passive-perception'
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément points de vie
+   */
+  private createHitPointsElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Points de vie',
+      type: DataType.HP,
+      value: 0,
+      tabId: tabId,
+      column: 0,
+      order: 17,
+      userId,
+      description: 'Points de vie actuels et maximum',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'hit-points',
+        maxHp: 0,
+        currentHp: 0,
+        temporaryHp: 0
       }
     };
   }

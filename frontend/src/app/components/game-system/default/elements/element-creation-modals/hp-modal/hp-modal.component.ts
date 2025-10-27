@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnChanges, SimpleChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HpElement } from '../../../../../../models/element-types';
@@ -10,7 +10,7 @@ import { HpElement } from '../../../../../../models/element-types';
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class HpModalComponent implements OnInit {
+export class HpModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
   @Input() editingElement: HpElement | null = null;
   @Input() zone = '';
@@ -27,11 +27,27 @@ export class HpModalComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.initializeForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['editingElement'] || changes['isOpen']) {
+      this.initializeForm();
+    }
+  }
+
+  private initializeForm() {
     if (this.editingElement) {
       this.hpData = { ...this.editingElement };
     } else {
-      // Par défaut, les PV courants = PV max lors de la création
-      this.hpData.currentHp = this.hpData.maxHp;
+      // Réinitialiser en mode création
+      this.hpData = {
+        type: 'hp',
+        name: 'Points de vie',
+        maxHp: 10,
+        currentHp: 10,
+        temporaryHp: 0
+      };
     }
   }
 

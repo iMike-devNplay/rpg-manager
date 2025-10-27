@@ -14,9 +14,9 @@ export enum DashboardZone {
 }
 
 // Icônes disponibles pour les onglets
-export type TabIcon = '📊' | '⚔️' | '🎒' | '📖' | '🗺️' | '✨' | '💰' | '🛡️' | '🎯' | '📝';
+export type TabIcon = '📊' | '⚔️' | '🎒' | '📖' | '🗺️' | '✨' | '💰' | '🛡️' | '🎯' | '📝' | '🛠️' | '🪄';
 
-export const TAB_ICONS: TabIcon[] = ['📊', '⚔️', '🎒', '📖', '🗺️', '✨', '💰', '🛡️', '🎯', '📝'];
+export const TAB_ICONS: TabIcon[] = ['📊', '⚔️', '🎒', '📖', '🗺️', '✨', '💰', '🛡️', '🎯', '📝', '🛠️', '🪄'];
 
 export const TAB_ICON_LABELS: Record<TabIcon, string> = {
   '📊': 'Statistiques',
@@ -28,7 +28,9 @@ export const TAB_ICON_LABELS: Record<TabIcon, string> = {
   '💰': 'Richesses',
   '🛡️': 'Défense',
   '🎯': 'Actions',
-  '📝': 'Notes'
+  '📝': 'Notes',
+  '🛠️': 'Outils',
+  '🪄': 'Sorts'
 };
 
 export enum DataType {

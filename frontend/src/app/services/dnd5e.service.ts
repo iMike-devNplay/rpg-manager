@@ -25,29 +25,84 @@ export class Dnd5eService {
       }
 
       // Récupérer ou créer les onglets du personnage
-      let tabs = this.storageService.getDashboardTabs(character.id);
-      if (!tabs || tabs.length === 0) {
-        tabs = [this.storageService.addDashboardTab(character.id, 'Principal', '📊')];
-      }
-      const firstTabId = tabs[0].id;
+      let mainTabId: string;
+      let skillsTabId: string;
+      let fightTabId: string;
+      let spellsTabId: string;
+      let inventoryTabId: string;
+      
+      // Le personnage est créé avec 1 onglet par défaut, on le remplace par 5 onglets personnalisés
+      const newTabs: any[] = [
+        { 
+          id: this.storageService.generateId(), 
+          name: 'Principal', 
+          icon: '📊', 
+          order: 0, 
+          characterId: character.id,
+          columnWidths: { 0: 1, 1: 2, 2: 2, 3: 1 } // Colonnes: gauche=1x, centre=2x, droite=2x, extra=1x
+        },
+        { 
+          id: this.storageService.generateId(), 
+          name: 'Compétences', 
+          icon: '🛠️', 
+          order: 1, 
+          characterId: character.id,
+          columnWidths: { 0: 3 } // Colonne unique large (3x)
+        },
+        { 
+          id: this.storageService.generateId(), 
+          name: 'Combat', 
+          icon: '⚔️', 
+          order: 2, 
+          characterId: character.id,
+          columnWidths: { 0: 1, 1: 1, 2: 1 } // 3 colonnes égales
+        },
+        { 
+          id: this.storageService.generateId(), 
+          name: 'Sorts', 
+          icon: '🪄', 
+          order: 3, 
+          characterId: character.id,
+          columnWidths: { 0: 1, 1: 2 } // 2 colonnes: gauche=1x, droite=2x
+        },
+        { 
+          id: this.storageService.generateId(), 
+          name: 'Inventaire', 
+          icon: '🎒', 
+          order: 4, 
+          characterId: character.id,
+          columnWidths: { 0: 2, 1: 1 } // 2 colonnes: gauche=2x, droite=1x
+        }
+      ];
+      
+      // Assigner les onglets directement au personnage avant de le sauvegarder
+      character.dashboardTabs = newTabs;
+      
+      // Assigner les IDs
+      mainTabId = newTabs[0].id;
+      skillsTabId = newTabs[1].id;
+      fightTabId = newTabs[2].id;
+      spellsTabId = newTabs[3].id;
+      inventoryTabId = newTabs[4].id;
+
 
       const elementsToCreate: DataItem[] = [];
 
       // 4a - Création du nouveau bonus de maîtrise D&D
   // Création du bonus de maîtrise D&D
-      elementsToCreate.push(this.createDndProficiencyBonus(character.userId, firstTabId));
+      elementsToCreate.push(this.createDndProficiencyBonus(character.userId, mainTabId));
 
       // 4a-bis - Création du niveau D&D
   // Création du niveau D&D
-      elementsToCreate.push(this.createDndLevel(character.userId, firstTabId));
+      elementsToCreate.push(this.createDndLevel(character.userId, mainTabId));
 
       // 4a-ter - Création du groupe d'attributs
   // Création du groupe d'attributs
-      elementsToCreate.push(this.createAttributesGroup(character.userId, firstTabId));
+      elementsToCreate.push(this.createAttributesGroup(character.userId, mainTabId));
 
       // 4a-qua - Création du groupe de compétences
   // Création du groupe de compétences
-      elementsToCreate.push(this.createSkillsGroup(character.userId, firstTabId));
+      elementsToCreate.push(this.createSkillsGroup(character.userId, skillsTabId));
 
       // 4b - Anciens attributs individuels désactivés - remplacés par le groupe d'attributs
       /*
@@ -60,33 +115,33 @@ export class Dnd5eService {
 
       // 4d - Création de l'élément Origine
       if (dnd5eData.origines) {
-        elementsToCreate.push(this.createOriginElement(dnd5eData.origines, character.userId, firstTabId));
+        elementsToCreate.push(this.createOriginElement(dnd5eData.origines, character.userId, mainTabId));
       }
 
       // 4e - Création de l'élément Classe
       if (dnd5eData.classes) {
-        elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId, firstTabId));
+        elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId, mainTabId));
       }
 
       // Création des éléments texte
-      elementsToCreate.push(this.createPeopleElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createBackgroundElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createPersonalityTraitElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createIdealElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createBondElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createFlawElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createLanguageElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createToolsElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createProficienciesElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createSpeedElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createPeopleElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createBackgroundElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createPersonalityTraitElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createIdealElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createBondElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createFlawElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createLanguageElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createToolsElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createProficienciesElement(character.userId, mainTabId));
+      elementsToCreate.push(this.createSpeedElement(character.userId, mainTabId));
 
       // Création des éléments numériques
-      elementsToCreate.push(this.createInitiativeElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createArmorClassElement(character.userId, firstTabId));
-      elementsToCreate.push(this.createPassivePerceptionElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createInitiativeElement(character.userId, fightTabId));
+      elementsToCreate.push(this.createArmorClassElement(character.userId, fightTabId));
+      elementsToCreate.push(this.createPassivePerceptionElement(character.userId, mainTabId));
 
       // Création de l'élément points de vie
-      elementsToCreate.push(this.createHitPointsElement(character.userId, firstTabId));
+      elementsToCreate.push(this.createHitPointsElement(character.userId, fightTabId));
 
   // Nombre d'éléments à créer: elementsToCreate.length
 
@@ -160,7 +215,7 @@ export class Dnd5eService {
       type: DataType.DND_SKILLS_GROUP,
       value: 'Compétences', // Nom d'affichage
       tabId: tabId,
-      column: 2,
+      column: 0,
       order: 0,
       userId,
       description: 'Toutes les compétences D&D 5e avec maîtrise et expertise',
@@ -224,28 +279,6 @@ export class Dnd5eService {
   }
 
   /**
-   * Crée un élément attribut
-   */
-  private createAttribute(attrData: any, userId: string): DataItem {
-    return {
-      id: this.storageService.generateId(),
-      name: attrData.name,
-      type: DataType.ATTRIBUTE,
-      value: 10, // 4f-2 - valeur par défaut à 10
-      zone: DashboardZone.LEFT,
-      order: attrData.order || 0,
-      userId,
-      description: attrData.description || '',
-      allowQuickModification: true,
-      hasProficiency: false,
-      metadata: {
-        dnd5eType: 'attribute',
-        attributeCode: attrData.attribute
-      }
-    };
-  }
-
-  /**
    * Crée l'élément Origine
    */
   private createOriginElement(origines: any[], userId: string, tabId: string): DataItem {
@@ -282,7 +315,7 @@ export class Dnd5eService {
       value: '',
       tabId: tabId,
       column: 0,
-      order: 3,
+      order: 4,
       userId,
       description: 'Classe du personnage',
       allowQuickModification: true,
@@ -304,7 +337,7 @@ export class Dnd5eService {
       value: '',
       tabId: tabId,
       column: 0,
-      order: 4,
+      order: 3,
       userId,
       description: 'Peuple du personnage',
       allowQuickModification: true,
@@ -324,8 +357,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 5,
+      column: 2,
+      order: 0,
       userId,
       description: 'Historique du personnage',
       allowQuickModification: true,
@@ -345,8 +378,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 6,
+      column: 2,
+      order: 1,
       userId,
       description: 'Traits de personnalité du personnage',
       allowQuickModification: true,
@@ -366,8 +399,8 @@ export class Dnd5eService {
       type: DataType.NUMERIC,
       value: 0,
       tabId: tabId,
-      column: 0,
-      order: 7,
+      column: 2,
+      order: 0,
       userId,
       description: 'Bonus d\'initiative (généralement modificateur de Dextérité)',
       allowQuickModification: true,
@@ -387,8 +420,8 @@ export class Dnd5eService {
       type: DataType.NUMERIC,
       value: 10,
       tabId: tabId,
-      column: 0,
-      order: 8,
+      column: 2,
+      order: 1,
       userId,
       description: 'Classe d\'armure (CA) du personnage',
       allowQuickModification: true,
@@ -408,8 +441,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 9,
+      column: 2,
+      order: 2,
       userId,
       description: 'Idéal du personnage',
       allowQuickModification: true,
@@ -429,8 +462,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 10,
+      column: 2,
+      order: 3,
       userId,
       description: 'Lien du personnage',
       allowQuickModification: true,
@@ -450,8 +483,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 11,
+      column: 2,
+      order: 4,
       userId,
       description: 'Défaut du personnage',
       allowQuickModification: true,
@@ -471,8 +504,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 12,
+      column: 1,
+      order: 1,
       userId,
       description: 'Langues parlées par le personnage',
       allowQuickModification: true,
@@ -492,8 +525,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 13,
+      column: 1,
+      order: 2,
       userId,
       description: 'Outils maîtrisés par le personnage',
       allowQuickModification: true,
@@ -513,8 +546,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '',
       tabId: tabId,
-      column: 0,
-      order: 14,
+      column: 1,
+      order: 3,
       userId,
       description: 'Autres maîtrises du personnage (armes, armures, etc.)',
       allowQuickModification: true,
@@ -534,8 +567,8 @@ export class Dnd5eService {
       type: DataType.TEXT,
       value: '9 m',
       tabId: tabId,
-      column: 0,
-      order: 15,
+      column: 3,
+      order: 0,
       userId,
       description: 'Vitesse de déplacement du personnage',
       allowQuickModification: true,
@@ -555,8 +588,8 @@ export class Dnd5eService {
       type: DataType.NUMERIC,
       value: 10,
       tabId: tabId,
-      column: 0,
-      order: 16,
+      column: 3,
+      order: 1,
       userId,
       description: 'Perception passive (10 + modificateur de Sagesse + bonus de maîtrise si maîtrise de Perception)',
       allowQuickModification: true,
@@ -577,7 +610,7 @@ export class Dnd5eService {
       value: 0,
       tabId: tabId,
       column: 0,
-      order: 17,
+      order: 0,
       userId,
       description: 'Points de vie actuels et maximum',
       allowQuickModification: true,

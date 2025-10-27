@@ -41,6 +41,11 @@ export class CharacterService {
     this.storageService.setCurrentCharacter(character);
   }
 
+  // Supprimer le personnage actuel
+  clearCurrentCharacter(): void {
+    this.storageService.clearCurrentCharacter();
+  }
+
   // Créer un nouveau personnage
   async createCharacter(name: string, gameSystem: GameSystem): Promise<PlayerCharacter> {
     console.log('=== createCharacter service appelée ===');
@@ -55,10 +60,6 @@ export class CharacterService {
     console.log('Character créé:', newCharacter);
     console.log('GameSystem:', gameSystem);
     console.log('Has game system data:', this.gameSystemDataService.hasGameSystemData(gameSystem));
-    
-    console.log('=== Définition du personnage comme actuel ===');
-    // Définir le personnage comme actuel AVANT l'initialisation pour que saveDataItem fonctionne
-    this.setCurrentCharacter(newCharacter);
     
     console.log('=== Vérification initialisation système ===');
     // Initialiser avec les données spécifiques au système de jeu si disponibles

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CharacterSelectorModalComponent } from '../character-selector-modal/character-selector-modal.component';
@@ -74,7 +74,7 @@ import { Router } from '@angular/router';
   `,
   styleUrls: ['./character-selection-page.component.scss']
 })
-export class CharacterSelectionPageComponent {
+export class CharacterSelectionPageComponent implements OnInit {
   userCharacters: any[] = [];
   currentCharacter: any = null;
   showCreate = false;
@@ -85,6 +85,12 @@ export class CharacterSelectionPageComponent {
   constructor(private characterService: CharacterService, private router: Router) {
     this.userCharacters = this.characterService.getUserCharacters();
     this.currentCharacter = this.characterService.getCurrentCharacter();
+  }
+
+  ngOnInit() {
+    // Supprimer le personnage courant lors de l'arrivée sur l'écran de sélection
+    console.log('=== Arrivée sur écran de sélection - Suppression du personnage courant ===');
+    this.characterService.clearCurrentCharacter();
   }
 
   onSelect(character: any) {

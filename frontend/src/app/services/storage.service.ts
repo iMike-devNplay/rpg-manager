@@ -58,6 +58,8 @@ export class StorageService {
   clearCurrentUser(): void {
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
+    // Supprimer aussi le personnage courant lors de la déconnexion
+    this.clearCurrentCharacter();
   }
 
   // Gestion des données générales
@@ -222,8 +224,24 @@ export class StorageService {
   }
 
   setCurrentCharacter(character: PlayerCharacter): void {
-    localStorage.setItem(this.CURRENT_CHARACTER_KEY, JSON.stringify(character));
-    this.currentCharacterSubject.next(character);
+    console.log('=== setCurrentCharacter appelé ===');
+    console.log('Character reçu:', character.id, character.name);
+    
+    // Toujours récupérer les données fraîches depuis rpg-manager-data
+    const data = this.getStorageData();
+    const freshCharacter = data.characters?.find((c: PlayerCharacter) => c.id === character.id);
+    
+    if (freshCharacter) {
+      console.log('Personnage frais trouvé dans storage:', freshCharacter.id);
+      console.log('Nombre de dataItems:', freshCharacter.dataItems?.length || 0);
+      console.log('Nombre de dashboardTabs:', freshCharacter.dashboardTabs?.length || 0);
+      localStorage.setItem(this.CURRENT_CHARACTER_KEY, JSON.stringify(freshCharacter));
+      this.currentCharacterSubject.next(freshCharacter);
+    } else {
+      console.warn('Personnage non trouvé dans storage, utilisation du personnage reçu');
+      localStorage.setItem(this.CURRENT_CHARACTER_KEY, JSON.stringify(character));
+      this.currentCharacterSubject.next(character);
+    }
   }
 
   clearCurrentCharacter(): void {

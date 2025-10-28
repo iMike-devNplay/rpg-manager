@@ -261,7 +261,7 @@ export class DashboardComponent implements OnInit {
   }
 
   get canAddTab(): boolean {
-    return this.dashboardTabs.length < 5;
+    return this.dashboardTabs.length < 8;
   }
 
   /**

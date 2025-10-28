@@ -448,9 +448,9 @@ export class StorageService {
   addDashboardTab(characterId: string, name: string, icon: TabIcon): DashboardTab {
     const tabs = this.getDashboardTabs(characterId);
     
-    // Limiter à 5 onglets maximum
-    if (tabs.length >= 5) {
-      throw new Error('Nombre maximum d\'onglets atteint (5)');
+    // Limiter à 8 onglets maximum
+    if (tabs.length >= 8) {
+      throw new Error('Nombre maximum d\'onglets atteint (8)');
     }
     
     const newTab: DashboardTab = {

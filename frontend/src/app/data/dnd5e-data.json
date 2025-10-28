@@ -82,115 +82,490 @@
 			"origine": "changelin",
 			"name": "Changelin",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "changelin-lumiere",
+					"name": "Touché par la cour de lumière",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "changelin-ombre",
+					"name": "Touché par la cour d'ombre",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "changelin-faerie",
+					"name": "Touché par la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "demiogre",
 			"name": "Demi-Ogre",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "demiogre-nomade",
+					"name": "Nomade",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "demiogre-sedentaire",
+					"name": "Sédentaire",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "demiogre-sorcereux",
+					"name": "Sorcereux",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "diurnambule",
 			"name": "Diurnambule",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "diurnambule-courtisan",
+					"name": "Courtisan",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "diurnambule-combattant",
+					"name": "Combattant",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "elementalien",
 			"name": "Elementalien",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "elementalien-air",
+					"name": "Elémentation d'air",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elementalien-eau",
+					"name": "Elémentation d'eau",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elementalien-feu",
+					"name": "Elémentalien de feu",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elementalien-terre",
+					"name": "Elémentation de terre",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "elfe",
 			"name": "Elfe",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "felys",
 			"name": "Félys",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "felys-bannis",
+					"name": "Bannis",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "felys-communs",
+					"name": "Communs",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "felys-noble",
+					"name": "Noble",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "gnome",
 			"name": "Gnome",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "gobelin",
 			"name": "Gobelin",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "gobelin-grottes",
+					"name": "Gobelin des grottes",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gobelin-forets",
+					"name": "Gobelin des forêts",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gobelin-plaine",
+					"name": "Gobelin des plaines",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gobelin-marecage",
+					"name": "Gobelin des marécages",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gobelin-civilise",
+					"name": "Gobelin civilisé",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "halfelin",
 			"name": "Halfelin",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "hommeserpent",
 			"name": "Homme-Serpent",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "serpent-primal",
+					"name": "Serpent-primal",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "serpent-visage",
+					"name": "Serpent-visage",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "humain",
 			"name": "Humain",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "kobold",
 			"name": "Kobold",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "kobold-frele-dragon",
+					"name": "Frêle-dragon",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "kobold-fier-dragon",
+					"name": "Fier-dragon",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "nain",
 			"name": "Nain",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "aasimar",
 			"name": "Aasimar",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "sangdragon",
 			"name": "Sangdragon",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "",
+					"name": "",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "sidh",
 			"name": "Sidh",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "sidh-elfe-faerie",
+					"name": "Elfe de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sidh-geant-faerie",
+					"name": "Géant de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sidh-gnome-faerie",
+					"name": "Gnome de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sidh-gobelin-faerie",
+					"name": "Gobelin de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sidh-kobold-faerie",
+					"name": "Kobold de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sidh-nain-faerie",
+					"name": "Nain de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sidh-orc-faerie",
+					"name": "Orc de la Faërie",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "taurin",
 			"name": "Taurin",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "taurin-monts",
+					"name": "Taurin des monts",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "taurin-plaine",
+					"name": "Taurin des plaines",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "taurin-cieux",
+					"name": "Taurin des cieux",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "therian",
 			"name": "Thérian",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "therian-corbin",
+					"name": "Corbin",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-lagomite",
+					"name": "Lagomite",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-leonin",
+					"name": "Léonin",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-lupin",
+					"name": "Lupin",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-mustelide",
+					"name": "Mustélide",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-rapacide",
+					"name": "Rapacidé",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-rodentin",
+					"name": "Rodentin",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-strigideen",
+					"name": "Strigidéen",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "therian-ursin",
+					"name": "Ursin",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		},
 		{
 			"origine": "tieffelin",
 			"name": "Tieffelin",
 			"type": "dnd5e-origine",
-			"description": ""
+			"description": "",
+			"peuples":
+			[
+				{
+					"peuple": "tieffelin-infernal",
+					"name": "Infernal",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "tieffelin-demoniaque",
+					"name": "Démoniaque",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "tieffelin-independant",
+					"name": "Indépendant",
+					"type": "dnd5e-peuple",
+					"description": ""
+				}
+			]
 		}
 	]
 }

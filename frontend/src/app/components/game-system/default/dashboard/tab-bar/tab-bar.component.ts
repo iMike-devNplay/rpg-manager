@@ -12,7 +12,7 @@ import { DashboardTab } from '../../../../../models/rpg.models';
 export class TabBarComponent {
   @Input() tabs: DashboardTab[] = [];
   @Input() activeTabId: string | null = null;
-  @Input() canAddTab = true; // Limité à 5 onglets
+  @Input() canAddTab = true; // Limité à 8 onglets
   
   @Output() tabSelected = new EventEmitter<string>();
   @Output() tabAdd = new EventEmitter<void>();

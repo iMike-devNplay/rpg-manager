@@ -194,8 +194,38 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "elfe-blanc",
+					"name": "Elfe Blanc",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elfe-gris",
+					"name": "Elfe Gris",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elfe-vert",
+					"name": "Elfe vert",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elfe-bleu",
+					"name": "Elfe bleu",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elfe-rouge",
+					"name": "Elfe rouge",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "elfe-brun",
+					"name": "Elfe brun",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}
@@ -236,8 +266,32 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "gnome-terre",
+					"name": "Gnome des terres",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gnome-bois",
+					"name": "Gnome des bois",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gnome-eaux",
+					"name": "Gnome des eaux",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gnome-nomade",
+					"name": "Gnome nomade",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "gnome-solitaire",
+					"name": "Gnome solitaire",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}
@@ -290,8 +344,26 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "halfelin-village",
+					"name": "Halfelin de village",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "halfelin-tete-de-bois",
+					"name": "Halfelin tête de bois",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "halfelin-cite",
+					"name": "Halfelin des cités",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "halfelin-aventureux",
+					"name": "Halfelin aventureux",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}
@@ -326,8 +398,32 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "humain-versatile",
+					"name": "Humain versatile",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "humain-competent",
+					"name": "Humain compétent",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "humain-talentueux",
+					"name": "Humain talentueux",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "humain-demi-elfe",
+					"name": "Humain demi-elfe",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "humain-demi-orc",
+					"name": "Humain demi-orc",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}
@@ -362,8 +458,26 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "nain-vallees",
+					"name": "Nain des vallées",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "nain-pics",
+					"name": "Nain des pics",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "nain-dessous",
+					"name": "Nain du dessous",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "nain-routes",
+					"name": "Nain des routes",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}
@@ -377,8 +491,20 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "aasimar-celeste",
+					"name": "Aasimar céleste",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "aasimar-dechu",
+					"name": "Aasimar déchu",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "aasimar-impur",
+					"name": "Aasimar impur",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}
@@ -392,8 +518,14 @@
 			"peuples":
 			[
 				{
-					"peuple": "",
-					"name": "",
+					"peuple": "sangdragon-cracheur",
+					"name": "Sangdragon cracheur",
+					"type": "dnd5e-peuple",
+					"description": ""
+				},
+				{
+					"peuple": "sangdragon-aile",
+					"name": "Sangdragon ailé",
 					"type": "dnd5e-peuple",
 					"description": ""
 				}

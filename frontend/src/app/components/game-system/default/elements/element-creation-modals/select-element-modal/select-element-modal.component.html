@@ -21,23 +21,6 @@
         <small class="form-help">Le nom qui apparaîtra en en-tête de l'élément</small>
       </div>
 
-      <!-- Valeur sélectionnée (déplacé ici) -->
-      <div class="form-group" *ngIf="formData.options.length > 0">
-        <label for="value">Valeur sélectionnée</label>
-        <select 
-          id="value"
-          [(ngModel)]="formData.value"
-          name="value"
-          class="form-control"
-        >
-          <option value="">-- Aucune sélection --</option>
-          <option *ngFor="let option of formData.options" [value]="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-        <small class="form-help">Valeur actuellement sélectionnée</small>
-      </div>
-
       <div class="form-group">
         <label for="description">Description (optionnel)</label>
         <textarea 
@@ -51,10 +34,85 @@
         <small class="form-help">Apparaîtra au survol de l'élément</small>
       </div>
 
+      <!-- Choix du mode de liste -->
+      <div class="form-group">
+        <label>Source des options <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              name="selectListMode" 
+              value="existing" 
+              [(ngModel)]="formData.selectListMode"
+              (change)="onSelectListModeChange()"
+            >
+            <span>Utiliser une liste existante</span>
+          </label>
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              name="selectListMode" 
+              value="new" 
+              [(ngModel)]="formData.selectListMode"
+              (change)="onSelectListModeChange()"
+            >
+            <span>Créer une nouvelle liste</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Sélection d'une liste existante -->
+      <div class="form-group" *ngIf="formData.selectListMode === 'existing'">
+        <label for="selectList">Liste de sélection <span class="required">*</span></label>
+        <select 
+          id="selectList"
+          [(ngModel)]="formData.selectedListId"
+          name="selectList"
+          class="form-control"
+          (change)="onSelectListChange()"
+          required
+        >
+          <option value="">-- Sélectionnez une liste --</option>
+          <optgroup label="Listes système">
+            <ng-container *ngFor="let list of availableLists">
+              <option [value]="list.id" *ngIf="list.type === 'system'">
+                {{ list.name }} ({{ list.options.length }} options)
+              </option>
+            </ng-container>
+          </optgroup>
+          <optgroup label="Listes personnalisées">
+            <ng-container *ngFor="let list of availableLists">
+              <option [value]="list.id" *ngIf="list.type === 'custom'">
+                {{ list.name }} ({{ list.options.length }} options)
+              </option>
+            </ng-container>
+          </optgroup>
+        </select>
+        <small class="form-help">
+          <span *ngIf="selectedListIsSystem" class="warning-text">⚠️ Les listes système ne peuvent pas être modifiées</span>
+          <span *ngIf="!selectedListIsSystem && formData.selectedListId">✏️ Cette liste personnalisée peut être modifiée</span>
+        </small>
+      </div>
+
+      <!-- Création d'une nouvelle liste -->
+      <div class="form-group" *ngIf="formData.selectListMode === 'new'">
+        <label for="newListName">Nom de la nouvelle liste <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="newListName"
+          [(ngModel)]="formData.newListName"
+          name="newListName"
+          placeholder="Ex: Types d'armes, Compétences..."
+          required
+          class="form-control"
+        >
+        <small class="form-help">Cette liste sera réutilisable pour d'autres éléments</small>
+      </div>
+
       <!-- Gestion des options -->
       <div class="form-group">
         <div class="options-header">
-          <label>Options de sélection <span class="required">*</span></label>
+          <label>Options de la liste <span class="required">*</span></label>
           <button 
             type="button" 
             class="collapse-toggle" 
@@ -70,12 +128,19 @@
           <div class="option-item" *ngFor="let option of formData.options; let i = index">
             <span class="option-label">{{ option.label }}</span>
             <span class="option-value">({{ option.value }})</span>
-            <button type="button" class="btn-remove" (click)="removeOption(i)" title="Supprimer cette option">×</button>
+            <button 
+              type="button" 
+              class="btn-remove" 
+              (click)="removeOption(i)" 
+              title="Supprimer cette option"
+              [disabled]="selectedListIsSystem">
+              ×
+            </button>
           </div>
         </div>
 
         <!-- Ajout de nouvelles options -->
-        <div class="add-option-form">
+        <div class="add-option-form" *ngIf="canEditOptions">
           <div class="add-option-inputs">
             <input 
               type="text" 
@@ -97,6 +162,23 @@
           </div>
           <small class="form-help">Ajoutez au moins une option. Le libellé est affiché, la valeur est stockée.</small>
         </div>
+      </div>
+
+      <!-- Valeur sélectionnée -->
+      <div class="form-group" *ngIf="formData.options.length > 0">
+        <label for="value">Valeur sélectionnée</label>
+        <select 
+          id="value"
+          [(ngModel)]="formData.value"
+          name="value"
+          class="form-control"
+        >
+          <option value="">-- Aucune sélection --</option>
+          <option *ngFor="let option of formData.options" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <small class="form-help">Valeur actuellement sélectionnée</small>
       </div>
 
       <div class="modal-footer">

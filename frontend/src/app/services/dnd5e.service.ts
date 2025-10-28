@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GameSystemDataService, GameSystemData } from './game-system-data.service';
-import { DataItem, DataType, DashboardZone, PlayerCharacter, GameSystem } from '../models/rpg.models';
+import { DataItem, DataType, DashboardZone, PlayerCharacter, GameSystem, SelectListReference, SelectListOption } from '../models/rpg.models';
 import { StorageService } from './storage.service';
 
 @Injectable({
@@ -114,8 +114,10 @@ export class Dnd5eService {
       */
 
       // 4d - Création de l'élément Origine
+      let origineElement: DataItem | null = null;
       if (dnd5eData.origines) {
-        elementsToCreate.push(this.createOriginElement(dnd5eData.origines, character.userId, mainTabId));
+        origineElement = this.createOriginElement(dnd5eData.origines, character.userId, mainTabId);
+        elementsToCreate.push(origineElement);
       }
 
       // 4e - Création de l'élément Classe
@@ -123,8 +125,8 @@ export class Dnd5eService {
         elementsToCreate.push(this.createClassElement(dnd5eData.classes, character.userId, mainTabId));
       }
 
-      // Création des éléments texte
-      elementsToCreate.push(this.createPeopleElement(character.userId, mainTabId));
+      // Création des éléments texte et select (Peuple dépend de l'Origine)
+      elementsToCreate.push(this.createPeopleElement(character.userId, mainTabId, origineElement?.id));
       elementsToCreate.push(this.createBackgroundElement(character.userId, mainTabId));
       elementsToCreate.push(this.createPersonalityTraitElement(character.userId, mainTabId));
       elementsToCreate.push(this.createIdealElement(character.userId, mainTabId));
@@ -282,8 +284,6 @@ export class Dnd5eService {
    * Crée l'élément Origine
    */
   private createOriginElement(origines: any[], userId: string, tabId: string): DataItem {
-  const mappedOptions = origines.map(o => ({ label: o.name, value: o.name }));
-    
     return {
       id: this.storageService.generateId(),
       name: 'Origine',
@@ -297,7 +297,7 @@ export class Dnd5eService {
       allowQuickModification: true,
       metadata: {
         dnd5eType: 'origin',
-        availableOptions: mappedOptions
+        selectListId: 'dnd5e-origines'
       }
     };
   }
@@ -306,8 +306,6 @@ export class Dnd5eService {
    * Crée l'élément Classe
    */
   private createClassElement(classes: any[], userId: string, tabId: string): DataItem {
-  const mappedOptions = classes.map(c => ({ label: c.name, value: c.name }));
-    
     return {
       id: this.storageService.generateId(),
       name: 'Classe',
@@ -321,7 +319,7 @@ export class Dnd5eService {
       allowQuickModification: true,
       metadata: {
         dnd5eType: 'class',
-        availableOptions: mappedOptions
+        selectListId: 'dnd5e-classes'
       }
     };
   }
@@ -329,20 +327,25 @@ export class Dnd5eService {
   /**
    * Crée l'élément texte Peuple
    */
-  private createPeopleElement(userId: string, tabId: string): DataItem {
+  /**
+   * Crée l'élément Peuple (SELECT dépendant de l'Origine)
+   */
+  private createPeopleElement(userId: string, tabId: string, origineElementId?: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Peuple',
-      type: DataType.TEXT,
+      type: DataType.SELECT,
       value: '',
       tabId: tabId,
       column: 0,
       order: 3,
       userId,
-      description: 'Peuple du personnage',
+      description: 'Peuple du personnage (dépend de l\'origine)',
       allowQuickModification: true,
       metadata: {
-        dnd5eType: 'people'
+        dnd5eType: 'people',
+        selectListId: '', // Sera défini dynamiquement selon l'origine choisie
+        dependsOn: origineElementId || '' // ID de l'élément Origine
       }
     };
   }
@@ -715,4 +718,92 @@ export class Dnd5eService {
       this.storageService.saveDataItem(proficiencyBonusItem);
     }
   }
+
+  // ========================================
+  // Gestion des listes de sélection D&D 5e
+  // ========================================
+
+  /**
+   * Charge les listes de sélection depuis le fichier JSON D&D 5e
+   * et les sauvegarde dans le localStorage en tant que listes système
+   */
+  async loadDnd5eSelectLists(): Promise<void> {
+    try {
+      const dnd5eData = await this.gameSystemDataService.loadGameSystemData(GameSystem.DND5E).toPromise();
+      if (!dnd5eData) {
+        console.warn('Impossible de charger les données D&D 5e pour les listes');
+        return;
+      }
+
+      const now = new Date();
+      const lists: SelectListReference[] = [];
+
+      // Créer la liste des classes
+      if (dnd5eData.classes && Array.isArray(dnd5eData.classes)) {
+        const classOptions: SelectListOption[] = dnd5eData.classes.map((c: any) => ({
+          id: this.storageService.generateId(),
+          label: c.name,
+          value: c.name
+        }));
+
+        lists.push({
+          id: 'dnd5e-classes',
+          name: 'Classes D&D 5e',
+          type: 'system',
+          gameSystem: 'dnd5e',
+          options: classOptions,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+
+      // Créer la liste des origines
+      if (dnd5eData.origines && Array.isArray(dnd5eData.origines)) {
+        const origineOptions: SelectListOption[] = dnd5eData.origines.map((o: any) => ({
+          id: this.storageService.generateId(),
+          label: o.name,
+          value: o.name
+        }));
+
+        lists.push({
+          id: 'dnd5e-origines',
+          name: 'Origines D&D 5e',
+          type: 'system',
+          gameSystem: 'dnd5e',
+          options: origineOptions,
+          createdAt: now,
+          updatedAt: now
+        });
+
+        // Créer une liste de peuples pour chaque origine
+        dnd5eData.origines.forEach((origine: any) => {
+          if (origine.peuples && Array.isArray(origine.peuples) && origine.peuples.length > 0) {
+            const peupleOptions: SelectListOption[] = origine.peuples.map((p: any) => ({
+              id: this.storageService.generateId(),
+              label: p.name,
+              value: p.name
+            }));
+
+            lists.push({
+              id: `dnd5e-peuples-${origine.name.toLowerCase().replace(/\s+/g, '-')}`,
+              name: `Peuples - ${origine.name}`,
+              type: 'system',
+              gameSystem: 'dnd5e',
+              options: peupleOptions,
+              createdAt: now,
+              updatedAt: now
+            });
+          }
+        });
+      }
+
+      // Sauvegarder toutes les listes en une fois
+      if (lists.length > 0) {
+        this.storageService.saveSystemSelectLists(lists);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des listes D&D 5e:', error);
+    }
+  }
+
 }

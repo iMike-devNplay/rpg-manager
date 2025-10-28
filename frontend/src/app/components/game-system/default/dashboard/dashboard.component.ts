@@ -397,10 +397,19 @@ export class DashboardComponent implements OnInit {
           }
           
           // Fusionner les metadata, les nouvelles données ont la priorité
-          if (this.editingItem.metadata) {
+          if (this.editingItem.metadata || updatedElement.metadata) {
             updatedElement.metadata = {
               ...this.editingItem.metadata,
               ...updatedElement.metadata
+            };
+          }
+          
+          // Si elementData contient déjà des metadata (venant directement de la modale),
+          // les utiliser en priorité
+          if ((elementData as any).metadata) {
+            updatedElement.metadata = {
+              ...updatedElement.metadata,
+              ...(elementData as any).metadata
             };
           }
         }
@@ -421,6 +430,15 @@ export class DashboardComponent implements OnInit {
           zone: zone || 'center', // Fallback pour la compatibilité
           position: this.getNextPosition(existingItems, zone || 'center')
         } as Element);
+        
+        // Si elementData contient déjà des metadata (venant directement de la modale),
+        // les utiliser en priorité
+        if ((elementData as any).metadata) {
+          newDataItem.metadata = {
+            ...newDataItem.metadata,
+            ...(elementData as any).metadata
+          };
+        }
         
         // Assigner au bon onglet si système d'onglets actif
         if (tabId) {
@@ -466,9 +484,9 @@ export class DashboardComponent implements OnInit {
     if (element.type === 'numeric') {
       dataItem.allowQuickModification = element.canQuickModify ?? true;
     } else if (element.type === 'select') {
-      // Préserver les options disponibles dans metadata
+      // Préserver le selectListId dans metadata (nouveau système)
       dataItem.metadata = {
-        availableOptions: element.options || []
+        selectListId: element.selectListId || ''
       };
       dataItem.allowQuickModification = true;
     } else if (element.type === 'hp') {
@@ -607,11 +625,25 @@ export class DashboardComponent implements OnInit {
         };
         return numericElement;
       case DataType.SELECT:
+        const selectListId = item.metadata?.['selectListId'] || '';
+        let selectOptions: { label: string; value: string }[] = [];
+        
+        if (selectListId) {
+          const selectList = this.storageService.getSelectListById(selectListId);
+          if (selectList) {
+            selectOptions = selectList.options.map(opt => ({
+              label: opt.label,
+              value: opt.value
+            }));
+          }
+        }
+        
         const selectElement = {
           ...baseElement,
           type: 'select' as const,
           value: item.value as string,
-          options: item.metadata?.availableOptions || []
+          selectListId: selectListId,
+          options: selectOptions
         };
         return selectElement;
       case DataType.ATTRIBUTE:

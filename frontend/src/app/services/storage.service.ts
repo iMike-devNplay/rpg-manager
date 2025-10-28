@@ -11,7 +11,10 @@ import {
   GameSystem,
   DashboardTab,
   TabIcon,
-  DashboardZone
+  DashboardZone,
+  SelectListReference,
+  SelectListsStorage,
+  SelectListOption
 } from '../models/rpg.models';
 
 @Injectable({
@@ -22,6 +25,8 @@ export class StorageService {
   private readonly USER_KEY = 'rpg-manager-user';
   private readonly USERS_LIST_KEY = 'rpg-manager-users-list';
   private readonly CURRENT_CHARACTER_KEY = 'rpg-manager-current-character';
+  private readonly SYSTEM_SELECT_LISTS_KEY = 'rpg-manager-system-select-lists';
+  private readonly CUSTOM_SELECT_LISTS_KEY = 'rpg-manager-custom-select-lists';
   
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -593,4 +598,144 @@ export class StorageService {
 
     return character;
   }
+  // ========================================
+  // Gestion des listes de sélection
+  // ========================================
+
+  /**
+   * Récupère toutes les listes de sélection (system + custom)
+   */
+  getSelectLists(): SelectListsStorage {
+    const systemLists = this.getSystemSelectLists();
+    const customLists = this.getCustomSelectLists();
+    return {
+      systemLists,
+      customLists
+    };
+  }
+
+  /**
+   * Récupère les listes système (chargées depuis JSON)
+   */
+  private getSystemSelectLists(): SelectListReference[] {
+    const data = localStorage.getItem(this.SYSTEM_SELECT_LISTS_KEY);
+    if (!data) {
+      return [];
+    }
+    try {
+      const lists = JSON.parse(data) as SelectListReference[];
+      // Reconvertir les dates
+      return lists.map(list => ({
+        ...list,
+        createdAt: new Date(list.createdAt),
+        updatedAt: new Date(list.updatedAt)
+      }));
+    } catch (error) {
+      console.error('Erreur lors du chargement des listes système:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupère les listes custom (créées par l'utilisateur)
+   */
+  private getCustomSelectLists(): SelectListReference[] {
+    const data = localStorage.getItem(this.CUSTOM_SELECT_LISTS_KEY);
+    if (!data) {
+      return [];
+    }
+    try {
+      const lists = JSON.parse(data) as SelectListReference[];
+      // Reconvertir les dates
+      return lists.map(list => ({
+        ...list,
+        createdAt: new Date(list.createdAt),
+        updatedAt: new Date(list.updatedAt)
+      }));
+    } catch (error) {
+      console.error('Erreur lors du chargement des listes custom:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Sauvegarde une liste de sélection (system ou custom)
+   */
+  saveSelectList(list: SelectListReference): void {
+    const now = new Date();
+    const listToSave = {
+      ...list,
+      updatedAt: now
+    };
+
+    if (list.type === 'system') {
+      const lists = this.getSystemSelectLists();
+      const index = lists.findIndex(l => l.id === list.id);
+      if (index >= 0) {
+        lists[index] = listToSave;
+      } else {
+        lists.push(listToSave);
+      }
+      localStorage.setItem(this.SYSTEM_SELECT_LISTS_KEY, JSON.stringify(lists));
+    } else {
+      const lists = this.getCustomSelectLists();
+      const index = lists.findIndex(l => l.id === list.id);
+      if (index >= 0) {
+        lists[index] = listToSave;
+      } else {
+        lists.push(listToSave);
+      }
+      localStorage.setItem(this.CUSTOM_SELECT_LISTS_KEY, JSON.stringify(lists));
+    }
+  }
+
+  /**
+   * Sauvegarde plusieurs listes système en une seule fois
+   */
+  saveSystemSelectLists(lists: SelectListReference[]): void {
+    localStorage.setItem(this.SYSTEM_SELECT_LISTS_KEY, JSON.stringify(lists));
+  }
+
+  /**
+   * Récupère une liste par son ID
+   */
+  getSelectListById(listId: string): SelectListReference | null {
+    const allLists = this.getSelectLists();
+    const systemList = allLists.systemLists.find(l => l.id === listId);
+    if (systemList) {
+      return systemList;
+    }
+    const customList = allLists.customLists.find(l => l.id === listId);
+    return customList || null;
+  }
+
+  /**
+   * Supprime une liste custom (les listes système ne peuvent pas être supprimées)
+   */
+  deleteCustomSelectList(listId: string): boolean {
+    const lists = this.getCustomSelectLists();
+    const index = lists.findIndex(l => l.id === listId);
+    if (index >= 0) {
+      lists.splice(index, 1);
+      localStorage.setItem(this.CUSTOM_SELECT_LISTS_KEY, JSON.stringify(lists));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Vérifie si une liste est utilisée par des éléments
+   */
+  isSelectListUsed(listId: string): boolean {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+
+    const characters = this.getCharacters(user.id);
+    return characters.some(character => 
+      character.dataItems.some(item => 
+        item.metadata && item.metadata['selectListId'] === listId
+      )
+    );
+  }
+
 }

@@ -159,11 +159,25 @@ export class ElementDisplayComponent {
         };
       case DataType.SELECT:
       case 'select':
+        const selectListId = this.item.metadata?.['selectListId'] || '';
+        let selectOptions: { label: string; value: string }[] = [];
+        
+        if (selectListId) {
+          const selectList = this.storageService.getSelectListById(selectListId);
+          if (selectList) {
+            selectOptions = selectList.options.map(opt => ({
+              label: opt.label,
+              value: opt.value
+            }));
+          }
+        }
+        
         return {
           ...baseElement,
           type: 'select',
           value: this.item.value as string,
-          options: this.item.metadata?.availableOptions || []
+          selectListId: selectListId,
+          options: selectOptions
         };
       default:
         // Fallback vers text
@@ -199,6 +213,48 @@ export class ElementDisplayComponent {
       // Persist the change immediately so parent views reflect saved state
       this.storageService.saveDataItem(updatedItem);
       this.itemUpdated.emit(updatedItem);
+      
+      // Gérer les dépendances : si cet élément est une origine D&D 5e,
+      // mettre à jour l'élément peuple dépendant
+      if (updatedItem.metadata?.['dnd5eType'] === 'origin' && newValue) {
+        this.updateDependentPeopleElement(updatedItem.id, newValue as string);
+      }
+    }
+  }
+
+  /**
+   * Met à jour l'élément Peuple quand l'Origine change
+   */
+  private updateDependentPeopleElement(origineElementId: string, origineValue: string): void {
+    const character = this.storageService.getCurrentCharacter();
+    if (!character) return;
+
+    // Trouver l'élément Peuple qui dépend de cette Origine
+    const peopleElement = character.dataItems.find(item => 
+      item.metadata?.['dependsOn'] === origineElementId
+    );
+
+    if (peopleElement) {
+      // Calculer le nouvel ID de liste basé sur l'origine sélectionnée
+      const normalizedOrigineName = origineValue.toLowerCase().replace(/\s+/g, '-');
+      const newSelectListId = `dnd5e-peuples-${normalizedOrigineName}`;
+
+      // Vérifier que la liste existe
+      const newList = this.storageService.getSelectListById(newSelectListId);
+      if (newList) {
+        // Mettre à jour le selectListId et réinitialiser la valeur
+        peopleElement.metadata = {
+          ...peopleElement.metadata,
+          selectListId: newSelectListId
+        };
+        peopleElement.value = ''; // Réinitialiser la sélection
+
+        // Sauvegarder
+        this.storageService.saveDataItem(peopleElement);
+        
+        // Émettre l'événement pour rafraîchir l'affichage
+        this.itemUpdated.emit(peopleElement);
+      }
     }
   }
 

@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataItem } from '../../../../models/rpg.models';
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-select-element',
@@ -10,14 +11,34 @@ import { DataItem } from '../../../../models/rpg.models';
   templateUrl: './select-element.component.html',
   styleUrl: './select-element.component.scss'
 })
-export class SelectElementComponent {
+export class SelectElementComponent implements OnInit {
   @Input() item!: DataItem;
   @Output() valueChange = new EventEmitter<string>();
 
   isOpen = false;
+  loadedOptions: { label: string; value: string }[] = [];
+
+  constructor(private storageService: StorageService) {}
+
+  ngOnInit(): void {
+    this.loadOptions();
+  }
+
+  private loadOptions(): void {
+    const selectListId = this.item.metadata?.['selectListId'];
+    if (selectListId) {
+      const selectList = this.storageService.getSelectListById(selectListId);
+      if (selectList) {
+        this.loadedOptions = selectList.options.map(opt => ({
+          label: opt.label,
+          value: opt.value
+        }));
+      }
+    }
+  }
 
   get options(): { label: string; value: string }[] {
-    return this.item.metadata?.availableOptions || [];
+    return this.loadedOptions;
   }
 
   get selectedLabel(): string {

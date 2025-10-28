@@ -37,7 +37,8 @@ export interface NumericElement extends BaseElement {
 export interface SelectElement extends BaseElement {
   type: 'select';
   value: string;
-  options: { label: string; value: string }[];
+  selectListId: string; // Référence vers une SelectListReference dans le storage
+  options?: { label: string; value: string }[]; // Options chargées dynamiquement depuis le storage
 }
 
 export interface DndAttributeElement extends BaseElement {

@@ -1,4 +1,41 @@
+// ========================================
+// Gestion des listes de sélection
+// ========================================
+
+/**
+ * Option d'une liste de sélection
+ */
+export interface SelectListOption {
+  id: string;
+  label: string;
+  value: string;
+}
+
+/**
+ * Référence à une liste de sélection
+ */
+export interface SelectListReference {
+  id: string;
+  name: string; // Nom lisible de la liste (ex: "Classes D&D 5e", "Origines D&D 5e")
+  type: 'system' | 'custom'; // system = chargé depuis JSON, custom = créé par l'utilisateur
+  gameSystem?: string; // Optionnel, pour les listes system (ex: "dnd5e")
+  options: SelectListOption[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Structure de stockage des listes dans le localStorage
+ */
+export interface SelectListsStorage {
+  systemLists: SelectListReference[]; // Listes chargées depuis les fichiers JSON (par système)
+  customLists: SelectListReference[]; // Listes créées manuellement par l'utilisateur
+}
+
+// ========================================
 // Énumérations
+// ========================================
+
 export enum UserMode {
   PLAYER = 'player',
   GAMEMASTER = 'gamemaster'

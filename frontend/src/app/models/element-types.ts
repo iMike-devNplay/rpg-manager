@@ -1,6 +1,6 @@
 export type GameSystem = 'dnd5e' | 'pathfinder' | 'call-of-cthulhu' | null;
 
-export type ElementType = 'text' | 'numeric' | 'select' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment' | 'hp' | 'attack';
+export type ElementType = 'text' | 'numeric' | 'select' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment' | 'hp' | 'attack' | 'resource-counter';
 
 export interface ElementTypeConfig {
   id: ElementType;
@@ -132,4 +132,10 @@ export interface AttackElement extends BaseElement {
   misc: string; // Type de dégâts, type d'arme, etc.
 }
 
-export type Element = TextElement | NumericElement | SelectElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement | HpElement | AttackElement;
+export interface ResourceCounterElement extends BaseElement {
+  type: 'resource-counter';
+  currentValue: number;
+  maxValue?: number;
+}
+
+export type Element = TextElement | NumericElement | SelectElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement | HpElement | AttackElement | ResourceCounterElement;

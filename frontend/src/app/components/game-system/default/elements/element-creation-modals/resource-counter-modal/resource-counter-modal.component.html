@@ -1,0 +1,122 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <!-- En-tête de la modale -->
+    <div class="modal-header">
+      <h2>{{ isEditing ? 'Modifier le compteur' : 'Nouveau compteur de ressource' }}</h2>
+      <button type="button" class="close-btn" (click)="onCancel()" title="Fermer">×</button>
+    </div>
+
+    <!-- Corps de la modale -->
+    <div class="modal-body">
+      <form (ngSubmit)="onSave()" #resourceForm="ngForm">
+        
+        <!-- Nom de l'élément -->
+        <div class="form-group">
+          <label for="elementName">Nom de l'élément <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="elementName"
+            name="elementName"
+            [(ngModel)]="formData.name"
+            required
+            placeholder="Ex: Flèches, Dés de vie, Munitions..."
+            maxlength="50">
+          <small class="help-text">Le nom qui apparaîtra dans le dashboard</small>
+        </div>
+
+
+
+        <!-- Valeur actuelle -->
+        <div class="form-group">
+          <label for="currentValue">Valeur actuelle <span class="required">*</span></label>
+          <input 
+            type="number" 
+            id="currentValue"
+            name="currentValue"
+            [(ngModel)]="formData.currentValue"
+            (ngModelChange)="onCurrentValueChange()"
+            required
+            min="0"
+            [max]="hasMaxValue && formData.maxValue ? formData.maxValue : null">
+        </div>
+
+        <!-- Valeur maximale (optionnelle) -->
+        <div class="form-group">
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="hasMaxValue"
+                (ngModelChange)="onHasMaxValueChange()"
+                name="hasMaxValue">
+              <span class="checkmark"></span>
+              Définir une valeur maximale
+            </label>
+          </div>
+          
+          <div class="max-value-input" *ngIf="hasMaxValue">
+            <input 
+              type="number" 
+              id="maxValue"
+              name="maxValue"
+              [(ngModel)]="formData.maxValue"
+              (ngModelChange)="onMaxValueChange()"
+              min="1"
+              placeholder="Valeur maximale">
+          </div>
+        </div>
+
+        <!-- Description (optionnelle) -->
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description"
+            name="description"
+            [(ngModel)]="formData.description"
+            placeholder="Description optionnelle de la ressource..."
+            rows="3"
+            maxlength="200"></textarea>
+        </div>
+
+        <!-- Aperçu -->
+        <div class="preview-section" *ngIf="formData.name">
+          <h4>Aperçu</h4>
+          <div class="resource-preview">
+            <div class="resource-header">
+              <span class="resource-name">{{ formData.name }}</span>
+              <span class="resource-values">
+                {{ formData.currentValue }}{{ hasMaxValue && formData.maxValue ? '/' + formData.maxValue : '' }}
+              </span>
+            </div>
+            <div class="resource-controls">
+              <button type="button" class="resource-btn" disabled>-</button>
+              <button type="button" class="resource-btn" disabled>+</button>
+            </div>
+            <div class="progress-bar" *ngIf="hasMaxValue && formData.maxValue">
+              <div class="progress-fill" 
+                   [style.width.%]="(formData.currentValue / formData.maxValue!) * 100">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Pied de la modale -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Annuler
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="onSave()"
+        [disabled]="!isFormValid()">
+        {{ isEditing ? 'Modifier' : 'Créer' }}
+      </button>
+    </div>
+
+  </div>
+</div>

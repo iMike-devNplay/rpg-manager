@@ -13,6 +13,7 @@ import { DndLevelModalComponent } from '../../../dnd5e/elements/element-creation
 import { DndSpellModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-spell-modal/dnd-spell-modal.component';
 import { DndSkillsGroupModalComponent } from '../../../dnd5e/elements/modals/dnd-skills-group-modal/dnd-skills-group-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
+import { ResourceCounterModalComponent } from '../element-creation-modals/resource-counter-modal/resource-counter-modal.component';
 import { ElementType, Element, GameSystem } from '../../../../../models/element-types';
 import { DataItem } from '../../../../../models/rpg.models';
 
@@ -33,7 +34,8 @@ import { DataItem } from '../../../../../models/rpg.models';
     DndLevelModalComponent,
     DndSpellModalComponent,
     DndSkillsGroupModalComponent,
-    EquipmentModalComponent
+    EquipmentModalComponent,
+    ResourceCounterModalComponent
   ],
   templateUrl: './element-creation-orchestrator.component.html',
   styleUrls: ['./element-creation-orchestrator.component.scss']
@@ -165,5 +167,25 @@ export class ElementCreationOrchestratorComponent {
 
   get attackElement() {
     return this.editingElement?.type === 'attack' ? this.editingElement : null;
+  }
+
+  get resourceCounterElement() {
+    return this.editingElement?.type === 'resource-counter' ? this.editingElement : null;
+  }
+
+  onResourceCounterSaved(data: any): void {
+    // Convertir les données de la modal en format Element
+    const elementData: Partial<Element> = {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      type: 'resource-counter',
+      zone: data.zone,
+      currentValue: data.currentValue,
+      maxValue: data.maxValue
+    };
+    
+    this.elementSaved.emit(elementData);
+    this.close.emit();
   }
 }

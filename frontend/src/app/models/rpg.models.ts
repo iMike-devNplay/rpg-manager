@@ -81,7 +81,8 @@ export enum DataType {
   DND_LEVEL = 'dnd_level',
   DND_SKILLS_GROUP = 'dnd_skills_group',
   HP = 'hp',
-  ATTACK = 'attack'
+  ATTACK = 'attack',
+  RESOURCE_COUNTER = 'resource_counter'
 }
 
 export enum GameSystem {
@@ -123,6 +124,14 @@ export interface User {
   username: string;
   mode: UserMode;
   createdAt: Date;
+}
+
+/**
+ * Interface pour les métadonnées d'un compteur de ressource
+ */
+export interface ResourceCounterElement {
+  currentValue: number;
+  maxValue?: number; // Facultatif
 }
 
 // Interface pour les onglets du dashboard

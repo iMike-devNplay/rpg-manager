@@ -39,6 +39,7 @@ export class Dnd5eService {
       // Récupérer ou créer les onglets du personnage
       let mainTabId: string;
       let skillsTabId: string;
+      let capacitiesTabId: string;
       let fightTabId: string;
       let spellsTabId: string;
       let inventoryTabId: string;
@@ -63,9 +64,17 @@ export class Dnd5eService {
         },
         { 
           id: this.storageService.generateId(), 
+          name: 'Capacités', 
+          icon: '🎯', 
+          order: 2, 
+          characterId: character.id,
+          columnWidths: { 0: 1, 1: 1, 2: 1 } // 3 colonnes: gauche=1x, cendtre=1x, droite=1x
+        },
+        { 
+          id: this.storageService.generateId(), 
           name: 'Combat', 
           icon: '⚔️', 
-          order: 2, 
+          order: 3, 
           characterId: character.id,
           columnWidths: { 0: 1, 1: 1, 2: 1 } // 3 colonnes égales
         },
@@ -73,7 +82,7 @@ export class Dnd5eService {
           id: this.storageService.generateId(), 
           name: 'Sorts', 
           icon: '🪄', 
-          order: 3, 
+          order: 4, 
           characterId: character.id,
           columnWidths: { 0: 1, 1: 2 } // 2 colonnes: gauche=1x, droite=2x
         },
@@ -81,7 +90,7 @@ export class Dnd5eService {
           id: this.storageService.generateId(), 
           name: 'Inventaire', 
           icon: '🎒', 
-          order: 4, 
+          order: 5, 
           characterId: character.id,
           columnWidths: { 0: 2, 1: 1 } // 2 colonnes: gauche=2x, droite=1x
         }
@@ -93,9 +102,10 @@ export class Dnd5eService {
       // Assigner les IDs
       mainTabId = newTabs[0].id;
       skillsTabId = newTabs[1].id;
-      fightTabId = newTabs[2].id;
-      spellsTabId = newTabs[3].id;
-      inventoryTabId = newTabs[4].id;
+      capacitiesTabId = newTabs[2].id;
+      fightTabId = newTabs[3].id;
+      spellsTabId = newTabs[4].id;
+      inventoryTabId = newTabs[5].id;
 
 
       const elementsToCreate: DataItem[] = [];
@@ -161,6 +171,9 @@ export class Dnd5eService {
 
       // Création de l'élément points de vie
       elementsToCreate.push(this.createHitPointsElement(character.userId, fightTabId));
+
+      // Création de l'élément dés de vie
+      elementsToCreate.push(this.createHitDiceElement(character.userId, mainTabId));
 
   // Nombre d'éléments à créer: elementsToCreate.length
 
@@ -600,7 +613,7 @@ export class Dnd5eService {
       value: '9 m',
       tabId: tabId,
       column: 3,
-      order: 0,
+      order: 1,
       userId,
       description: 'Vitesse de déplacement du personnage',
       allowQuickModification: true,
@@ -621,7 +634,7 @@ export class Dnd5eService {
       value: 10,
       tabId: tabId,
       column: 3,
-      order: 1,
+      order: 2,
       userId,
       description: 'Perception passive (10 + modificateur de Sagesse + bonus de maîtrise si maîtrise de Perception)',
       allowQuickModification: true,
@@ -651,6 +664,32 @@ export class Dnd5eService {
         maxHp: 0,
         currentHp: 0,
         temporaryHp: 0
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément compteur de dés de vie
+   */
+  private createHitDiceElement(userId: string, tabId: string): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      name: 'Dés de vie',
+      type: DataType.RESOURCE_COUNTER,
+      value: {
+        currentValue: 1,
+        maxValue: 1
+      } as any,
+      tabId: tabId,
+      column: 3, // 4ème colonne (index 3)
+      order: 0,  // Première position
+      userId,
+      description: 'Dés de vie pour récupérer des points de vie pendant un repos court',
+      allowQuickModification: true,
+      metadata: {
+        dnd5eType: 'hit-dice',
+        currentValue: 1,
+        maxValue: 1
       }
     };
   }

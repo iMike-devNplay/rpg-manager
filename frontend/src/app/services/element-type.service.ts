@@ -50,6 +50,14 @@ export const ELEMENT_TYPES_CONFIG: ElementTypeConfig[] = [
     icon: '🎒',
     category: 'equipment'
   },
+  {
+    id: 'resource-counter',
+    name: 'Compteur de ressource',
+    description: 'Compteur pour ressources limitées (dés de vie, flèches, munitions, consommables)',
+    gameSystem: null,
+    icon: '🔄',
+    category: 'basic'
+  },
 
   // Éléments spécifiques à D&D 5e
   {

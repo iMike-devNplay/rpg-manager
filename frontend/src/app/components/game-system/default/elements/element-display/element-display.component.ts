@@ -11,6 +11,7 @@ import { EquipmentElementComponent } from '../element-types/equipment-element/eq
 import { SelectElementComponent } from '../../../../elements/element-types/select-element/select-element.component';
 import { HpElementComponent } from '../../../../elements/element-types/hp-element/hp-element.component';
 import { AttackElementComponent } from '../../../../elements/element-types/attack-element/attack-element.component';
+import { ResourceCounterElementComponent } from '../../../../elements/element-types/resource-counter-element/resource-counter-element.component';
 import { DndAttributeElementComponent } from '../../../dnd5e/elements/element-types/dnd-attribute-element/dnd-attribute-element.component';
 import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attributes-group/dnd-attributes-group.component';
 import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
@@ -32,7 +33,8 @@ import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-grou
     DndSkillsGroupComponent,
     EquipmentElementComponent,
     HpElementComponent,
-    AttackElementComponent
+    AttackElementComponent,
+    ResourceCounterElementComponent
   ],
   templateUrl: './element-display.component.html',
   styleUrls: ['./element-display.component.scss']
@@ -178,6 +180,15 @@ export class ElementDisplayComponent {
           value: this.item.value as string,
           selectListId: selectListId,
           options: selectOptions
+        };
+      case DataType.RESOURCE_COUNTER:
+      case 'resource_counter':
+        const resourceData = this.item.value as any;
+        return {
+          ...baseElement,
+          type: 'resource-counter',
+          currentValue: resourceData?.currentValue !== undefined ? resourceData.currentValue : (this.item.metadata?.['currentValue'] || 0),
+          maxValue: resourceData?.maxValue !== undefined ? resourceData.maxValue : this.item.metadata?.['maxValue']
         };
       default:
         // Fallback vers text

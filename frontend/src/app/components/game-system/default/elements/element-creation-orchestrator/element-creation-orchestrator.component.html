@@ -114,3 +114,12 @@
   (close)="onElementModalClose()"
   (save)="onElementSaved($event)">
 </app-dnd-skills-group-modal>
+
+<!-- Modal pour compteur de ressource -->
+<app-resource-counter-modal
+  [isVisible]="showElementModal && selectedType === 'resource-counter'"
+  [editingElement]="resourceCounterElement"
+  [targetZone]="zone"
+  (close)="onElementModalClose()"
+  (save)="onResourceCounterSaved($event)">
+</app-resource-counter-modal>

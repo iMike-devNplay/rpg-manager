@@ -126,6 +126,13 @@
       [element]="element">
     </app-attack-element>
 
+    <!-- Compteur de ressource -->
+    <app-resource-counter-element 
+      *ngIf="element.type === 'resource-counter'"
+      [item]="item"
+      (valueChange)="onElementValueChange($event)">
+    </app-resource-counter-element>
+
   </div>
 
   <!-- Description qui s'affiche au hover -->

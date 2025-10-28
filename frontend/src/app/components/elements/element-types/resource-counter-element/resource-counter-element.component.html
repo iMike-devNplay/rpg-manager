@@ -1,0 +1,37 @@
+<div class="resource-counter">
+  <!-- Affichage compact : valeur + boutons -->
+  <div class="counter-main">
+    <div class="counter-display">
+      <span class="current-value">{{ resourceData.currentValue }}</span>
+      <span *ngIf="hasMaxValue" class="max-value">/ {{ resourceData.maxValue }}</span>
+    </div>
+    
+    <div class="counter-controls">
+      <button 
+        type="button" 
+        class="counter-btn decrease-btn" 
+        [disabled]="!canDecrease"
+        (click)="onDecrease()"
+        title="Diminuer">
+        −
+      </button>
+      
+      <button 
+        type="button" 
+        class="counter-btn increase-btn" 
+        [disabled]="!canIncrease"
+        (click)="onIncrease()"
+        title="Augmenter">
+        +
+      </button>
+    </div>
+  </div>
+  
+  <!-- Barre de progression compacte si max défini -->
+  <div *ngIf="hasMaxValue" class="progress-bar">
+    <div 
+      class="progress-fill" 
+      [style.width.%]="(resourceData.currentValue / resourceData.maxValue!) * 100">
+    </div>
+  </div>
+</div>

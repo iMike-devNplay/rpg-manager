@@ -537,6 +537,7 @@ export class DashboardComponent implements OnInit {
       case 'select': return DataType.SELECT;
       case 'hp': return DataType.HP;
       case 'attack': return DataType.ATTACK;
+      case 'resource-counter': return DataType.RESOURCE_COUNTER;
       case 'dnd-attribute': return DataType.ATTRIBUTE;
       case 'dnd-attributes-group': return DataType.ATTRIBUTES_GROUP;
       case 'dnd-proficiency-bonus': return DataType.DND_PROFICIENCY_BONUS;
@@ -553,6 +554,10 @@ export class DashboardComponent implements OnInit {
       case 'select': return element.value;
       case 'hp': return element.maxHp; // Utiliser maxHp comme valeur principale
       case 'attack': return element.name; // Nom de l'attaque comme valeur d'affichage
+      case 'resource-counter': return {
+        currentValue: element.currentValue,
+        maxValue: element.maxValue
+      };
       case 'dnd-attribute': return element.value;
       case 'dnd-attributes-group': return 'Attributs'; // Nom générique pour l'affichage
       case 'dnd-proficiency-bonus': return element.value;
@@ -723,6 +728,15 @@ export class DashboardComponent implements OnInit {
           temporaryHp: item.metadata?.['temporaryHp'] || 0
         };
         return hpElement;
+      case DataType.RESOURCE_COUNTER:
+        const resourceData = item.value as any;
+        const resourceCounterElement = {
+          ...baseElement,
+          type: 'resource-counter' as const,
+          currentValue: resourceData?.currentValue !== undefined ? resourceData.currentValue : (item.metadata?.['currentValue'] || 0),
+          maxValue: resourceData?.maxValue !== undefined ? resourceData.maxValue : item.metadata?.['maxValue']
+        };
+        return resourceCounterElement;
       default:
         const defaultElement = {
           ...baseElement,

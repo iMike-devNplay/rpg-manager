@@ -219,6 +219,12 @@ export class ElementDisplayComponent {
       if (updatedItem.metadata?.['dnd5eType'] === 'origin' && newValue) {
         this.updateDependentPeopleElement(updatedItem.id, newValue as string);
       }
+
+      // Gérer les dépendances : si cet élément est un historique D&D 5e,
+      // mettre à jour les 4 éléments dépendants (trait, idéal, lien, défaut)
+      if (updatedItem.metadata?.['dnd5eType'] === 'background' && newValue) {
+        this.updateDependentBackgroundElements(updatedItem.id, newValue as string);
+      }
     }
   }
 
@@ -236,26 +242,104 @@ export class ElementDisplayComponent {
 
     if (peopleElement) {
       // Calculer le nouvel ID de liste basé sur l'origine sélectionnée
-      const normalizedOrigineName = origineValue.toLowerCase().replace(/\s+/g, '-');
+      const normalizedOrigineName = this.normalizeNameForId(origineValue);
       const newSelectListId = `dnd5e-peuples-${normalizedOrigineName}`;
 
       // Vérifier que la liste existe
       const newList = this.storageService.getSelectListById(newSelectListId);
       if (newList) {
-        // Mettre à jour le selectListId et réinitialiser la valeur
-        peopleElement.metadata = {
-          ...peopleElement.metadata,
-          selectListId: newSelectListId
+        // Créer une nouvelle instance pour forcer la détection de changement d'Angular
+        const updatedPeopleElement = {
+          ...peopleElement,
+          value: '', // Réinitialiser la sélection
+          metadata: {
+            ...peopleElement.metadata,
+            selectListId: newSelectListId
+          }
         };
-        peopleElement.value = ''; // Réinitialiser la sélection
 
         // Sauvegarder
-        this.storageService.saveDataItem(peopleElement);
+        this.storageService.saveDataItem(updatedPeopleElement);
         
         // Émettre l'événement pour rafraîchir l'affichage
-        this.itemUpdated.emit(peopleElement);
+        this.itemUpdated.emit(updatedPeopleElement);
       }
     }
+  }
+
+  /**
+   * Met à jour les 4 éléments dépendants (Trait, Idéal, Lien, Défaut) quand l'Historique change
+   */
+  private updateDependentBackgroundElements(backgroundElementId: string, backgroundValue: string): void {
+    const character = this.storageService.getCurrentCharacter();
+    if (!character) return;
+
+    // Extraire l'historique de base (avant le " - " s'il y a une variante)
+    const baseBackground = backgroundValue.split(' - ')[0]; // "Brigand - Fugitif" -> "Brigand"
+    console.log(`Extraction historique: "${backgroundValue}" -> "${baseBackground}"`);
+    
+    // Normaliser le nom de l'historique pour construire les IDs des listes
+    const normalizedBackgroundName = this.normalizeNameForId(baseBackground);
+
+    // Les 4 types d'éléments dépendants avec leurs dnd5eTypes et prefixes de liste
+    const dependentTypes = [
+      { dnd5eType: 'personality-trait', listPrefix: 'dnd5e-traits' },
+      { dnd5eType: 'ideal', listPrefix: 'dnd5e-ideaux' },
+      { dnd5eType: 'bond', listPrefix: 'dnd5e-liens' },
+      { dnd5eType: 'flaw', listPrefix: 'dnd5e-defauts' }
+    ];
+
+    // Pour chaque type d'élément dépendant
+    dependentTypes.forEach(({ dnd5eType, listPrefix }) => {
+      // Trouver l'élément qui dépend de l'historique
+      const dependentElement = character.dataItems.find(item => 
+        item.metadata?.['dependsOn'] === backgroundElementId &&
+        item.metadata?.['dnd5eType'] === dnd5eType
+      );
+
+      console.log(`Recherche élément ${dnd5eType}:`, dependentElement ? 'TROUVÉ' : 'NON TROUVÉ');
+
+      if (dependentElement) {
+        // Calculer le nouvel ID de liste
+        const newSelectListId = `${listPrefix}-${normalizedBackgroundName}`;
+        console.log(`Recherche liste ${newSelectListId}:`);
+
+        // Vérifier que la liste existe
+        const newList = this.storageService.getSelectListById(newSelectListId);
+        if (newList) {
+          console.log(`Liste ${newSelectListId} trouvée avec ${newList.options.length} options`);
+          // Créer une nouvelle instance pour forcer la détection de changement d'Angular
+          const updatedElement = {
+            ...dependentElement,
+            value: '', // Réinitialiser la sélection
+            metadata: {
+              ...dependentElement.metadata,
+              selectListId: newSelectListId
+            }
+          };
+
+          // Sauvegarder
+          this.storageService.saveDataItem(updatedElement);
+          
+          // Émettre l'événement pour rafraîchir l'affichage
+          this.itemUpdated.emit(updatedElement);
+        } else {
+          console.warn(`Liste ${newSelectListId} NON TROUVÉE`);
+        }
+      }
+    });
+  }
+
+  /**
+   * Normalise un nom pour créer un identifiant (enlève accents, espaces, etc.)
+   */
+  private normalizeNameForId(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD') // Décomposer les caractères accentués
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les diacritiques
+      .replace(/\s+/g, '-') // Remplacer espaces par tirets
+      .replace(/[^a-z0-9-]/g, ''); // Supprimer autres caractères spéciaux
   }
 
   /**

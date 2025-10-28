@@ -848,7 +848,13 @@ export class DashboardComponent implements OnInit {
    */
   onItemUpdated(item: DataItem): void {
     // L'élément a déjà été sauvegardé par le service
-    // On peut optionnellement faire une mise à jour locale ici
+    // Mettre à jour l'item dans la liste locale pour forcer le rafraîchissement
+    const itemIndex = this.dataItems.findIndex(di => di.id === item.id);
+    if (itemIndex !== -1) {
+      this.dataItems[itemIndex] = { ...item }; // Nouvelle référence pour déclencher la détection de changement
+    }
+    
+    // Recharger le personnage actuel
     this.currentCharacter = this.characterService.getCurrentCharacter();
     
     // Synchronisation automatique niveau → bonus de maîtrise pour D&D 5e

@@ -14,6 +14,18 @@ export class Dnd5eService {
   ) {}
 
   /**
+   * Normalise un nom pour créer un identifiant (enlève accents, espaces, etc.)
+   */
+  private normalizeNameForId(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD') // Décomposer les caractères accentués
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les diacritiques
+      .replace(/\s+/g, '-') // Remplacer espaces par tirets
+      .replace(/[^a-z0-9-]/g, ''); // Supprimer autres caractères spéciaux
+  }
+
+  /**
    * Initialise un personnage D&D 5e avec les éléments de base
    */
   async initializeDnd5eCharacter(character: PlayerCharacter): Promise<void> {
@@ -127,11 +139,16 @@ export class Dnd5eService {
 
       // Création des éléments texte et select (Peuple dépend de l'Origine)
       elementsToCreate.push(this.createPeopleElement(character.userId, mainTabId, origineElement?.id));
-      elementsToCreate.push(this.createBackgroundElement(character.userId, mainTabId));
-      elementsToCreate.push(this.createPersonalityTraitElement(character.userId, mainTabId));
-      elementsToCreate.push(this.createIdealElement(character.userId, mainTabId));
-      elementsToCreate.push(this.createBondElement(character.userId, mainTabId));
-      elementsToCreate.push(this.createFlawElement(character.userId, mainTabId));
+
+      // Création de l'élément Historique (devient SELECT)
+      const backgroundElement = this.createBackgroundElement(character.userId, mainTabId);
+      elementsToCreate.push(backgroundElement);
+
+      // Création des éléments dépendants de l'Historique (Trait, Idéal, Lien, Défaut)
+      elementsToCreate.push(this.createPersonalityTraitElement(character.userId, mainTabId, backgroundElement.id));
+      elementsToCreate.push(this.createIdealElement(character.userId, mainTabId, backgroundElement.id));
+      elementsToCreate.push(this.createBondElement(character.userId, mainTabId, backgroundElement.id));
+      elementsToCreate.push(this.createFlawElement(character.userId, mainTabId, backgroundElement.id));
       elementsToCreate.push(this.createLanguageElement(character.userId, mainTabId));
       elementsToCreate.push(this.createToolsElement(character.userId, mainTabId));
       elementsToCreate.push(this.createProficienciesElement(character.userId, mainTabId));
@@ -353,11 +370,14 @@ export class Dnd5eService {
   /**
    * Crée l'élément texte Historique
    */
+  /**
+   * Crée l'élément select Historique
+   */
   private createBackgroundElement(userId: string, tabId: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Historique',
-      type: DataType.TEXT,
+      type: DataType.SELECT,
       value: '',
       tabId: tabId,
       column: 2,
@@ -366,19 +386,20 @@ export class Dnd5eService {
       description: 'Historique du personnage',
       allowQuickModification: true,
       metadata: {
-        dnd5eType: 'background'
+        dnd5eType: 'background',
+        selectListId: 'dnd5e-historiques'
       }
     };
   }
 
   /**
-   * Crée l'élément texte Trait de personnalité
+   * Crée l'élément select Trait de personnalité (dépend de l'historique)
    */
-  private createPersonalityTraitElement(userId: string, tabId: string): DataItem {
+  private createPersonalityTraitElement(userId: string, tabId: string, backgroundElementId?: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Trait de personnalité',
-      type: DataType.TEXT,
+      type: DataType.SELECT,
       value: '',
       tabId: tabId,
       column: 2,
@@ -387,7 +408,9 @@ export class Dnd5eService {
       description: 'Traits de personnalité du personnage',
       allowQuickModification: true,
       metadata: {
-        dnd5eType: 'personality-trait'
+        dnd5eType: 'personality-trait',
+        selectListId: '',
+        dependsOn: backgroundElementId
       }
     };
   }
@@ -435,13 +458,13 @@ export class Dnd5eService {
   }
 
   /**
-   * Crée l'élément texte Idéal
+   * Crée l'élément select Idéal (dépend de l'historique)
    */
-  private createIdealElement(userId: string, tabId: string): DataItem {
+  private createIdealElement(userId: string, tabId: string, backgroundElementId?: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Idéal',
-      type: DataType.TEXT,
+      type: DataType.SELECT,
       value: '',
       tabId: tabId,
       column: 2,
@@ -450,19 +473,21 @@ export class Dnd5eService {
       description: 'Idéal du personnage',
       allowQuickModification: true,
       metadata: {
-        dnd5eType: 'ideal'
+        dnd5eType: 'ideal',
+        selectListId: '',
+        dependsOn: backgroundElementId
       }
     };
   }
 
   /**
-   * Crée l'élément texte Lien
+   * Crée l'élément select Lien (dépend de l'historique)
    */
-  private createBondElement(userId: string, tabId: string): DataItem {
+  private createBondElement(userId: string, tabId: string, backgroundElementId?: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Lien',
-      type: DataType.TEXT,
+      type: DataType.SELECT,
       value: '',
       tabId: tabId,
       column: 2,
@@ -471,19 +496,21 @@ export class Dnd5eService {
       description: 'Lien du personnage',
       allowQuickModification: true,
       metadata: {
-        dnd5eType: 'bond'
+        dnd5eType: 'bond',
+        selectListId: '',
+        dependsOn: backgroundElementId
       }
     };
   }
 
   /**
-   * Crée l'élément texte Défaut
+   * Crée l'élément select Défaut (dépend de l'historique)
    */
-  private createFlawElement(userId: string, tabId: string): DataItem {
+  private createFlawElement(userId: string, tabId: string, backgroundElementId?: string): DataItem {
     return {
       id: this.storageService.generateId(),
       name: 'Défaut',
-      type: DataType.TEXT,
+      type: DataType.SELECT,
       value: '',
       tabId: tabId,
       column: 2,
@@ -492,7 +519,9 @@ export class Dnd5eService {
       description: 'Défaut du personnage',
       allowQuickModification: true,
       metadata: {
-        dnd5eType: 'flaw'
+        dnd5eType: 'flaw',
+        selectListId: '',
+        dependsOn: backgroundElementId
       }
     };
   }
@@ -785,7 +814,7 @@ export class Dnd5eService {
             }));
 
             lists.push({
-              id: `dnd5e-peuples-${origine.name.toLowerCase().replace(/\s+/g, '-')}`,
+              id: `dnd5e-peuples-${this.normalizeNameForId(origine.name)}`,
               name: `Peuples - ${origine.name}`,
               type: 'system',
               gameSystem: 'dnd5e',
@@ -794,6 +823,125 @@ export class Dnd5eService {
               updatedAt: now
             });
           }
+        });
+      }
+
+      // Créer les listes des historiques et leurs dépendances (traits, idéaux, liens, défauts)
+      if (dnd5eData.historiques && Array.isArray(dnd5eData.historiques)) {
+        const historiqueOptions: SelectListOption[] = [];
+
+        // Créer les options principales (historiques + variantes)
+        dnd5eData.historiques.forEach((historique: any) => {
+          // Ajouter l'historique principal
+          const historiqueId = historique.historique || historique.name?.toLowerCase().replace(/\s+/g, '-') || '';
+          const historiqueName = historique.name || historique.historique || '';
+          
+          historiqueOptions.push({
+            id: this.storageService.generateId(),
+            label: historiqueName,
+            value: historiqueName
+          });
+
+          // Ajouter les variantes si elles existent
+          if (historique.variantes && Array.isArray(historique.variantes)) {
+            historique.variantes.forEach((variante: string) => {
+              historiqueOptions.push({
+                id: this.storageService.generateId(),
+                label: `${historiqueName} - ${variante}`,
+                value: `${historiqueName} - ${variante}`
+              });
+            });
+          }
+
+          // Créer les listes dépendantes pour cet historique
+          const normalizedId = historiqueId || this.normalizeNameForId(historiqueName);
+
+          // Liste des traits
+          if (historique.trait && Array.isArray(historique.trait)) {
+            const traitOptions: SelectListOption[] = historique.trait.map((t: any) => ({
+              id: this.storageService.generateId(),
+              label: t.text,
+              value: `${normalizedId}-trait-${t.id}`
+            }));
+
+            lists.push({
+              id: `dnd5e-traits-${normalizedId}`,
+              name: `Traits - ${historiqueName}`,
+              type: 'system',
+              gameSystem: 'dnd5e',
+              options: traitOptions,
+              createdAt: now,
+              updatedAt: now
+            });
+          }
+
+          // Liste des idéaux
+          if (historique.ideal && Array.isArray(historique.ideal)) {
+            const idealOptions: SelectListOption[] = historique.ideal.map((i: any) => ({
+              id: this.storageService.generateId(),
+              label: i.text,
+              value: `${normalizedId}-ideal-${i.id}`
+            }));
+
+            lists.push({
+              id: `dnd5e-ideaux-${normalizedId}`,
+              name: `Idéaux - ${historiqueName}`,
+              type: 'system',
+              gameSystem: 'dnd5e',
+              options: idealOptions,
+              createdAt: now,
+              updatedAt: now
+            });
+          }
+
+          // Liste des liens
+          if (historique.lien && Array.isArray(historique.lien)) {
+            const lienOptions: SelectListOption[] = historique.lien.map((l: any) => ({
+              id: this.storageService.generateId(),
+              label: l.text,
+              value: `${normalizedId}-lien-${l.id}`
+            }));
+
+            lists.push({
+              id: `dnd5e-liens-${normalizedId}`,
+              name: `Liens - ${historiqueName}`,
+              type: 'system',
+              gameSystem: 'dnd5e',
+              options: lienOptions,
+              createdAt: now,
+              updatedAt: now
+            });
+          }
+
+          // Liste des défauts
+          if (historique.defaut && Array.isArray(historique.defaut)) {
+            const defautOptions: SelectListOption[] = historique.defaut.map((d: any) => ({
+              id: this.storageService.generateId(),
+              label: d.text,
+              value: `${normalizedId}-defaut-${d.id}`
+            }));
+
+            lists.push({
+              id: `dnd5e-defauts-${normalizedId}`,
+              name: `Défauts - ${historiqueName}`,
+              type: 'system',
+              gameSystem: 'dnd5e',
+              options: defautOptions,
+              createdAt: now,
+              updatedAt: now
+            });
+          }
+        });
+
+        // Ajouter la liste principale des historiques
+        lists.push({
+          id: 'dnd5e-historiques',
+          name: 'Historiques D&D 5e',
+          type: 'system',
+          gameSystem: 'dnd5e',
+          options: historiqueOptions,
+          createdAt: now,
+          updatedAt: now
         });
       }
 

@@ -8,6 +8,7 @@ export interface GameSystemData {
   classes?: any[];
   origines?: any[];
   attributes?: any[];
+  historiques?: any[];
 }
 
 @Injectable({

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataItem } from '../../../../models/rpg.models';
@@ -11,12 +11,13 @@ import { StorageService } from '../../../../services/storage.service';
   templateUrl: './select-element.component.html',
   styleUrl: './select-element.component.scss'
 })
-export class SelectElementComponent implements OnInit {
+export class SelectElementComponent implements OnInit, OnChanges {
   @Input() item!: DataItem;
   @Output() valueChange = new EventEmitter<string>();
 
   isOpen = false;
   loadedOptions: { label: string; value: string }[] = [];
+  private lastSelectListId: string | null = null;
 
   constructor(private storageService: StorageService) {}
 
@@ -24,20 +25,46 @@ export class SelectElementComponent implements OnInit {
     this.loadOptions();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['item']) {
+      this.forceReloadOptions();
+    }
+  }
+
+  private forceReloadOptions(): void {
+    this.lastSelectListId = null; // Forcer le rechargement
+    this.loadedOptions = [];      // Vider les options
+    this.loadOptions();           // Recharger
+  }
+
   private loadOptions(): void {
     const selectListId = this.item.metadata?.['selectListId'];
     if (selectListId) {
-      const selectList = this.storageService.getSelectListById(selectListId);
-      if (selectList) {
-        this.loadedOptions = selectList.options.map(opt => ({
-          label: opt.label,
-          value: opt.value
-        }));
+      // Forcer le rechargement si l'ID a changé
+      if (selectListId !== this.lastSelectListId) {
+        this.loadedOptions = []; // Vider d'abord les options
+        this.lastSelectListId = selectListId;
+      }
+      
+      // Charger les nouvelles options si pas encore chargées
+      if (this.loadedOptions.length === 0) {
+        const selectList = this.storageService.getSelectListById(selectListId);
+        if (selectList) {
+          this.loadedOptions = selectList.options.map(opt => ({
+            label: opt.label,
+            value: opt.value
+          }));
+        }
       }
     }
   }
 
   get options(): { label: string; value: string }[] {
+    // Charger les options si nécessaire (éviter les appels répétés)
+    const currentSelectListId = this.item.metadata?.['selectListId'];
+    if (currentSelectListId && currentSelectListId !== this.lastSelectListId) {
+      this.loadOptions();
+    }
     return this.loadedOptions;
   }
 

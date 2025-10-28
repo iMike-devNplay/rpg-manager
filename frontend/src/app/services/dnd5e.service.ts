@@ -684,7 +684,7 @@ export class Dnd5eService {
       column: 3, // 4ème colonne (index 3)
       order: 0,  // Première position
       userId,
-      description: 'Dés de vie pour récupérer des points de vie pendant un repos court',
+      description: '**Dés de vie** pour récupérer des points de vie.\n\n*Repos court* : lancez un ou plusieurs dés de vie pour récupérer des PV.',
       allowQuickModification: true,
       metadata: {
         dnd5eType: 'hit-dice',

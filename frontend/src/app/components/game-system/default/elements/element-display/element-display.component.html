@@ -136,8 +136,7 @@
   </div>
 
   <!-- Description qui s'affiche au hover -->
-  <div class="element-description" *ngIf="item.description">
-    {{ item.description }}
+  <div class="element-description" *ngIf="item.description" [innerHTML]="item.description | markdown">
   </div>
 
 </div>

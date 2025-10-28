@@ -17,6 +17,7 @@ import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attribu
 import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
 import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.component';
 import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-group/dnd-skills-group.component';
+import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
 
 @Component({
   selector: 'app-element-display',
@@ -34,7 +35,8 @@ import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-grou
     EquipmentElementComponent,
     HpElementComponent,
     AttackElementComponent,
-    ResourceCounterElementComponent
+    ResourceCounterElementComponent,
+    MarkdownPipe
   ],
   templateUrl: './element-display.component.html',
   styleUrls: ['./element-display.component.scss']

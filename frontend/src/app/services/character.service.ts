@@ -4,6 +4,7 @@ import { PlayerCharacter, GameSystem, GAME_SYSTEM_LABELS } from '../models/rpg.m
 import { StorageService } from './storage.service';
 import { UserService } from './user.service';
 import { Dnd5eService } from './dnd5e.service';
+import { Dnd4eService } from './dnd4e.service';
 import { GameSystemDataService } from './game-system-data.service';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class CharacterService {
     private storageService: StorageService,
     private userService: UserService,
     private dnd5eService: Dnd5eService,
+    private dnd4eService: Dnd4eService,
     private gameSystemDataService: GameSystemDataService
   ) {}
 
@@ -60,6 +62,8 @@ export class CharacterService {
     if (this.gameSystemDataService.hasGameSystemData(gameSystem)) {
       if (gameSystem === GameSystem.DND5E) {
         await this.dnd5eService.initializeDnd5eCharacter(newCharacter);
+      } else if (gameSystem === GameSystem.DND4E) {
+        await this.dnd4eService.initializeDnd4eCharacter(newCharacter);
       }
     }
 

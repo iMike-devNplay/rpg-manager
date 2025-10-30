@@ -1,0 +1,29 @@
+<div class="dnd4e-attributes-group">
+  <!-- Affichage compact en lecture seule -->
+  <div class="compact-view">
+    <!-- Ligne des attributs -->
+    <div class="attributes-compact">
+      <div *ngFor="let attr of attributes" class="attr-compact">
+        <span class="attr-code">{{ attr.code }}</span>
+        <span class="attr-value">{{ attr.value }}</span>
+        <span class="attr-mod">{{ getModifierDisplay(attr.value) }}</span>
+      </div>
+    </div>
+    
+    <!-- Ligne des défenses -->
+    <div class="defenses-compact">
+      <div class="defense-compact">
+        <span class="defense-label">Réflexes:</span>
+        <span class="defense-bonus">{{ getDefenseDisplay(getDefense('Réflexe')!) }}</span>
+      </div>
+      <div class="defense-compact">
+        <span class="defense-label">Vigueur:</span>
+        <span class="defense-bonus">{{ getDefenseDisplay(getDefense('Vigueur')!) }}</span>
+      </div>
+      <div class="defense-compact">
+        <span class="defense-label">Volonté:</span>
+        <span class="defense-bonus">{{ getDefenseDisplay(getDefense('Volonté')!) }}</span>
+      </div>
+    </div>
+  </div>
+</div>

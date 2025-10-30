@@ -12,6 +12,7 @@ import { DndProficiencyBonusModalComponent } from '../../../dnd5e/elements/eleme
 import { DndLevelModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-level-modal/dnd-level-modal.component';
 import { DndSpellModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-spell-modal/dnd-spell-modal.component';
 import { DndSkillsGroupModalComponent } from '../../../dnd5e/elements/modals/dnd-skills-group-modal/dnd-skills-group-modal.component';
+import { EditDnd4eAttributesModalComponent } from '../../../dnd4e/elements/modals/edit-dnd4e-attributes-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
 import { ResourceCounterModalComponent } from '../element-creation-modals/resource-counter-modal/resource-counter-modal.component';
 import { ElementType, Element, GameSystem } from '../../../../../models/element-types';
@@ -34,6 +35,7 @@ import { DataItem } from '../../../../../models/rpg.models';
     DndLevelModalComponent,
     DndSpellModalComponent,
     DndSkillsGroupModalComponent,
+    EditDnd4eAttributesModalComponent,
     EquipmentModalComponent,
     ResourceCounterModalComponent
   ],
@@ -171,6 +173,15 @@ export class ElementCreationOrchestratorComponent {
 
   get resourceCounterElement() {
     return this.editingElement?.type === 'resource-counter' ? this.editingElement : null;
+  }
+
+  get dnd4eAttributesGroupElement() {
+    return this.editingElement?.type === 'dnd4e-attributes-group' ? this.editingElement : null;
+  }
+
+  get dnd4eAttributesGroupDataItem(): DataItem | null {
+    // Pour la modal D&D 4e qui utilise DataItem
+    return this.editingDataItem || (this.editingElement as any);
   }
 
   onResourceCounterSaved(data: any): void {

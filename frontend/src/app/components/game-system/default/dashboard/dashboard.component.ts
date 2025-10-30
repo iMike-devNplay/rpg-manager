@@ -737,6 +737,15 @@ export class DashboardComponent implements OnInit {
           maxValue: resourceData?.maxValue !== undefined ? resourceData.maxValue : item.metadata?.['maxValue']
         };
         return resourceCounterElement;
+      case DataType.DND4E_ATTRIBUTES_GROUP:
+        const dnd4eAttributesElement = {
+          ...baseElement,
+          type: 'dnd4e-attributes-group' as const,
+          attributes: item.metadata?.['attributes'] || {
+            FOR: 10, DEX: 10, CON: 10, INT: 10, SAG: 10, CHA: 10
+          }
+        };
+        return dnd4eAttributesElement;
       default:
         const defaultElement = {
           ...baseElement,

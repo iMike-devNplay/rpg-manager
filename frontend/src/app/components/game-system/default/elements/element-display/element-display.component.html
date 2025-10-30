@@ -133,6 +133,13 @@
       (valueChange)="onElementValueChange($event)">
     </app-resource-counter-element>
 
+    <!-- Groupe d'attributs D&D 4e -->
+    <app-dnd4e-attributes-group 
+      *ngIf="element.type === 'dnd4e-attributes-group'"
+      [element]="item"
+      (valueChange)="onElementValueChange($event)">
+    </app-dnd4e-attributes-group>
+
   </div>
 
   <!-- Description qui s'affiche au hover -->

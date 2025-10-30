@@ -1,6 +1,6 @@
-export type GameSystem = 'dnd5e' | 'pathfinder' | 'call-of-cthulhu' | null;
+export type GameSystem = 'dnd5e' | 'dnd4e' | 'pathfinder' | 'call-of-cthulhu' | null;
 
-export type ElementType = 'text' | 'numeric' | 'select' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment' | 'hp' | 'attack' | 'resource-counter';
+export type ElementType = 'text' | 'numeric' | 'select' | 'dnd-attribute' | 'dnd-attributes-group' | 'dnd-proficiency-bonus' | 'dnd-level' | 'dnd-skills-group' | 'dnd-spell' | 'equipment' | 'hp' | 'attack' | 'resource-counter' | 'dnd4e-attributes-group';
 
 export interface ElementTypeConfig {
   id: ElementType;
@@ -138,4 +138,16 @@ export interface ResourceCounterElement extends BaseElement {
   maxValue?: number;
 }
 
-export type Element = TextElement | NumericElement | SelectElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement | HpElement | AttackElement | ResourceCounterElement;
+export interface Dnd4eAttributesGroupElement extends BaseElement {
+  type: 'dnd4e-attributes-group';
+  attributes: {
+    FOR: number;
+    DEX: number;
+    CON: number;
+    INT: number;
+    SAG: number;
+    CHA: number;
+  };
+}
+
+export type Element = TextElement | NumericElement | SelectElement | DndAttributeElement | DndAttributesGroupElement | DndProficiencyBonusElement | DndLevelElement | DndSkillsGroupElement | DndSpellElement | EquipmentElement | HpElement | AttackElement | ResourceCounterElement | Dnd4eAttributesGroupElement;

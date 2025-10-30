@@ -9,6 +9,7 @@ export interface GameSystemData {
   origines?: any[];
   attributes?: any[];
   historiques?: any[];
+  races?: any[];
 }
 
 @Injectable({
@@ -24,9 +25,13 @@ export class GameSystemDataService {
       return of(null);
     }
 
-    // Pour le moment, on gère seulement D&D 5e
+    // Gestion des systèmes de jeu supportés
     if (gameSystem === 'dnd5e') {
       return this.loadDnd5eData();
+    }
+    
+    if (gameSystem === 'dnd4e') {
+      return this.loadDnd4eData();
     }
 
     return of(null);
@@ -36,7 +41,7 @@ export class GameSystemDataService {
    * Vérifie si un système de jeu a des données spécifiques
    */
   hasGameSystemData(gameSystem: GameSystem): boolean {
-    return gameSystem === 'dnd5e';
+    return gameSystem === 'dnd5e' || gameSystem === 'dnd4e';
   }
 
   /**
@@ -51,6 +56,21 @@ export class GameSystemDataService {
         observer.complete();
       }).catch(error => {
         console.error('Erreur lors du chargement des données D&D 5e:', error);
+        observer.error(error);
+      });
+    });
+  }
+
+  /**
+   * Charge les données D&D 4e
+   */
+  private loadDnd4eData(): Observable<GameSystemData> {
+    return new Observable(observer => {
+      import('../data/dnd4e-data.json').then(data => {
+        observer.next(data.default || data);
+        observer.complete();
+      }).catch(error => {
+        console.error('Erreur lors du chargement des données D&D 4e:', error);
         observer.error(error);
       });
     });

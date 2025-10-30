@@ -17,6 +17,7 @@ import { DndAttributesGroupComponent } from '../../../dnd5e/elements/dnd-attribu
 import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-proficiency-bonus/dnd-proficiency-bonus.component';
 import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.component';
 import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-group/dnd-skills-group.component';
+import { Dnd4eAttributesGroupComponent } from '../../../dnd4e/elements/dnd4e-attributes-group/dnd4e-attributes-group.component';
 import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
 
 @Component({
@@ -32,6 +33,7 @@ import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
     DndProficiencyBonusComponent,
     DndLevelComponent,
     DndSkillsGroupComponent,
+    Dnd4eAttributesGroupComponent,
     EquipmentElementComponent,
     HpElementComponent,
     AttackElementComponent,
@@ -191,6 +193,13 @@ export class ElementDisplayComponent {
           type: 'resource-counter',
           currentValue: resourceData?.currentValue !== undefined ? resourceData.currentValue : (this.item.metadata?.['currentValue'] || 0),
           maxValue: resourceData?.maxValue !== undefined ? resourceData.maxValue : this.item.metadata?.['maxValue']
+        };
+      case DataType.DND4E_ATTRIBUTES_GROUP:
+      case 'dnd4e_attributes_group':
+        return {
+          ...baseElement,
+          type: 'dnd4e-attributes-group',
+          attributes: this.item.metadata?.['attributes'] || {}
         };
       default:
         // Fallback vers text

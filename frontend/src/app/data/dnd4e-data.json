@@ -1,0 +1,152 @@
+{
+	"game-system": "dnd4e",
+	"name": "Donjons et Dragons 4e",
+    "races": [
+        {
+			"race": "demi-elfe",
+			"name": "Demi-elfe",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "drakeide",
+			"name": "Drakéide",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "eladrin",
+			"name": "Eladrin",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "elfe",
+			"name": "Elfe",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "halfelin",
+			"name": "Halfelin",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "humain",
+			"name": "Humain",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "nain",
+			"name": "Nain",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "tieffelin",
+			"name": "Tieffelin",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "demi-orque",
+			"name": "Demi-orque",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "deva",
+			"name": "Déva",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "gnome",
+			"name": "Gnome",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "goliath",
+			"name": "Goliath",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "cristallien",
+			"name": "Cristallien",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "gitzhzerai",
+			"name": "Githzerai",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "minotaure",
+			"name": "Minotaure",
+			"type": "dnd4e-race",
+			"description": ""
+        },
+        {
+			"race": "silvyen",
+			"name": "Silvyen",
+			"type": "dnd4e-race",
+			"description": ""
+        }
+    ],
+    "classes": [
+		{
+			"classe": "guerrier",
+			"name": "Guerrier",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "magicien",
+			"name": "Magicien",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "maitre-de-guerre",
+			"name": "Maître de guerre",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "paladin",
+			"name": "Paladin",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "pretre",
+			"name": "Prêtre",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "rodeur",
+			"name": "Rôdeur",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "sorcier",
+			"name": "Sorcier",
+			"type": "dnd4e-classe",
+			"description": ""
+		},
+		{
+			"classe": "voleur",
+			"name": "Voleur",
+			"type": "dnd4e-classe",
+			"description": ""
+		}
+    ]
+}

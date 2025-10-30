@@ -1,0 +1,168 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Attributs D&D 4e</h3>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Groupe Vigueur (FOR + CON) -->
+      <div class="defense-group vigueur-group">
+        <div class="defense-group-header">
+          <span class="defense-group-name">Vigueur</span>
+          <span class="defense-group-bonus">{{ getDefenseDisplay(getDefense('Vigueur')!) }}</span>
+        </div>
+        <div class="attributes-in-group">
+          <div class="attribute-item">
+            <div class="attribute-header">
+              <span class="attribute-name">Force (FOR)</span>
+            </div>
+            <div class="attribute-controls">
+              <button class="btn-decrement" (click)="decrementAttribute(getAttribute('FOR')!)">-</button>
+              <div class="attribute-values">
+                <input 
+                  type="number" 
+                  [(ngModel)]="getAttribute('FOR')!.value" 
+                  (change)="onAttributeChange(getAttribute('FOR')!)"
+                  class="attribute-value-input"
+                  min="0"
+                  max="30"
+                />
+                <span class="attribute-modifier">{{ getModifierDisplay(getAttribute('FOR')!.value) }}</span>
+              </div>
+              <button class="btn-increment" (click)="incrementAttribute(getAttribute('FOR')!)">+</button>
+            </div>
+          </div>
+
+          <div class="attribute-item">
+            <div class="attribute-header">
+              <span class="attribute-name">Constitution (CON)</span>
+            </div>
+            <div class="attribute-controls">
+              <button class="btn-decrement" (click)="decrementAttribute(getAttribute('CON')!)">-</button>
+              <div class="attribute-values">
+                <input 
+                  type="number" 
+                  [(ngModel)]="getAttribute('CON')!.value" 
+                  (change)="onAttributeChange(getAttribute('CON')!)"
+                  class="attribute-value-input"
+                  min="0"
+                  max="30"
+                />
+                <span class="attribute-modifier">{{ getModifierDisplay(getAttribute('CON')!.value) }}</span>
+              </div>
+              <button class="btn-increment" (click)="incrementAttribute(getAttribute('CON')!)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Groupe Réflexe (DEX + INT) -->
+      <div class="defense-group reflexe-group">
+        <div class="defense-group-header">
+          <span class="defense-group-name">Réflexe</span>
+          <span class="defense-group-bonus">{{ getDefenseDisplay(getDefense('Réflexe')!) }}</span>
+        </div>
+        <div class="attributes-in-group">
+          <div class="attribute-item">
+            <div class="attribute-header">
+              <span class="attribute-name">Dextérité (DEX)</span>
+            </div>
+            <div class="attribute-controls">
+              <button class="btn-decrement" (click)="decrementAttribute(getAttribute('DEX')!)">-</button>
+              <div class="attribute-values">
+                <input 
+                  type="number" 
+                  [(ngModel)]="getAttribute('DEX')!.value" 
+                  (change)="onAttributeChange(getAttribute('DEX')!)"
+                  class="attribute-value-input"
+                  min="0"
+                  max="30"
+                />
+                <span class="attribute-modifier">{{ getModifierDisplay(getAttribute('DEX')!.value) }}</span>
+              </div>
+              <button class="btn-increment" (click)="incrementAttribute(getAttribute('DEX')!)">+</button>
+            </div>
+          </div>
+
+          <div class="attribute-item">
+            <div class="attribute-header">
+              <span class="attribute-name">Intelligence (INT)</span>
+            </div>
+            <div class="attribute-controls">
+              <button class="btn-decrement" (click)="decrementAttribute(getAttribute('INT')!)">-</button>
+              <div class="attribute-values">
+                <input 
+                  type="number" 
+                  [(ngModel)]="getAttribute('INT')!.value" 
+                  (change)="onAttributeChange(getAttribute('INT')!)"
+                  class="attribute-value-input"
+                  min="0"
+                  max="30"
+                />
+                <span class="attribute-modifier">{{ getModifierDisplay(getAttribute('INT')!.value) }}</span>
+              </div>
+              <button class="btn-increment" (click)="incrementAttribute(getAttribute('INT')!)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Groupe Volonté (SAG + CHA) -->
+      <div class="defense-group volonte-group">
+        <div class="defense-group-header">
+          <span class="defense-group-name">Volonté</span>
+          <span class="defense-group-bonus">{{ getDefenseDisplay(getDefense('Volonté')!) }}</span>
+        </div>
+        <div class="attributes-in-group">
+          <div class="attribute-item">
+            <div class="attribute-header">
+              <span class="attribute-name">Sagesse (SAG)</span>
+            </div>
+            <div class="attribute-controls">
+              <button class="btn-decrement" (click)="decrementAttribute(getAttribute('SAG')!)">-</button>
+              <div class="attribute-values">
+                <input 
+                  type="number" 
+                  [(ngModel)]="getAttribute('SAG')!.value" 
+                  (change)="onAttributeChange(getAttribute('SAG')!)"
+                  class="attribute-value-input"
+                  min="0"
+                  max="30"
+                />
+                <span class="attribute-modifier">{{ getModifierDisplay(getAttribute('SAG')!.value) }}</span>
+              </div>
+              <button class="btn-increment" (click)="incrementAttribute(getAttribute('SAG')!)">+</button>
+            </div>
+          </div>
+
+          <div class="attribute-item">
+            <div class="attribute-header">
+              <span class="attribute-name">Charisme (CHA)</span>
+            </div>
+            <div class="attribute-controls">
+              <button class="btn-decrement" (click)="decrementAttribute(getAttribute('CHA')!)">-</button>
+              <div class="attribute-values">
+                <input 
+                  type="number" 
+                  [(ngModel)]="getAttribute('CHA')!.value" 
+                  (change)="onAttributeChange(getAttribute('CHA')!)"
+                  class="attribute-value-input"
+                  min="0"
+                  max="30"
+                />
+                <span class="attribute-modifier">{{ getModifierDisplay(getAttribute('CHA')!.value) }}</span>
+              </div>
+              <button class="btn-increment" (click)="incrementAttribute(getAttribute('CHA')!)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="onClose()">Annuler</button>
+      <button class="btn-save" (click)="onSave()">Sauvegarder</button>
+    </div>
+  </div>
+</div>

@@ -140,6 +140,12 @@
       (valueChange)="onElementValueChange($event)">
     </app-dnd4e-attributes-group>
 
+    <!-- Voies et Capacités COF2e -->
+    <app-cof2e-voies 
+      *ngIf="element.type === 'cof2e-voies'"
+      [element]="item">
+    </app-cof2e-voies>
+
   </div>
 
   <!-- Description qui s'affiche au hover -->

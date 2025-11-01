@@ -1,0 +1,87 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Voies et Capacités COF2e</h3>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Section: Sélection des voies du profil -->
+      <div class="section" *ngIf="availableVoiesFromProfil.length > 0">
+        <h4>Voies du profil (sélectionner 2)</h4>
+        <p class="help-text">
+          {{ selectedProfilVoies.length }} / 2 voies sélectionnées
+        </p>
+        <div class="voies-selection">
+          <div 
+            *ngFor="let voie of availableVoiesFromProfil" 
+            class="voie-card selectable"
+            [ngClass]="{ 'selected': isProfilVoieSelected(voie.voie) }"
+            (click)="toggleProfilVoie(voie)">
+            <div class="voie-card-header">
+              <span class="voie-name">{{ voie.name }}</span>
+              <span class="selection-indicator" *ngIf="isProfilVoieSelected(voie.voie)">✓</span>
+            </div>
+            <div class="capacites-count">
+              {{ voie.capacites.length }} capacités
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Gestion des voies et capacités -->
+      <div class="section">
+        <h4>Vos voies</h4>
+        <p class="help-text">
+          Gérez les capacités acquises (Niveau {{ niveau }})
+        </p>
+
+        <div class="voies-list" *ngIf="voies.length > 0">
+          <div *ngFor="let voie of voies" class="voie-card">
+            <div class="voie-card-header">
+              <div>
+                <span class="voie-name">{{ voie.name }}</span>
+                <span class="voie-source" [ngClass]="'source-' + voie.source">
+                  {{ voie.source === 'peuple' ? 'Peuple' : 'Profil' }}
+                </span>
+              </div>
+              <div class="voie-actions">
+                <span class="capacites-acquired">
+                  {{ getAcquiredCount(voie) }} / {{ voie.capacites.length }}
+                </span>
+                <button 
+                  class="btn-remove-voie"
+                  (click)="removeVoie(voie)"
+                  [title]="voie.source === 'peuple' ? 'Retirer la voie du peuple' : 'Retirer cette voie'">
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div class="capacites-grid">
+              <div 
+                *ngFor="let capacite of voie.capacites" 
+                class="capacite-item"
+                [ngClass]="{ 'acquired': capacite.acquired }"
+                (click)="toggleCapacite(voie, capacite)">
+                <div class="capacite-rang">R{{ capacite.rang }}</div>
+                <div class="capacite-name">{{ capacite.name }}</div>
+                <div class="capacite-checkbox" *ngIf="capacite.acquired">✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="voies.length === 0">
+          <p>Aucune voie disponible</p>
+          <small>Sélectionnez des voies du profil ci-dessus</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">Annuler</button>
+      <button class="btn btn-primary" (click)="onSave()">Sauvegarder</button>
+    </div>
+  </div>
+</div>

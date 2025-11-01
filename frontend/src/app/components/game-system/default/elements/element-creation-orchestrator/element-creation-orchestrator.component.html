@@ -123,6 +123,14 @@
   (save)="onSelectElementSaved($event)">
 </app-edit-dnd4e-attributes-modal>
 
+<!-- Modal pour voies COF2e -->
+<app-edit-cof2e-voies-modal
+  *ngIf="showElementModal && selectedType === 'cof2e-voies'"
+  [item]="cof2eVoiesDataItem!"
+  (close)="onElementModalClose()"
+  (save)="onSelectElementSaved($event)">
+</app-edit-cof2e-voies-modal>
+
 <!-- Modal pour compteur de ressource -->
 <app-resource-counter-modal
   [isVisible]="showElementModal && selectedType === 'resource-counter'"

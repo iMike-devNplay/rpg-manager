@@ -5,6 +5,7 @@ import { StorageService } from './storage.service';
 import { UserService } from './user.service';
 import { Dnd5eService } from './dnd5e.service';
 import { Dnd4eService } from './dnd4e.service';
+import { Cof2eService } from './cof2e.service';
 import { GameSystemDataService } from './game-system-data.service';
 
 @Injectable({
@@ -16,6 +17,7 @@ export class CharacterService {
     private userService: UserService,
     private dnd5eService: Dnd5eService,
     private dnd4eService: Dnd4eService,
+    private cof2eService: Cof2eService,
     private gameSystemDataService: GameSystemDataService
   ) {}
 
@@ -64,6 +66,8 @@ export class CharacterService {
         await this.dnd5eService.initializeDnd5eCharacter(newCharacter);
       } else if (gameSystem === GameSystem.DND4E) {
         await this.dnd4eService.initializeDnd4eCharacter(newCharacter);
+      } else if (gameSystem === GameSystem.COF2E) {
+        await this.cof2eService.initializeCof2eCharacter(newCharacter);
       }
     }
 

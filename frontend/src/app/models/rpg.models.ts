@@ -81,6 +81,7 @@ export enum DataType {
   DND_LEVEL = 'dnd_level',
   DND_SKILLS_GROUP = 'dnd_skills_group',
   DND4E_ATTRIBUTES_GROUP = 'dnd4e_attributes_group',
+  COF2E_VOIES = 'cof2e_voies',
   HP = 'hp',
   ATTACK = 'attack',
   RESOURCE_COUNTER = 'resource_counter'
@@ -89,6 +90,7 @@ export enum DataType {
 export enum GameSystem {
   DND5E = 'dnd5e',
   DND4E = 'dnd4e',
+  COF2E = 'cof2e',
   PATHFINDER = 'pathfinder',
   CHRONIQUES_OUBLIEES = 'chroniques_oubliees',
   CALL_OF_CTHULHU = 'call_of_cthulhu',
@@ -107,6 +109,7 @@ export enum GameSystem {
 export const GAME_SYSTEM_LABELS: Record<GameSystem, string> = {
   [GameSystem.DND5E]: 'Donjons & Dragons 5e',
   [GameSystem.DND4E]: 'Donjons & Dragons 4e',
+  [GameSystem.COF2E]: 'Chroniques Oubliées 2e',
   [GameSystem.PATHFINDER]: 'Pathfinder',
   [GameSystem.CHRONIQUES_OUBLIEES]: 'Chroniques Oubliées',
   [GameSystem.CALL_OF_CTHULHU]: 'L\'Appel de Cthulhu',

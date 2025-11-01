@@ -1,0 +1,35 @@
+<div class="cof2e-voies">
+  <!-- Affichage en colonnes (1 voie = 1 colonne) -->
+  <div class="columns-view">
+    <div class="voies-header">
+      <h4>Voies et Capacités</h4>
+      <span class="voies-count">{{ voies.length }} voie(s)</span>
+    </div>
+
+    <div class="voies-grid" *ngIf="voies.length > 0">
+      <div *ngFor="let voie of voies" class="voie-column">
+        <div class="voie-column-header">
+          <span class="voie-name">{{ voie.name }}</span>
+          <span class="voie-source" [ngClass]="getSourceBadgeClass(voie)">
+            {{ getSourceBadge(voie) }}
+          </span>
+        </div>
+        
+        <div class="capacites-vertical">
+          <div 
+            *ngFor="let capacite of voie.capacites" 
+            class="capacite-row"
+            [ngClass]="{ 'acquired': capacite.acquired }">
+            <span class="capacite-rang">Rang {{ capacite.rang }}</span>
+            <span class="capacite-name">{{ capacite.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="voies.length === 0">
+      <p>Aucune voie sélectionnée</p>
+      <small>Choisissez un peuple et un profil pour obtenir vos voies</small>
+    </div>
+  </div>
+</div>

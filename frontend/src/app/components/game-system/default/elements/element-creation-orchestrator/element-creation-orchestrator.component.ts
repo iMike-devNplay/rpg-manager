@@ -13,6 +13,7 @@ import { DndLevelModalComponent } from '../../../dnd5e/elements/element-creation
 import { DndSpellModalComponent } from '../../../dnd5e/elements/element-creation-modals/dnd-spell-modal/dnd-spell-modal.component';
 import { DndSkillsGroupModalComponent } from '../../../dnd5e/elements/modals/dnd-skills-group-modal/dnd-skills-group-modal.component';
 import { EditDnd4eAttributesModalComponent } from '../../../dnd4e/elements/modals/edit-dnd4e-attributes-modal.component';
+import { EditCof2eVoiesModalComponent } from '../../../cof2e/elements/modals/edit-cof2e-voies-modal.component';
 import { EquipmentModalComponent } from '../element-creation-modals/equipment-modal/equipment-modal.component';
 import { ResourceCounterModalComponent } from '../element-creation-modals/resource-counter-modal/resource-counter-modal.component';
 import { ElementType, Element, GameSystem } from '../../../../../models/element-types';
@@ -36,6 +37,7 @@ import { DataItem } from '../../../../../models/rpg.models';
     DndSpellModalComponent,
     DndSkillsGroupModalComponent,
     EditDnd4eAttributesModalComponent,
+    EditCof2eVoiesModalComponent,
     EquipmentModalComponent,
     ResourceCounterModalComponent
   ],
@@ -181,6 +183,11 @@ export class ElementCreationOrchestratorComponent {
 
   get dnd4eAttributesGroupDataItem(): DataItem | null {
     // Pour la modal D&D 4e qui utilise DataItem
+    return this.editingDataItem || (this.editingElement as any);
+  }
+
+  get cof2eVoiesDataItem(): DataItem | null {
+    // Pour la modal COF2e qui utilise DataItem
     return this.editingDataItem || (this.editingElement as any);
   }
 

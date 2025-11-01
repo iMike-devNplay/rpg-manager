@@ -378,10 +378,18 @@ export class DashboardComponent implements OnInit {
 
   onElementCreated(elementData: Partial<Element>): void {
     try {
+      console.log('onElementCreated - elementData:', elementData);
       if (elementData.id) {
         // Mode édition : mettre à jour l'élément existant
-        // Conversion vers DataItem pour compatibilité avec le système existant
-        const updatedElement = this.convertElementToDataItem(elementData as Element);
+        
+        // Vérifier si elementData est déjà un DataItem (venant de modales spécifiques)
+        const isAlreadyDataItem = (elementData as any).type && typeof (elementData as any).type === 'string';
+        console.log('isAlreadyDataItem:', isAlreadyDataItem);
+        
+        // Si c'est déjà un DataItem, l'utiliser directement
+        const updatedElement = isAlreadyDataItem 
+          ? elementData as any as DataItem
+          : this.convertElementToDataItem(elementData as Element);
         
         // Préserver les propriétés importantes de l'élément original
         if (this.editingItem) {
@@ -525,6 +533,18 @@ export class DashboardComponent implements OnInit {
         dnd5eType: 'dnd-skills-group',
         skills: element.skills
       };
+    } else if (element.type === 'dnd4e-attributes-group') {
+      // Stocker les attributs D&D 4e comme metadata
+      dataItem.metadata = {
+        dnd4eType: 'attributes-group',
+        attributes: element.attributes
+      };
+    } else if (element.type === 'cof2e-voies') {
+      // Stocker les voies COF2e comme metadata
+      dataItem.metadata = {
+        cof2eType: 'voies',
+        voies: element.voies || []
+      };
     }
 
     return dataItem;
@@ -543,6 +563,8 @@ export class DashboardComponent implements OnInit {
       case 'dnd-proficiency-bonus': return DataType.DND_PROFICIENCY_BONUS;
       case 'dnd-level': return DataType.DND_LEVEL;
       case 'dnd-skills-group': return DataType.DND_SKILLS_GROUP;
+      case 'dnd4e-attributes-group': return DataType.DND4E_ATTRIBUTES_GROUP;
+      case 'cof2e-voies': return DataType.COF2E_VOIES;
       default: return DataType.TEXT;
     }
   }
@@ -563,6 +585,8 @@ export class DashboardComponent implements OnInit {
       case 'dnd-proficiency-bonus': return element.value;
       case 'dnd-level': return element.level;
       case 'dnd-skills-group': return 'Compétences'; // Nom générique pour l'affichage
+      case 'dnd4e-attributes-group': return 'Attributs D&D 4e'; // Nom générique pour l'affichage
+      case 'cof2e-voies': return 'Voies COF2e'; // Nom générique pour l'affichage
       case 'equipment': return element.name; // Nom de l'équipement comme valeur
       default: return element.name;
     }
@@ -746,6 +770,13 @@ export class DashboardComponent implements OnInit {
           }
         };
         return dnd4eAttributesElement;
+      case DataType.COF2E_VOIES:
+        const cof2eVoiesElement = {
+          ...baseElement,
+          type: 'cof2e-voies' as const,
+          voies: item.metadata?.['voies'] || []
+        };
+        return cof2eVoiesElement;
       default:
         const defaultElement = {
           ...baseElement,

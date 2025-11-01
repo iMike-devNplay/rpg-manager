@@ -1,0 +1,148 @@
+.cof2e-voies {
+  width: 100%;
+}
+
+.columns-view {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+}
+
+.voies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #dee2e6;
+
+  h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .voies-count {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+  }
+}
+
+.voies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.voie-column {
+  background: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  border: 2px solid #dee2e6;
+  display: flex;
+  flex-direction: column;
+}
+
+.voie-column-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+
+  .voie-name {
+    font-weight: 600;
+    color: #212529;
+    font-size: 1rem;
+  }
+
+  .voie-source {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    align-self: flex-start;
+
+    &.source-peuple {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    &.source-profil {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+  }
+}
+
+.capacites-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.capacite-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s;
+
+  &.acquired {
+    background: #d4edda;
+    border-color: #c3e6cb;
+
+    .capacite-rang {
+      color: #155724;
+    }
+
+    .capacite-name {
+      color: #155724;
+      font-weight: 600;
+    }
+  }
+
+  .capacite-rang {
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .capacite-name {
+    font-size: 0.85rem;
+    color: #495057;
+    line-height: 1.3;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6c757d;
+
+  p {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    color: #495057;
+  }
+
+  small {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+}

@@ -10,6 +10,8 @@ export interface GameSystemData {
   attributes?: any[];
   historiques?: any[];
   races?: any[];
+  familles?: any[];  // Pour COF2e
+  peuples?: any[];   // Pour COF2e
 }
 
 @Injectable({
@@ -34,6 +36,10 @@ export class GameSystemDataService {
       return this.loadDnd4eData();
     }
 
+    if (gameSystem === 'cof2e') {
+      return this.loadCof2eData();
+    }
+
     return of(null);
   }
 
@@ -41,7 +47,7 @@ export class GameSystemDataService {
    * Vérifie si un système de jeu a des données spécifiques
    */
   hasGameSystemData(gameSystem: GameSystem): boolean {
-    return gameSystem === 'dnd5e' || gameSystem === 'dnd4e';
+    return gameSystem === 'dnd5e' || gameSystem === 'dnd4e' || gameSystem === 'cof2e';
   }
 
   /**
@@ -71,6 +77,21 @@ export class GameSystemDataService {
         observer.complete();
       }).catch(error => {
         console.error('Erreur lors du chargement des données D&D 4e:', error);
+        observer.error(error);
+      });
+    });
+  }
+
+  /**
+   * Charge les données Chroniques Oubliées 2e
+   */
+  private loadCof2eData(): Observable<GameSystemData> {
+    return new Observable(observer => {
+      import('../data/cof-data.json').then(data => {
+        observer.next(data.default || data);
+        observer.complete();
+      }).catch(error => {
+        console.error('Erreur lors du chargement des données COF2e:', error);
         observer.error(error);
       });
     });

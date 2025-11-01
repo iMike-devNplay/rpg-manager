@@ -1,0 +1,421 @@
+{
+	"game-system": "dnd4e",
+	"name": "Donjons et Dragons 4e",
+    "familles": [
+        {
+            "famille": "aventurier",
+            "name": "Aventurier",
+            "point-vigueur": 4,
+            "de-recuperation": "d8",
+            "chance": 1,
+            "profils": [
+                {
+                    "profil": "arquebusier",
+                    "name": "Arquebusier",
+                    "": 4,
+                    "voies": [
+                        {
+                            "voie": "artilleur",
+                            "name": "Voie de l'artilleur",
+                            "capacites": [
+                                {
+                                    "capacite": "mecanisme",
+                                    "rang": 1,
+                                    "name": "Mécanismes",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "arme-a-repetition",
+                                    "rang": 2,
+                                    "name": "Arme à répétition",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "tir-de-barrage",
+                                    "rang": 3,
+                                    "name": "Tir de barrage (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "canon-double",
+                                    "rang": 4,
+                                    "name": "Canon double",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "couleuvrine",
+                                    "rang": 5,
+                                    "name": "Couleuvrine (L)",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        {
+                            "voie": "explosifs",
+                            "name": "Voie des explosifs",
+                            "capacites": [
+                                {
+                                    "capacite": "tir-de-grenaille",
+                                    "rang": 1,
+                                    "name": "Tir de grenaille (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "demolition",
+                                    "rang": 2,
+                                    "name": "Démolition",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "poudre-puissante",
+                                    "rang": 3,
+                                    "name": "Poudre puissante",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "piege-explosif",
+                                    "rang": 4,
+                                    "name": "Piège explosif (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "boulet-explosif",
+                                    "rang": 5,
+                                    "name": "Boulet explosif (L)",
+                                    "description": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "profil": "barde",
+                    "name": "Barde",
+                    "voies": [
+                        {
+                            "voie": "escrime",
+                            "name": "Voie de l'escrime",
+                            "capacites": [
+                                {
+                                    "capacite": "precision",
+                                    "rang": 1,
+                                    "name": "Précision",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "feinte",
+                                    "rang": 2,
+                                    "name": "Feinte (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "intelligence-de-combat",
+                                    "rang": 3,
+                                    "name": "Intelligence du combat (M)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "attaque-flamboyante",
+                                    "rang": 4,
+                                    "name": "Attaque flamboyante (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "botte-mortelle",
+                                    "rang": 5,
+                                    "name": "Botte mortelle",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        {
+                            "voie": "musicien",
+                            "name": "Voie du musicien",
+                            "capacites": [
+                                {
+                                    "capacite": "chant-des-heros",
+                                    "rang": 1,
+                                    "name": "Chant des héros (L)*",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "chant-de-reconfort",
+                                    "rang": 2,
+                                    "name": "Chant de réconfort (L)*",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "attaque-sonore",
+                                    "rang": 3,
+                                    "name": "Attaque sonore (A)*",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "zone-de-silence",
+                                    "rang": 4,
+                                    "name": "Zone de silence (A)*",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "danse-irresistible",
+                                    "rang": 5,
+                                    "name": "Danse irrésistible (A)*",
+                                    "description": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "famille": "combattant",
+            "name": "Combattant",
+            "point-vigueur": 5,
+            "de-recuperation": "d10",
+            "chance": 0,
+            "profils": [
+                {
+                    "profil": "barbare",
+                    "name": "Barbare",
+                    "voies": [
+                        {
+                            "voie": "brute",
+                            "name": "Voie de la brute",
+                            "capacites": [
+                                {
+                                    "capacite": "argument-de-taille",
+                                    "rang": 1,
+                                    "name": "Argument de taille",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "tour-de-force",
+                                    "rang": 2,
+                                    "name": "Tour de force (G)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "attaque-brutale",
+                                    "rang": 3,
+                                    "name": "Attaque brutale (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "force-heroique",
+                                    "rang": 4,
+                                    "name": "Force héroïque",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "briseur-d-os",
+                                    "rang": 5,
+                                    "name": "Briseur d'os",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        {
+                            "voie": "pagne",
+                            "name": "Voie du pagne",
+                            "capacites": [
+                                {
+                                    "capacite": "vigueur",
+                                    "rang": 1,
+                                    "name": "Vigueur",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "peau-de-pierre",
+                                    "rang": 2,
+                                    "name": "Peau de pierre",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "tatouages",
+                                    "rang": 3,
+                                    "name": "Tatouages",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "constitution-heroique",
+                                    "rang": 4,
+                                    "name": "Constitution héroïque",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "peau-d-acier",
+                                    "rang": 5,
+                                    "name": "Peau d'acier",
+                                    "description": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "profil": "chevalier",
+                    "name": "Chevalier",
+                    "voies": [
+                        {
+                            "voie": "cavalier",
+                            "name": "Voie du cavalier",
+                            "capacites": [
+                                {
+                                    "capacite": "fidele-monture",
+                                    "rang": 1,
+                                    "name": "Fidèle monture",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "cavalier-emerite",
+                                    "rang": 2,
+                                    "name": "Cavalier émérite",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "charge",
+                                    "rang": 3,
+                                    "name": "Charge (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "monture-magique",
+                                    "rang": 4,
+                                    "name": "Monture magique",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "monture-fantastique",
+                                    "rang": 5,
+                                    "name": "Monture fantastique",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        {
+                            "voie": "guerre",
+                            "name": "Voie de la guerre",
+                            "capacites": [
+                                {
+                                    "capacite": "armure-sur-mesure",
+                                    "rang": 1,
+                                    "name": "Armure sur mesure",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "encaisser-un-coup",
+                                    "rang": 2,
+                                    "name": "Encaisser un coup (M)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "frappe-du-justicier",
+                                    "rang": 3,
+                                    "name": "Frappe du justicier (L)",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "force-heroique",
+                                    "rang": 4,
+                                    "name": "Force héroïque",
+                                    "description": ""
+                                },
+                                {
+                                    "capacite": "mon-armure-est-une-arme",
+                                    "rang": 5,
+                                    "name": "Mon armure est une arme (G)",
+                                    "description": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "peuples": [
+        {
+            "peuple": "demi-orc",
+            "name": "Demi-orc",
+            "voie": 
+            {
+                "voie": "voie-demi-orc",
+                "name": "Voie du demi-orc",
+                "capacites": [
+                    {
+                        "capacite": "impressionnant",
+                        "rang": 1,
+                        "name": "Impressionnant",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "talent-pour-la-violence",
+                        "rang": 2,
+                        "name": "Talent pour la violence",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "critique-brutal",
+                        "rang": 3,
+                        "name": "Critique brutal",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "attaque-sanglante",
+                        "rang": 4,
+                        "name": "Attaque sanglante (L)",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "colosse",
+                        "rang": 5,
+                        "name": "Colosse",
+                        "description": ""
+                    }
+                ]
+            }
+        },
+        {
+            "peuple": "elfe-haut",
+            "name": "Elfe haut",
+            "voie":  
+            {
+                "voie": "voie-elfe-haut",
+                "name": "Voie de l'elfe haut",
+                "capacites": [
+                    {
+                        "capacite": "lumiere-interieure",
+                        "rang": 1,
+                        "name": "Lumière intérieure",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "force-d'ame",
+                        "rang": 2,
+                        "name": "Force d'âme",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "talent-pour-la-magie",
+                        "rang": 3,
+                        "name": "Talent pour la magie",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "immortel",
+                        "rang": 4,
+                        "name": "Immortel",
+                        "description": ""
+                    },
+                    {
+                        "capacite": "superiorite-elfique",
+                        "rang": 5,
+                        "name": "Supériorité elfique",
+                        "description": ""
+                    }
+                ]
+            }
+        }
+    ]
+}

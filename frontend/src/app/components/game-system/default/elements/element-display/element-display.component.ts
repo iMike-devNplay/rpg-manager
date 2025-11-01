@@ -18,6 +18,7 @@ import { DndProficiencyBonusComponent } from '../../../dnd5e/elements/dnd-profic
 import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.component';
 import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-group/dnd-skills-group.component';
 import { Dnd4eAttributesGroupComponent } from '../../../dnd4e/elements/dnd4e-attributes-group/dnd4e-attributes-group.component';
+import { Cof2eVoiesComponent } from '../../../cof2e/elements/cof2e-voies/cof2e-voies.component';
 import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
 
 @Component({
@@ -34,6 +35,7 @@ import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
     DndLevelComponent,
     DndSkillsGroupComponent,
     Dnd4eAttributesGroupComponent,
+    Cof2eVoiesComponent,
     EquipmentElementComponent,
     HpElementComponent,
     AttackElementComponent,
@@ -201,6 +203,13 @@ export class ElementDisplayComponent {
           type: 'dnd4e-attributes-group',
           attributes: this.item.metadata?.['attributes'] || {}
         };
+      case DataType.COF2E_VOIES:
+      case 'cof2e_voies':
+        return {
+          ...baseElement,
+          type: 'cof2e-voies',
+          voies: this.item.metadata?.['voies'] || []
+        };
       default:
         // Fallback vers text
         return {
@@ -247,6 +256,12 @@ export class ElementDisplayComponent {
       if (updatedItem.metadata?.['dnd5eType'] === 'background' && newValue) {
         this.updateDependentBackgroundElements(updatedItem.id, newValue as string);
       }
+
+      // Gérer les dépendances COF2e : si cet élément est une famille,
+      // mettre à jour l'élément profil dépendant
+      if (updatedItem.metadata?.['cof2eType'] === 'famille' && newValue) {
+        this.updateDependentProfilElement(updatedItem.id, newValue as string);
+      }
     }
   }
 
@@ -285,6 +300,45 @@ export class ElementDisplayComponent {
         
         // Émettre l'événement pour rafraîchir l'affichage
         this.itemUpdated.emit(updatedPeopleElement);
+      }
+    }
+  }
+
+  /**
+   * Met à jour l'élément Profil quand la Famille change (COF2e)
+   */
+  private updateDependentProfilElement(familleElementId: string, familleValue: string): void {
+    const character = this.storageService.getCurrentCharacter();
+    if (!character) return;
+
+    // Trouver l'élément Profil qui dépend de cette Famille
+    const profilElement = character.dataItems.find(item => 
+      item.metadata?.['dependsOn'] === familleElementId
+    );
+
+    if (profilElement) {
+      // Calculer le nouvel ID de liste basé sur la famille sélectionnée
+      const normalizedFamilleName = this.normalizeNameForId(familleValue);
+      const newSelectListId = `cof2e-profils-${normalizedFamilleName}`;
+
+      // Vérifier que la liste existe
+      const newList = this.storageService.getSelectListById(newSelectListId);
+      if (newList) {
+        // Créer une nouvelle instance pour forcer la détection de changement d'Angular
+        const updatedProfilElement = {
+          ...profilElement,
+          value: '', // Réinitialiser la sélection
+          metadata: {
+            ...profilElement.metadata,
+            selectListId: newSelectListId
+          }
+        };
+
+        // Sauvegarder
+        this.storageService.saveDataItem(updatedProfilElement);
+        
+        // Émettre l'événement pour rafraîchir l'affichage
+        this.itemUpdated.emit(updatedProfilElement);
       }
     }
   }

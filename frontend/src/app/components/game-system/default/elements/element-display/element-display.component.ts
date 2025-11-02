@@ -88,6 +88,7 @@ export class ElementDisplayComponent {
           value: this.item.value as number,
           canQuickModify: this.item.allowQuickModification !== false
         };
+      case DataType.ATTRIBUTE:
       case 'attribute':
         return {
           ...baseElement,
@@ -109,6 +110,7 @@ export class ElementDisplayComponent {
             charisma: { value: 10, hasProficiency: false }
           }
         };
+      case DataType.DND_PROFICIENCY_BONUS:
       case 'dnd_proficiency_bonus':
         return {
           ...baseElement,
@@ -116,12 +118,14 @@ export class ElementDisplayComponent {
           value: this.item.value as number,
           level: this.item.metadata?.['level'] || 1
         };
+      case DataType.DND_LEVEL:
       case 'dnd_level':
         return {
           ...baseElement,
           type: 'dnd-level',
           level: this.item.value as number
         };
+      case DataType.DND_SKILLS_GROUP:
       case 'dnd_skills_group':
         return {
           ...baseElement,
@@ -153,6 +157,7 @@ export class ElementDisplayComponent {
           }
         };
       case DataType.HP:
+      case 'hp':
         return {
           ...baseElement,
           type: 'hp',
@@ -161,6 +166,7 @@ export class ElementDisplayComponent {
           temporaryHp: this.item.metadata?.['temporaryHp'] || 0
         };
       case DataType.ATTACK:
+      case 'attack':
         return {
           ...baseElement,
           type: 'attack',

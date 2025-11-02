@@ -382,7 +382,10 @@ export class DashboardComponent implements OnInit {
         // Mode édition : mettre à jour l'élément existant
         
         // Vérifier si elementData est déjà un DataItem (venant de modales spécifiques)
-        const isAlreadyDataItem = (elementData as any).type && typeof (elementData as any).type === 'string';
+        // Un DataItem a userId, tabId ou column, alors qu'un Element a gameSystem
+        const isAlreadyDataItem = (elementData as any).userId !== undefined || 
+                                   (elementData as any).column !== undefined ||
+                                   ((elementData as any).tabId !== undefined && (elementData as any).gameSystem === undefined);
         
         // Si c'est déjà un DataItem, l'utiliser directement
         const updatedElement = isAlreadyDataItem 
@@ -510,6 +513,13 @@ export class DashboardComponent implements OnInit {
         attackBonus: element.attackBonus,
         damage: element.damage,
         misc: element.misc
+      };
+    } else if (element.type === 'resource-counter') {
+      // Stocker les valeurs du compteur dans metadata
+      dataItem.allowQuickModification = true;
+      dataItem.metadata = {
+        currentValue: element.currentValue,
+        maxValue: element.maxValue
       };
     } else if (element.type === 'dnd-attribute') {
       dataItem.hasProficiency = element.hasProficiency;

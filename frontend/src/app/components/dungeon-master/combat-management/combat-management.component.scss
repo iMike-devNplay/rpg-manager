@@ -11,15 +11,34 @@
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
 
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .btn-back {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateX(-2px);
+      }
+    }
   }
 
   .combat-status {
@@ -39,6 +58,69 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+  }
+}
+
+.adventure-characters {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  h3 {
+    margin: 0 0 15px 0;
+    color: #1e40af;
+    font-size: 1.2rem;
+  }
+
+  .characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .character-card {
+    background: white;
+    border: 2px solid #93c5fd;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #dbeafe;
+      border-color: #3b82f6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .character-name {
+      font-weight: 600;
+      color: #1e40af;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .character-details {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .character-user {
+      display: block;
+    }
+
+    .character-hint {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-style: italic;
+      text-align: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+    }
   }
 }
 

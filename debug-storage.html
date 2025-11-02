@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug RPG Manager Storage</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            padding: 20px; 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+        }
+        h1 { color: #569cd6; }
+        h2 { color: #4ec9b0; margin-top: 30px; }
+        pre { 
+            background: #2d2d30; 
+            padding: 15px; 
+            border-radius: 5px; 
+            overflow-x: auto;
+            border-left: 3px solid #569cd6;
+        }
+        .error { color: #f48771; }
+        .success { color: #4ec9b0; }
+        button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1177bb; }
+    </style>
+</head>
+<body>
+    <h1>🔍 RPG Manager - Debug LocalStorage</h1>
+    
+    <button onclick="showAllKeys()">Voir toutes les clés</button>
+    <button onclick="showAdventures()">Voir Aventures</button>
+    <button onclick="showCharacters()">Voir Personnages</button>
+    <button onclick="showUsers()">Voir Utilisateurs</button>
+    <button onclick="showAll()">Tout Voir</button>
+    
+    <div id="output"></div>
+
+    <script>
+        // Afficher d'abord toutes les clés du localStorage
+        function showAllKeys() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h2>🔑 Toutes les clés du localStorage</h2>';
+            
+            const keys = Object.keys(localStorage);
+            output.innerHTML += `<p class="success">✓ ${keys.length} clé(s) trouvée(s)</p>`;
+            
+            if (keys.length === 0) {
+                output.innerHTML += '<p class="error">Le localStorage est vide!</p>';
+                output.innerHTML += '<p>Note: Le localStorage est isolé par domaine. Cette page doit être sur le même domaine que l\'application.</p>';
+                return;
+            }
+            
+            output.innerHTML += '<ul>';
+            keys.forEach(key => {
+                const value = localStorage.getItem(key);
+                const size = new Blob([value]).size;
+                output.innerHTML += `<li><strong>${key}</strong> (${size} bytes)</li>`;
+            });
+            output.innerHTML += '</ul>';
+        }
+        
+        function showAdventures() {
+            const output = document.getElementById('output');
+            const data = localStorage.getItem('rpg-manager-adventures');
+            
+            output.innerHTML = '<h2>📖 Aventures (rpg-manager-adventures)</h2>';
+            
+            if (!data) {
+                output.innerHTML += '<p class="error">Aucune aventure trouvée dans le localStorage</p>';
+                return;
+            }
+            
+            try {
+                const adventures = JSON.parse(data);
+                output.innerHTML += `<p class="success">✓ ${adventures.length} aventure(s) trouvée(s)</p>`;
+                output.innerHTML += '<pre>' + JSON.stringify(adventures, null, 2) + '</pre>';
+            } catch (e) {
+                output.innerHTML += '<p class="error">Erreur de parsing: ' + e.message + '</p>';
+            }
+        }
+        
+        function showCharacters() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h2>🧙 Personnages (rpg-manager-data)</h2>';
+            
+            const data = localStorage.getItem('rpg-manager-data');
+            
+            if (!data) {
+                output.innerHTML += '<p class="error">Aucune donnée trouvée (rpg-manager-data)</p>';
+                return;
+            }
+            
+            try {
+                const allData = JSON.parse(data);
+                
+                output.innerHTML += '<h3>Structure complète de rpg-manager-data:</h3>';
+                output.innerHTML += '<pre>' + JSON.stringify(allData, null, 2) + '</pre>';
+                
+            } catch (e) {
+                output.innerHTML += '<p class="error">Erreur: ' + e.message + '</p>';
+                output.innerHTML += '<pre>' + e.stack + '</pre>';
+            }
+        }
+        
+        function showUsers() {
+            const output = document.getElementById('output');
+            const data = localStorage.getItem('rpg-manager-users-list');
+            
+            output.innerHTML = '<h2>👥 Utilisateurs (rpg-manager-users-list)</h2>';
+            
+            if (!data) {
+                output.innerHTML += '<p class="error">Aucun utilisateur trouvé</p>';
+                return;
+            }
+            
+            try {
+                const users = JSON.parse(data);
+                output.innerHTML += `<p class="success">✓ ${users.length} utilisateur(s)</p>`;
+                output.innerHTML += '<pre>' + JSON.stringify(users, null, 2) + '</pre>';
+            } catch (e) {
+                output.innerHTML += '<p class="error">Erreur: ' + e.message + '</p>';
+            }
+        }
+        
+        function showAll() {
+            showAdventures();
+            const temp = document.getElementById('output').innerHTML;
+            showCharacters();
+            document.getElementById('output').innerHTML = temp + document.getElementById('output').innerHTML;
+            const temp2 = document.getElementById('output').innerHTML;
+            showUsers();
+            document.getElementById('output').innerHTML = temp2 + document.getElementById('output').innerHTML;
+        }
+    </script>
+</body>
+</html>

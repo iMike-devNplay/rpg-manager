@@ -9,7 +9,6 @@ import { CharacterService } from '../../../../services/character.service';
 import { Dnd5eService } from '../../../../services/dnd5e.service';
 import { ElementCreationOrchestratorComponent } from '../elements/element-creation-orchestrator/element-creation-orchestrator.component';
 import { ElementDisplayComponent } from '../elements/element-display/element-display.component';
-import { CombatManagementComponent } from '../../../dungeon-master/combat-management/combat-management.component';
 import { PlayersManagementComponent } from '../../../dungeon-master/players-management/players-management.component';
 import { TabBarComponent } from './tab-bar/tab-bar.component';
 import { TabModalComponent } from './tab-modal/tab-modal.component';
@@ -25,7 +24,6 @@ import { ElementService } from '../../../../services/element.service';
     FormsModule,
     ElementCreationOrchestratorComponent,
     ElementDisplayComponent,
-    CombatManagementComponent,
     PlayersManagementComponent,
     TabBarComponent,
     TabModalComponent
@@ -73,6 +71,14 @@ export class DashboardComponent implements OnInit {
 
   navigateToCharacterPage(): void {
     this.router.navigate(['/character']);
+  }
+
+  navigateToAdventures(): void {
+    this.router.navigate(['/adventures']);
+  }
+
+  navigateToCombat(): void {
+    this.router.navigate(['/combat']);
   }
 
   private subscriptions: Subscription[] = [];

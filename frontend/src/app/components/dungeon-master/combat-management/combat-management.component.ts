@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AdventureService } from '../../../services/adventure.service';
+import { StorageService } from '../../../services/storage.service';
+import { Adventure, PlayerCharacter } from '../../../models/rpg.models';
 
 interface CombatParticipant {
   id: string;
@@ -13,6 +17,11 @@ interface CombatParticipant {
   conditions: string[];
 }
 
+interface AdventureCharacterInfo {
+  character: PlayerCharacter;
+  userName: string;
+}
+
 @Component({
   selector: 'app-combat-management',
   standalone: true,
@@ -20,11 +29,17 @@ interface CombatParticipant {
   templateUrl: './combat-management.component.html',
   styleUrls: ['./combat-management.component.scss']
 })
-export class CombatManagementComponent {
+export class CombatManagementComponent implements OnInit {
   participants: CombatParticipant[] = [];
   currentTurn: number = 0;
   round: number = 1;
   isCombatActive: boolean = false;
+  
+  // Gestion de l'aventure liée
+  adventureId: string | null = null;
+  adventure: Adventure | null = null;
+  adventureCharacters: AdventureCharacterInfo[] = [];
+  showCharacterSelect: boolean = false;
   
   // Formulaire d'ajout de participant
   newParticipant = {
@@ -35,6 +50,71 @@ export class CombatManagementComponent {
     ac: 10,
     isPlayer: false
   };
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private adventureService: AdventureService,
+    private storageService: StorageService
+  ) {}
+
+  ngOnInit() {
+    // Récupérer l'ID de l'aventure depuis les paramètres de requête
+    this.route.queryParams.subscribe(params => {
+      this.adventureId = params['adventureId'] || null;
+      if (this.adventureId) {
+        this.loadAdventure();
+      }
+    });
+  }
+
+  loadAdventure() {
+    if (!this.adventureId) return;
+    
+    this.adventure = this.adventureService.getAdventureById(this.adventureId);
+    if (this.adventure) {
+      // Charger les personnages de l'aventure
+      this.adventureCharacters = [];
+      for (const charRef of this.adventure.characters) {
+        const characters = this.storageService.getCharacters(charRef.userId);
+        const character = characters.find(c => c.id === charRef.characterId);
+        if (character) {
+          const users = this.storageService.getUsers();
+          const user = users.find(u => u.id === charRef.userId);
+          this.adventureCharacters.push({
+            character,
+            userName: user ? user.username : 'Inconnu'
+          });
+        }
+      }
+    }
+  }
+
+  onBackToAdventure() {
+    if (this.adventureId) {
+      this.router.navigate(['/adventure-game', this.adventureId]);
+    } else {
+      // Retour au dashboard si pas d'aventure
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  selectAdventureCharacter(charInfo: AdventureCharacterInfo) {
+    // Préremplir le formulaire avec les données du personnage
+    const hpItem = charInfo.character.dataItems.find((item: any) => item.type === 'hp');
+    const acItem = charInfo.character.dataItems.find((item: any) => 
+      item.metadata?.dnd5eType === 'armor-class' || item.type === 'armor_class'
+    );
+
+    this.newParticipant.name = charInfo.character.name;
+    this.newParticipant.isPlayer = true;
+    this.newParticipant.hp = hpItem?.metadata?.['maxHp'] || hpItem?.metadata?.['currentHp'] || 10;
+    this.newParticipant.maxHp = hpItem?.metadata?.['maxHp'] || 10;
+    this.newParticipant.ac = acItem?.value as number || 10;
+    this.newParticipant.initiative = 0; // L'utilisateur devra le renseigner
+    
+    this.showCharacterSelect = false;
+  }
 
   addParticipant() {
     if (this.newParticipant.name.trim()) {

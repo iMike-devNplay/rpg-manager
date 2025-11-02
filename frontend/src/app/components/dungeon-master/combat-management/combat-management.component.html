@@ -1,7 +1,13 @@
 <!-- Gestion des combats -->
 <div class="combat-management">
   <div class="combat-header">
-    <h2>🗡️ Gestion des Combats</h2>
+    <div class="header-nav">
+      <button class="btn-back" (click)="onBackToAdventure()">
+        <span *ngIf="adventureId">← Retour à l'aventure</span>
+        <span *ngIf="!adventureId">← Retour au Dashboard</span>
+      </button>
+      <h2>🗡️ Gestion des Combats</h2>
+    </div>
     
     <div class="combat-status" *ngIf="isCombatActive">
       <div class="round-info">
@@ -28,6 +34,23 @@
       </div>
       
       <button class="btn danger" (click)="resetCombat()">🗑️ Reset</button>
+    </div>
+  </div>
+
+  <!-- Personnages de l'aventure -->
+  <div class="adventure-characters" *ngIf="adventureCharacters.length > 0 && !isCombatActive">
+    <h3>📖 Personnages de l'aventure : {{ adventure?.name }}</h3>
+    <div class="characters-grid">
+      <div 
+        *ngFor="let charInfo of adventureCharacters" 
+        class="character-card"
+        (click)="selectAdventureCharacter(charInfo)">
+        <div class="character-name">{{ charInfo.character.name }}</div>
+        <div class="character-details">
+          <span class="character-user">Joueur : {{ charInfo.userName }}</span>
+        </div>
+        <div class="character-hint">Cliquez pour pré-remplir</div>
+      </div>
     </div>
   </div>
 

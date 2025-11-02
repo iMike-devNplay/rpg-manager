@@ -1,0 +1,64 @@
+<div class="adventures-container">
+  <div class="adventures-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="onBack()">
+        ← Retour au Dashboard
+      </button>
+      <h1>Mes Aventures</h1>
+    </div>
+    <button class="btn btn-primary" (click)="onCreateAdventure()">
+      ✨ Nouvelle Aventure
+    </button>
+  </div>
+
+  <div class="adventures-list" *ngIf="adventures.length > 0">
+    <div class="adventure-card" *ngFor="let adventure of adventures">
+      <div class="adventure-image" [style.background-image]="adventure.imageUrl ? 'url(' + adventure.imageUrl + ')' : 'none'">
+        <div class="adventure-system-badge">
+          {{ getGameSystemLabel(adventure.gameSystem) }}
+        </div>
+      </div>
+      
+      <div class="adventure-content">
+        <h2>{{ adventure.name }}</h2>
+        <p class="adventure-date">📅 {{ formatDate(adventure.date) }}</p>
+        <p class="adventure-description">{{ adventure.description || 'Aucune description' }}</p>
+        
+        <div class="adventure-characters">
+          <span class="character-count">
+            👥 {{ adventure.characters.length }} personnage{{ adventure.characters.length > 1 ? 's' : '' }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="adventure-actions">
+        <button class="btn btn-success" (click)="onLaunchAdventure(adventure)" title="Lancer l'aventure">
+          🎮 Lancer
+        </button>
+        <button class="btn btn-secondary" (click)="onEditAdventure(adventure)" title="Modifier">
+          ✏️ Modifier
+        </button>
+        <button class="btn btn-danger" (click)="onDeleteAdventure(adventure)" title="Supprimer">
+          🗑️ Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="adventures.length === 0">
+    <div class="empty-icon">📖</div>
+    <h2>Aucune aventure</h2>
+    <p>Créez votre première aventure pour commencer à jouer !</p>
+    <button class="btn btn-primary" (click)="onCreateAdventure()">
+      ✨ Créer ma première aventure
+    </button>
+  </div>
+</div>
+
+<!-- Modal de création/édition -->
+<app-adventure-modal
+  *ngIf="showCreateModal"
+  [isOpen]="showCreateModal"
+  [adventure]="editingAdventure"
+  (close)="onModalClose()">
+</app-adventure-modal>

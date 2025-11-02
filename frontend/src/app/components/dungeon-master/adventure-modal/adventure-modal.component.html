@@ -1,0 +1,121 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>{{ adventure ? 'Modifier l\'aventure' : 'Nouvelle aventure' }}</h2>
+      <button class="btn-close" (click)="onCancel()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()">
+        <!-- Informations de base -->
+        <div class="form-section">
+          <h3>Informations générales</h3>
+          
+          <div class="form-group">
+            <label for="name">Nom de l'aventure *</label>
+            <input
+              type="text"
+              id="name"
+              [(ngModel)]="name"
+              name="name"
+              placeholder="Ex: La Forteresse Oubliée"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="date">Date de la session *</label>
+            <input
+              type="date"
+              id="date"
+              [(ngModel)]="date"
+              name="date"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="gameSystem">Système de jeu *</label>
+            <select
+              id="gameSystem"
+              [(ngModel)]="gameSystem"
+              name="gameSystem"
+              (change)="onGameSystemChange()"
+              required>
+              <option *ngFor="let system of gameSystems" [value]="system.value">
+                {{ system.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              [(ngModel)]="description"
+              name="description"
+              rows="4"
+              placeholder="Décrivez l'aventure..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="imageUrl">URL de l'image</label>
+            <input
+              type="url"
+              id="imageUrl"
+              [(ngModel)]="imageUrl"
+              name="imageUrl"
+              placeholder="https://exemple.com/image.jpg">
+            <small *ngIf="imageUrl" class="image-preview">
+              <img [src]="imageUrl" alt="Aperçu" onerror="this.style.display='none'">
+            </small>
+          </div>
+        </div>
+
+        <!-- Sélection des personnages -->
+        <div class="form-section">
+          <h3>Personnages participants *</h3>
+          <p class="help-text">Sélectionnez les personnages qui participeront à cette aventure</p>
+
+          <div class="characters-selection" *ngIf="availableCharacters.length > 0">
+            <div
+              *ngFor="let charWithUser of availableCharacters"
+              class="character-item"
+              [class.selected]="selectedCharacterIds.has(charWithUser.character.id)"
+              (click)="toggleCharacterSelection(charWithUser)">
+              <div class="character-info">
+                <div class="character-name">{{ charWithUser.character.name }}</div>
+                <div class="character-meta">
+                  👤 {{ charWithUser.userName }}
+                </div>
+              </div>
+              <div class="selection-indicator" *ngIf="selectedCharacterIds.has(charWithUser.character.id)">
+                ✓
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-characters" *ngIf="availableCharacters.length === 0">
+            <p>Aucun personnage disponible pour ce système de jeu.</p>
+            <p class="help-text">Créez d'abord des personnages {{ getGameSystemLabel() }}.</p>
+          </div>
+
+          <div class="selected-count">
+            {{ selectedCharacterIds.size }} personnage(s) sélectionné(s)
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" type="button" (click)="onCancel()">
+        Annuler
+      </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="onSubmit()"
+        [disabled]="!isFormValid()">
+        {{ adventure ? 'Enregistrer' : 'Créer l\'aventure' }}
+      </button>
+    </div>
+  </div>
+</div>

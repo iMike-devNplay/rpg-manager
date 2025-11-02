@@ -10,6 +10,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('frontend/dist/rpg-manager/browser'));
 
+// Route spéciale pour le debug
+app.get('/debug-storage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'debug-storage.html'));
+});
+
 // Route pour servir l'application Angular
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/dist/rpg-manager/browser/index.html'));

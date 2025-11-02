@@ -1,0 +1,142 @@
+<div class="adventure-game-container" *ngIf="!loading">
+  <div class="game-header">
+    <div class="header-nav">
+      <button class="btn-back" (click)="onBack()">
+        ← Retour aux aventures
+      </button>
+      <button class="btn-combat" (click)="onGoToCombat()" *ngIf="adventure">
+        ⚔️ Gestion de Combat
+      </button>
+    </div>
+    <div class="adventure-info" *ngIf="adventure">
+      <h1>{{ adventure.name }}</h1>
+      <span class="game-system-badge">{{ getGameSystemLabel() }}</span>
+    </div>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    <p>{{ error }}</p>
+    <button class="btn-primary" (click)="onBack()">Retour</button>
+  </div>
+
+  <div class="game-content" *ngIf="adventure && !error">
+    <!-- Une colonne par personnage -->
+    <div class="character-column" *ngFor="let synthesis of charactersSynthesis">
+      <div class="character-card">
+        <div class="character-header">
+          <h3>{{ synthesis.character.name }}</h3>
+          <span class="player-badge">{{ synthesis.userName }}</span>
+        </div>
+        
+        <div class="character-details">
+          <div class="detail-row">
+            <span class="detail-label">Classe:</span>
+            <span class="detail-value">{{ synthesis.class }}</span>
+          </div>
+          
+          <div class="detail-row" *ngIf="synthesis.race !== 'N/A'">
+            <span class="detail-label">
+              {{ adventure.gameSystem === 'cof2e' ? 'Peuple' : 'Race' }}:
+            </span>
+            <span class="detail-value">{{ synthesis.race }}</span>
+          </div>
+          
+          <div class="detail-row" *ngIf="synthesis.background !== 'N/A'">
+            <span class="detail-label">Origine:</span>
+            <span class="detail-value">{{ synthesis.background }}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Niveau:</span>
+            <span class="detail-value">{{ synthesis.level }}</span>
+          </div>
+        </div>
+        
+        <div class="character-stats">
+          <div class="stat-box">
+            <div class="stat-label">PV Max</div>
+            <div class="stat-value">{{ synthesis.maxHP }}</div>
+          </div>
+          
+          <div class="stat-box">
+            <div class="stat-label">
+              {{ adventure.gameSystem === 'cof2e' ? 'Défense' : 'CA' }}
+            </div>
+            <div class="stat-value">{{ synthesis.armorClass }}</div>
+          </div>
+          
+          <div class="stat-box" *ngIf="adventure.gameSystem === 'dnd5e'">
+            <div class="stat-label">Perception</div>
+            <div class="stat-value">{{ synthesis.passivePerception }}</div>
+          </div>
+          
+          <div class="stat-box">
+            <div class="stat-label">Vitesse</div>
+            <div class="stat-value">{{ synthesis.speed }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-characters" *ngIf="charactersSynthesis.length === 0">
+      <p>Aucun personnage dans cette aventure.</p>
+    </div>
+    
+    <!-- Colonne du journal (toujours à droite) -->
+    <div class="journal-column">
+      <h2>📝 Journal de l'aventure</h2>
+      
+      <!-- Formulaire d'ajout d'entrée -->
+      <div class="journal-input-section">
+        <textarea
+          class="journal-input"
+          [(ngModel)]="newJournalEntry"
+          placeholder="Notez un événement, une action, une remarque..."
+          rows="3"
+        ></textarea>
+        <button 
+          class="btn-add-entry" 
+          (click)="addJournalEntry()"
+          [disabled]="!newJournalEntry.trim()"
+          title="Ajouter l'entrée">
+          + Ajouter
+        </button>
+      </div>
+
+      <!-- Affichage des entrées groupées par jour -->
+      <div class="journal-entries">
+        <div *ngIf="journalDays.length === 0" class="empty-journal">
+          <p>📖 Aucune entrée dans le journal.</p>
+          <p><small>Commencez à noter vos aventures !</small></p>
+        </div>
+
+        <div *ngFor="let day of journalDays" class="journal-day">
+          <div class="day-header" (click)="toggleDayCollapse(day)">
+            <span class="day-label">{{ day.dateLabel }}</span>
+            <span class="day-count">({{ day.entries.length }})</span>
+            <span class="collapse-icon">{{ day.collapsed ? '▶' : '▼' }}</span>
+          </div>
+
+          <div class="day-entries" *ngIf="!day.collapsed">
+            <div *ngFor="let entry of day.entries" class="journal-entry">
+              <div class="entry-header">
+                <span class="entry-time">{{ formatEntryTime(entry.timestamp) }}</span>
+                <button 
+                  class="btn-delete-entry" 
+                  (click)="deleteJournalEntry(entry.id)"
+                  title="Supprimer l'entrée">
+                  ×
+                </button>
+              </div>
+              <div class="entry-content">{{ entry.content }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-spinner" *ngIf="loading">
+  <p>Chargement de l'aventure...</p>
+</div>

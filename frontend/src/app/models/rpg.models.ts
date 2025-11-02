@@ -243,6 +243,45 @@ export interface GameSession {
   updatedAt: Date;
 }
 
+// ========================================
+// Aventures (Maître de jeu)
+// ========================================
+
+/**
+ * Référence à un personnage dans une aventure
+ */
+export interface AdventureCharacterReference {
+  characterId: string;
+  userId: string;
+}
+
+/**
+ * Entrée de journal d'aventure
+ */
+export interface JournalEntry {
+  id: string;
+  content: string;
+  timestamp: Date;
+}
+
+/**
+ * Aventure gérée par le maître de jeu
+ */
+export interface Adventure {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+  gameSystem: GameSystem;
+  date: Date;
+  gameMasterId: string;
+  characters: AdventureCharacterReference[]; // Références aux personnages
+  journal: string; // Ancien format - conservé pour compatibilité
+  journalEntries: JournalEntry[]; // Nouveau format avec entrées horodatées
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Interface pour l'export/import
 export interface ExportData {
   version: string;

@@ -95,6 +95,7 @@ export class ElementDisplayComponent {
           value: this.item.value as number,
           hasProficiency: this.item.hasProficiency
         };
+      case DataType.ATTRIBUTES_GROUP:
       case 'attributes_group':
         return {
           ...baseElement,

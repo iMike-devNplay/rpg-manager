@@ -77,10 +77,8 @@ export class EditCof2eVoiesModalComponent implements OnInit {
       const profilValue = profilElement?.value as string;
 
       // Charger la voie du peuple si un peuple est sélectionné
-      console.log('Chargement voie peuple - peupleValue:', peupleValue);
       if (peupleValue && cof2eData.peuples) {
         const peuple = cof2eData.peuples.find((p: any) => p.peuple === peupleValue);
-        console.log('Peuple trouvé:', peuple);
         if (peuple?.voie) {
           // Ajouter la voie du peuple aux voies disponibles
           const voiePeuple: Cof2eVoie = {
@@ -96,17 +94,14 @@ export class EditCof2eVoiesModalComponent implements OnInit {
             source: 'peuple'
           };
           
-          console.log('Voie peuple créée:', voiePeuple);
           // Ajouter si pas déjà présente
           if (!this.voies.find(v => v.voie === voiePeuple.voie)) {
             this.voies.push(voiePeuple);
-            console.log('Voie peuple ajoutée. Total voies:', this.voies.length);
           }
         }
       }
 
       // Charger les voies disponibles du profil si un profil est sélectionné
-      console.log('Chargement voies profil - profilValue:', profilValue);
       if (profilValue && cof2eData.familles) {
         // Trouver le profil dans les familles
         for (const famille of cof2eData.familles) {
@@ -125,15 +120,12 @@ export class EditCof2eVoiesModalComponent implements OnInit {
                 })),
                 source: 'profil'
               }));
-              console.log('Voies profil disponibles:', this.availableVoiesFromProfil.length);
               break;
             }
           }
         }
       }
       
-      console.log('Fin loadAvailableVoies - Total voies:', this.voies.length);
-      console.log('Voies disponibles profil:', this.availableVoiesFromProfil.length);
     } catch (error) {
       console.error('Erreur lors du chargement des voies:', error);
     }
@@ -143,10 +135,8 @@ export class EditCof2eVoiesModalComponent implements OnInit {
    * Charge les voies depuis l'item et fusionne avec les voies sauvegardées
    */
   private loadVoiesFromItem(): void {
-    console.log('loadVoiesFromItem - metadata:', this.item?.metadata);
     if (this.item?.metadata?.['voies'] && Array.isArray(this.item.metadata['voies'])) {
       const savedVoies = this.item.metadata['voies'] as Cof2eVoie[];
-      console.log('Voies sauvegardées trouvées:', savedVoies.length);
       
       // Fusionner les voies sauvegardées avec les voies chargées depuis cof-data.json
       // Garder l'état "acquired" des capacités sauvegardées
@@ -170,10 +160,7 @@ export class EditCof2eVoiesModalComponent implements OnInit {
     // Charger les voies sélectionnées du profil
     this.selectedProfilVoies = this.voies
       .filter(v => v.source === 'profil')
-      .map(v => v.voie);
-    
-    console.log('Fin loadVoiesFromItem - Total voies:', this.voies.length);
-    console.log('Voies sélectionnées profil:', this.selectedProfilVoies.length);
+      .map(v => v.voie);    
   }
 
   /**

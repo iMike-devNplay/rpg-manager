@@ -82,6 +82,7 @@ export enum DataType {
   DND_SKILLS_GROUP = 'dnd_skills_group',
   DND4E_ATTRIBUTES_GROUP = 'dnd4e_attributes_group',
   COF2E_VOIES = 'cof2e_voies',
+  COF2E_ATTRIBUTES_GROUP = 'cof2e_attributes_group',
   HP = 'hp',
   ATTACK = 'attack',
   RESOURCE_COUNTER = 'resource_counter'

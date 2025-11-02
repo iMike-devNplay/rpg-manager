@@ -131,6 +131,14 @@
   (save)="onSelectElementSaved($event)">
 </app-edit-cof2e-voies-modal>
 
+<!-- Modal pour caractéristiques COF2e -->
+<app-edit-cof2e-attributes-modal
+  *ngIf="showElementModal && selectedType === 'cof2e-attributes-group'"
+  [item]="cof2eAttributesDataItem!"
+  (close)="onElementModalClose()"
+  (save)="onSelectElementSaved($event)">
+</app-edit-cof2e-attributes-modal>
+
 <!-- Modal pour compteur de ressource -->
 <app-resource-counter-modal
   [isVisible]="showElementModal && selectedType === 'resource-counter'"

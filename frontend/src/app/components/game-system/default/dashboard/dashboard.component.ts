@@ -378,13 +378,11 @@ export class DashboardComponent implements OnInit {
 
   onElementCreated(elementData: Partial<Element>): void {
     try {
-      console.log('onElementCreated - elementData:', elementData);
       if (elementData.id) {
         // Mode édition : mettre à jour l'élément existant
         
         // Vérifier si elementData est déjà un DataItem (venant de modales spécifiques)
         const isAlreadyDataItem = (elementData as any).type && typeof (elementData as any).type === 'string';
-        console.log('isAlreadyDataItem:', isAlreadyDataItem);
         
         // Si c'est déjà un DataItem, l'utiliser directement
         const updatedElement = isAlreadyDataItem 
@@ -545,6 +543,12 @@ export class DashboardComponent implements OnInit {
         cof2eType: 'voies',
         voies: element.voies || []
       };
+    } else if (element.type === 'cof2e-attributes-group') {
+      // Stocker les caractéristiques COF2e comme metadata
+      dataItem.metadata = {
+        cof2eType: 'attributes-group',
+        attributes: element.attributes
+      };
     }
 
     return dataItem;
@@ -565,6 +569,7 @@ export class DashboardComponent implements OnInit {
       case 'dnd-skills-group': return DataType.DND_SKILLS_GROUP;
       case 'dnd4e-attributes-group': return DataType.DND4E_ATTRIBUTES_GROUP;
       case 'cof2e-voies': return DataType.COF2E_VOIES;
+      case 'cof2e-attributes-group': return DataType.COF2E_ATTRIBUTES_GROUP;
       default: return DataType.TEXT;
     }
   }
@@ -587,6 +592,7 @@ export class DashboardComponent implements OnInit {
       case 'dnd-skills-group': return 'Compétences'; // Nom générique pour l'affichage
       case 'dnd4e-attributes-group': return 'Attributs D&D 4e'; // Nom générique pour l'affichage
       case 'cof2e-voies': return 'Voies COF2e'; // Nom générique pour l'affichage
+      case 'cof2e-attributes-group': return 'Caractéristiques COF2e'; // Nom générique pour l'affichage
       case 'equipment': return element.name; // Nom de l'équipement comme valeur
       default: return element.name;
     }
@@ -777,6 +783,21 @@ export class DashboardComponent implements OnInit {
           voies: item.metadata?.['voies'] || []
         };
         return cof2eVoiesElement;
+      case DataType.COF2E_ATTRIBUTES_GROUP:
+        const cof2eAttributesElement = {
+          ...baseElement,
+          type: 'cof2e-attributes-group' as const,
+          attributes: item.metadata?.['attributes'] || {
+            FOR: 0,
+            AGI: 0,
+            CON: 0,
+            PER: 0,
+            INT: 0,
+            CHA: 0,
+            VOL: 0
+          }
+        };
+        return cof2eAttributesElement;
       default:
         const defaultElement = {
           ...baseElement,

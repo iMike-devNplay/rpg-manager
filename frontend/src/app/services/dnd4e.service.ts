@@ -107,7 +107,8 @@ export class Dnd4eService {
       inventoryTabId = newTabs[5].id;
 
       // Charger les listes de sélection pour Race et Classe
-      await this.loadDnd4eSelectLists(dnd4eData, character.userId);
+      // Note: Cette méthode charge elle-même les données D&D 4e
+      await this.loadDnd4eSelectLists();
 
       const userId = character.userId;
       const characterElements: DataItem[] = [];
@@ -144,7 +145,6 @@ export class Dnd4eService {
       // Sauvegarder le personnage avec les nouveaux onglets et éléments
       this.storageService.updateCharacter(character);
 
-      console.log('Initialisation D&D 4e terminée', { character, elements: characterElements });
     } catch (error) {
       console.error('Erreur lors de l\'initialisation du personnage D&D 4e:', error);
       throw error;
@@ -153,53 +153,65 @@ export class Dnd4eService {
 
   /**
    * Charge les listes de sélection D&D 4e dans le localStorage
+   * Méthode publique pour être appelée au démarrage de l'application
    */
-  private async loadDnd4eSelectLists(dnd4eData: GameSystemData, userId: string): Promise<void> {
-    const now = new Date();
-    const lists: any[] = [];
+  async loadDnd4eSelectLists(): Promise<void> {
+    try {
+      const dnd4eData = await this.gameSystemDataService.loadGameSystemData(GameSystem.DND4E).toPromise();
+      if (!dnd4eData) {
+        console.warn('[DND4E] Impossible de charger les données D&D 4e pour les listes');
+        return;
+      }
 
-    // Charger la liste des races
-    if (dnd4eData.races && Array.isArray(dnd4eData.races)) {
-      const raceOptions: SelectListOption[] = dnd4eData.races.map((race: any) => ({
-        id: this.storageService.generateId(),
-        label: race.name,
-        value: race.name
-      }));
+      const now = new Date();
+      const lists: any[] = [];
 
-      lists.push({
-        id: 'dnd4e-races',
-        name: 'Races D&D 4e',
-        type: 'system',
-        gameSystem: GameSystem.DND4E,
-        options: raceOptions,
-        createdAt: now,
-        updatedAt: now
+      // Charger la liste des races
+      if (dnd4eData.races && Array.isArray(dnd4eData.races)) {
+        const raceOptions: SelectListOption[] = dnd4eData.races.map((race: any) => ({
+          id: this.storageService.generateId(),
+          label: race.name,
+          value: race.name
+        }));
+
+        lists.push({
+          id: 'dnd4e-races',
+          name: 'Races D&D 4e',
+          type: 'system',
+          gameSystem: GameSystem.DND4E,
+          options: raceOptions,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+
+      // Charger la liste des classes
+      if (dnd4eData.classes && Array.isArray(dnd4eData.classes)) {
+        const classOptions: SelectListOption[] = dnd4eData.classes.map((classe: any) => ({
+          id: this.storageService.generateId(),
+          label: classe.name,
+          value: classe.name
+        }));
+
+        lists.push({
+          id: 'dnd4e-classes',
+          name: 'Classes D&D 4e',
+          type: 'system',
+          gameSystem: GameSystem.DND4E,
+          options: classOptions,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+
+      // Sauvegarder toutes les listes
+      lists.forEach(list => {
+        this.storageService.saveSelectList(list);
       });
+
+    } catch (error) {
+      console.error('[DND4E] Erreur lors du chargement des listes D&D 4e', error);
     }
-
-    // Charger la liste des classes
-    if (dnd4eData.classes && Array.isArray(dnd4eData.classes)) {
-      const classOptions: SelectListOption[] = dnd4eData.classes.map((classe: any) => ({
-        id: this.storageService.generateId(),
-        label: classe.name,
-        value: classe.name
-      }));
-
-      lists.push({
-        id: 'dnd4e-classes',
-        name: 'Classes D&D 4e',
-        type: 'system',
-        gameSystem: GameSystem.DND4E,
-        options: classOptions,
-        createdAt: now,
-        updatedAt: now
-      });
-    }
-
-    // Sauvegarder toutes les listes
-    lists.forEach(list => {
-      this.storageService.saveSelectList(list);
-    });
   }
 
   /**

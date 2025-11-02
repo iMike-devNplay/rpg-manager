@@ -19,6 +19,7 @@ import { DndLevelComponent } from '../../../dnd5e/elements/dnd-level/dnd-level.c
 import { DndSkillsGroupComponent } from '../../../dnd5e/elements/dnd-skills-group/dnd-skills-group.component';
 import { Dnd4eAttributesGroupComponent } from '../../../dnd4e/elements/dnd4e-attributes-group/dnd4e-attributes-group.component';
 import { Cof2eVoiesComponent } from '../../../cof2e/elements/cof2e-voies/cof2e-voies.component';
+import { Cof2eAttributesGroupComponent } from '../../../cof2e/elements/cof2e-attributes-group/cof2e-attributes-group.component';
 import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
 
 @Component({
@@ -36,6 +37,7 @@ import { MarkdownPipe } from '../../../../../pipes/markdown.pipe';
     DndSkillsGroupComponent,
     Dnd4eAttributesGroupComponent,
     Cof2eVoiesComponent,
+    Cof2eAttributesGroupComponent,
     EquipmentElementComponent,
     HpElementComponent,
     AttackElementComponent,
@@ -210,6 +212,21 @@ export class ElementDisplayComponent {
           type: 'cof2e-voies',
           voies: this.item.metadata?.['voies'] || []
         };
+      case DataType.COF2E_ATTRIBUTES_GROUP:
+      case 'cof2e_attributes_group':
+        return {
+          ...baseElement,
+          type: 'cof2e-attributes-group',
+          attributes: this.item.metadata?.['attributes'] || {
+            FOR: 0,
+            AGI: 0,
+            CON: 0,
+            PER: 0,
+            INT: 0,
+            CHA: 0,
+            VOL: 0
+          }
+        };
       default:
         // Fallback vers text
         return {
@@ -352,7 +369,6 @@ export class ElementDisplayComponent {
 
     // Extraire l'historique de base (avant le " - " s'il y a une variante)
     const baseBackground = backgroundValue.split(' - ')[0]; // "Brigand - Fugitif" -> "Brigand"
-    console.log(`Extraction historique: "${backgroundValue}" -> "${baseBackground}"`);
     
     // Normaliser le nom de l'historique pour construire les IDs des listes
     const normalizedBackgroundName = this.normalizeNameForId(baseBackground);
@@ -373,17 +389,13 @@ export class ElementDisplayComponent {
         item.metadata?.['dnd5eType'] === dnd5eType
       );
 
-      console.log(`Recherche élément ${dnd5eType}:`, dependentElement ? 'TROUVÉ' : 'NON TROUVÉ');
-
       if (dependentElement) {
         // Calculer le nouvel ID de liste
         const newSelectListId = `${listPrefix}-${normalizedBackgroundName}`;
-        console.log(`Recherche liste ${newSelectListId}:`);
 
         // Vérifier que la liste existe
         const newList = this.storageService.getSelectListById(newSelectListId);
         if (newList) {
-          console.log(`Liste ${newSelectListId} trouvée avec ${newList.options.length} options`);
           // Créer une nouvelle instance pour forcer la détection de changement d'Angular
           const updatedElement = {
             ...dependentElement,

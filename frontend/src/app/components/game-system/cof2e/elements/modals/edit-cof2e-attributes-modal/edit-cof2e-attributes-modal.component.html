@@ -1,0 +1,74 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Modifier les Caractéristiques</h3>
+      <button class="close-btn" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="help-text">
+        Les valeurs des caractéristiques vont de <strong>-2 à +5</strong>. 
+        Ces valeurs servent directement de modificateurs aux jets de dés.
+      </div>
+
+      <div class="attributes-grid">
+        <!-- Caractéristiques physiques -->
+        <div class="attributes-section">
+          <h4 class="section-title">Caractéristiques Physiques</h4>
+          <div *ngFor="let attr of attributes.slice(0, 4)" class="attribute-row">
+            <div class="attribute-info">
+              <span class="attribute-code">{{ attr.code }}</span>
+              <span class="attribute-name">{{ attr.name }}</span>
+            </div>
+            <div class="attribute-controls">
+              <button 
+                class="btn-decrement" 
+                (click)="decrement(attr)"
+                [disabled]="attr.value <= -2">
+                −
+              </button>
+              <div class="attribute-value">{{ getDisplayValue(attr.value) }}</div>
+              <button 
+                class="btn-increment" 
+                (click)="increment(attr)"
+                [disabled]="attr.value >= 5">
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caractéristiques mentales -->
+        <div class="attributes-section">
+          <h4 class="section-title">Caractéristiques Mentales</h4>
+          <div *ngFor="let attr of attributes.slice(4, 7)" class="attribute-row">
+            <div class="attribute-info">
+              <span class="attribute-code">{{ attr.code }}</span>
+              <span class="attribute-name">{{ attr.name }}</span>
+            </div>
+            <div class="attribute-controls">
+              <button 
+                class="btn-decrement" 
+                (click)="decrement(attr)"
+                [disabled]="attr.value <= -2">
+                −
+              </button>
+              <div class="attribute-value">{{ getDisplayValue(attr.value) }}</div>
+              <button 
+                class="btn-increment" 
+                (click)="increment(attr)"
+                [disabled]="attr.value >= 5">
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">Annuler</button>
+      <button class="btn btn-primary" (click)="onSave()">Enregistrer</button>
+    </div>
+  </div>
+</div>

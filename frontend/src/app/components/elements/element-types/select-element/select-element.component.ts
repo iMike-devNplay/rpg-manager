@@ -54,8 +54,12 @@ export class SelectElementComponent implements OnInit, OnChanges {
             label: opt.label,
             value: opt.value
           }));
+        } else {
+          console.warn('[SELECT] Aucune liste trouvée pour ID:', selectListId);
         }
       }
+    } else {
+      console.warn('[SELECT] Pas de selectListId dans metadata');
     }
   }
 

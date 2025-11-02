@@ -1,0 +1,33 @@
+<div class="cof2e-attributes-group">
+  <div class="attributes-header">
+    <h4>Caractéristiques</h4>
+  </div>
+
+  <div class="attributes-grid">
+    <!-- Caractéristiques physiques -->
+    <div class="attributes-section">
+      <div class="section-label">Physiques</div>
+      <div 
+        *ngFor="let attr of attributes.slice(0, 4)" 
+        class="attribute-item"
+        [ngClass]="getAttributeClass(attr.value)">
+        <div class="attribute-code">{{ attr.code }}</div>
+        <div class="attribute-name">{{ attr.name }}</div>
+        <div class="attribute-value">{{ getAttributeDisplay(attr.value) }}</div>
+      </div>
+    </div>
+
+    <!-- Caractéristiques mentales -->
+    <div class="attributes-section">
+      <div class="section-label">Mentales</div>
+      <div 
+        *ngFor="let attr of attributes.slice(4, 7)" 
+        class="attribute-item"
+        [ngClass]="getAttributeClass(attr.value)">
+        <div class="attribute-code">{{ attr.code }}</div>
+        <div class="attribute-name">{{ attr.name }}</div>
+        <div class="attribute-value">{{ getAttributeDisplay(attr.value) }}</div>
+      </div>
+    </div>
+  </div>
+</div>

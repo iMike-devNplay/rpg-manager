@@ -89,8 +89,9 @@ export class Cof2eService {
       // Récupérer l'userId du personnage
       const userId = character.userId;
 
-      // Créer les listes de profils pour chaque famille
-      this.createProfilsDynamicLists(cof2eData);
+      // Charger les listes de sélection pour Famille, Profils et Peuple (une seule fois)
+      // Note: Cette méthode charge elle-même les données COF2e
+      await this.loadCof2eSelectLists();
 
       // Initialiser le tableau dataItems
       character.dataItems = [];
@@ -114,12 +115,19 @@ export class Cof2eService {
       // Colonne centre (column: 1)
       order = 0;
 
-      // 4. Niveau
-      const niveauElement = this.createNiveauElement(userId, mainTabId, 1, order++);
+      // 4. Caractéristiques COF2e
+      const attributesElement = this.createAttributesElement(userId, mainTabId, 1, order++);
+      character.dataItems.push(attributesElement);
+
+      // Colonne centre (column: 2)
+      order = 0;
+
+      // 5. Niveau
+      const niveauElement = this.createNiveauElement(userId, mainTabId, 2, order++);
       character.dataItems.push(niveauElement);
 
-      // 5. Points de vie
-      const pvElement = this.createPointsDeVieElement(userId, mainTabId, 1, order++);
+      // 6. Points de vie
+      const pvElement = this.createPointsDeVieElement(userId, mainTabId, 2, order++);
       character.dataItems.push(pvElement);
 
       // === ONGLET CAPACITÉS ===
@@ -132,7 +140,6 @@ export class Cof2eService {
       // Sauvegarder le personnage avec tous les onglets et dataItems
       this.storageService.updateCharacter(character);
 
-      console.log('Personnage COF2e initialisé avec succès:', character);
     } catch (error) {
       console.error('Erreur lors de l\'initialisation du personnage COF2e:', error);
       throw error;
@@ -140,7 +147,94 @@ export class Cof2eService {
   }
 
   /**
+   * Charge les listes de sélection COF2e dans le localStorage
+   * Méthode publique pour être appelée au démarrage de l'application
+   */
+  async loadCof2eSelectLists(): Promise<void> {
+    try {
+      const cof2eData = await this.gameSystemDataService.loadGameSystemData(GameSystem.COF2E).toPromise();
+      if (!cof2eData) {
+        console.warn('[COF2E] Impossible de charger les données COF2e pour les listes');
+        return;
+      }
+
+      const now = new Date();
+      const lists: SelectListReference[] = [];
+
+      // Liste des Familles
+      if (cof2eData.familles && Array.isArray(cof2eData.familles)) {
+        const familleOptions: SelectListOption[] = cof2eData.familles.map((famille: any) => ({
+          id: this.normalizeNameForId(famille.name),
+          label: famille.name,
+          value: famille.famille
+        }));
+
+        lists.push({
+          id: 'cof2e-familles',
+          name: 'Familles COF2e',
+          type: 'system',
+          gameSystem: 'cof2e',
+          options: familleOptions,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+
+      // Listes de Profils dynamiques (une par famille)
+      const familles = cof2eData.familles || [];
+      familles.forEach((famille: any) => {
+        if (famille.profils && Array.isArray(famille.profils) && famille.profils.length > 0) {
+          const profilOptions: SelectListOption[] = famille.profils.map((profil: any) => ({
+            id: this.storageService.generateId(),
+            label: profil.name,
+            value: profil.name
+          }));
+
+          const listId = `cof2e-profils-${this.normalizeNameForId(famille.name)}`;
+          lists.push({
+            id: listId,
+            name: `Profils - ${famille.name}`,
+            type: 'system',
+            gameSystem: 'cof2e',
+            options: profilOptions,
+            createdAt: now,
+            updatedAt: now
+          });
+        }
+      });
+
+      // Liste des Peuples
+      if (cof2eData.peuples && Array.isArray(cof2eData.peuples)) {
+        const peupleOptions: SelectListOption[] = cof2eData.peuples.map((peuple: any) => ({
+          id: this.normalizeNameForId(peuple.name),
+          label: peuple.name,
+          value: peuple.peuple
+        }));
+
+        lists.push({
+          id: 'cof2e-peuples',
+          name: 'Peuples COF2e',
+          type: 'system',
+          gameSystem: 'cof2e',
+          options: peupleOptions,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+
+      // Sauvegarder toutes les listes
+      lists.forEach(list => {
+        this.storageService.saveSelectList(list);
+      });
+
+    } catch (error) {
+      console.error('[COF2E] Erreur lors du chargement des listes COF2e', error);
+    }
+  }
+
+  /**
    * Crée les listes de profils dynamiques pour chaque famille
+   * @deprecated Utilisez loadCof2eSelectLists() à la place
    */
   private createProfilsDynamicLists(cof2eData: GameSystemData): void {
     const familles = cof2eData.familles || [];
@@ -173,26 +267,8 @@ export class Cof2eService {
    * Crée l'élément de sélection de la famille
    */
   private createFamilleSelectElement(cof2eData: GameSystemData, userId: string, tabId: string, column: number, order: number): DataItem {
-    const familles = cof2eData.familles || [];
-    const options: SelectListOption[] = familles.map((famille: any) => ({
-      id: this.normalizeNameForId(famille.name),
-      label: famille.name,
-      value: famille.famille
-    }));
-
-    const listId = 'cof2e-familles'; // ID fixe
-    const list: SelectListReference = {
-      id: listId,
-      name: 'Familles COF2e',
-      type: 'system',
-      gameSystem: 'cof2e',
-      options: options,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    // Sauvegarder la liste dans le storage
-    this.storageService.saveSelectList(list);
+    // La liste est déjà créée par loadCof2eSelectLists()
+    const listId = 'cof2e-familles';
 
     return {
       id: this.storageService.generateId(),
@@ -239,25 +315,8 @@ export class Cof2eService {
    * Crée l'élément de sélection du peuple
    */
   private createPeupleSelectElement(cof2eData: GameSystemData, userId: string, tabId: string, column: number, order: number): DataItem {
-    const peuples = cof2eData.peuples || [];
-    const options: SelectListOption[] = peuples.map((peuple: any) => ({
-      id: this.normalizeNameForId(peuple.name),
-      label: peuple.name,
-      value: peuple.peuple
-    }));
-
-    const listId = 'cof2e-peuples'; // ID fixe
-    const list: SelectListReference = {
-      id: listId,
-      name: 'Peuples COF2e',
-      type: 'system',
-      gameSystem: 'cof2e',
-      options: options,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    this.storageService.saveSelectList(list);
+    // La liste est déjà créée par loadCof2eSelectLists()
+    const listId = 'cof2e-peuples';
 
     return {
       id: this.storageService.generateId(),
@@ -333,6 +392,34 @@ export class Cof2eService {
       metadata: {
         voies: [], // Tableau des voies sélectionnées avec leurs capacités
         capacitesAcquises: [] // Rang de capacités acquises par niveau
+      }
+    };
+  }
+
+  /**
+   * Crée l'élément des Caractéristiques COF2e
+   */
+  private createAttributesElement(userId: string, tabId: string, column: number, order: number): DataItem {
+    return {
+      id: this.storageService.generateId(),
+      userId,
+      name: 'Caractéristiques',
+      description: 'Les 7 caractéristiques du personnage (FOR, AGI, CON, PER, INT, CHA, VOL)',
+      type: DataType.COF2E_ATTRIBUTES_GROUP,
+      value: '',
+      tabId: tabId,
+      column: column,
+      order: order,
+      metadata: {
+        attributes: {
+          FOR: 0,
+          AGI: 0,
+          CON: 0,
+          PER: 0,
+          INT: 0,
+          CHA: 0,
+          VOL: 0
+        }
       }
     };
   }

@@ -146,6 +146,12 @@
       [element]="item">
     </app-cof2e-voies>
 
+    <!-- Caractéristiques COF2e -->
+    <app-cof2e-attributes-group
+      *ngIf="element.type === 'cof2e-attributes-group'"
+      [element]="element">
+    </app-cof2e-attributes-group>
+
   </div>
 
   <!-- Description qui s'affiche au hover -->

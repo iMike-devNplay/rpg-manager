@@ -986,7 +986,11 @@ export class Dnd5eService {
 
       // Sauvegarder toutes les listes en une fois
       if (lists.length > 0) {
-        this.storageService.saveSystemSelectLists(lists);
+        // IMPORTANT: Utiliser saveSelectList pour chaque liste au lieu de saveSystemSelectLists
+        // pour ne pas écraser les listes des autres systèmes (D&D 4e, COF2e)
+        lists.forEach(list => {
+          this.storageService.saveSelectList(list);
+        });
       }
     } catch (error) {
       console.error('Erreur lors du chargement des listes D&D 5e:', error);
